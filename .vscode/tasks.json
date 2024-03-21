@@ -6,7 +6,26 @@
         {
             "label": "Flet Build",
             "type": "shell",
-            "command": "flet run application"
+            "command": ["flet"],
+            "args": [
+                "pack",
+                "--name",
+                "Telegram Migrator",
+                "--product-name",
+                "Telegram Migrator",
+                "--product-version",
+                "0.0.1",
+                "--company-name",
+                "Sergey Degtyar",
+                "--copyright",
+                "Open-Source",
+                // "--onedir",
+                // "dist",
+                "--icon",
+                "${workspaceFolder}\\application\\assets\\psd\\telegram.png",
+                "${workspaceFolder}\\application\\application.py",
+                "--yes"
+            ]    
         }
     ]
 }
