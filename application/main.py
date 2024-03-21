@@ -1,10 +1,12 @@
 import flet as ft
+import telethon as tg
+
 
 def main(page: ft.Page):
     page.title = "Telegram Migrator"
     page.window_width = 800
     
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    # page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
     txt_number = ft.TextField(value="0", text_align=ft.TextAlign.RIGHT, width=100)
 
