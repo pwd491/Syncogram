@@ -7,6 +7,7 @@ chardet==5.2.0
 charset-normalizer==3.3.2
 click==8.1.7
 cookiecutter==2.6.0
+Cython==3.0.9
 flet==0.20.0
 flet-core==0.20.0
 flet-runtime==0.20.0
@@ -27,6 +28,8 @@ pyasn1==0.5.1
 Pygments==2.17.2
 pyinstaller==6.5.0
 pyinstaller-hooks-contrib==2024.3
+pyobjc-core==10.2
+pyobjc-framework-Cocoa==10.2
 pypng==0.20220715.0
 python-dateutil==2.9.0.post0
 python-slugify==8.0.4
@@ -36,6 +39,7 @@ repath==0.9.0
 requests==2.31.0
 rich==13.7.1
 rsa==4.9
+screeninfo==0.8.1
 setuptools==69.2.0
 six==1.16.0
 sniffio==1.3.1
