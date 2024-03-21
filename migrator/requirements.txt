@@ -1,2 +1,4 @@
 flet
 Telethon
+pyinstaller
+pillow
