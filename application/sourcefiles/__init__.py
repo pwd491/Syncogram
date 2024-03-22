@@ -1,1 +1,1 @@
-from .sidebar import sidebar
+from .navbar import navbar
