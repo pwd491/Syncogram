@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 flet = "0.20.0"
 screeninfo = "^0.8.1"
+pyinstaller = "^6.5.0"
 pillow = "^10.2.0"
 
 
