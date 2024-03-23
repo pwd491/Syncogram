@@ -1,60 +1,66 @@
 import flet as ft
 
-class NavForm(ft.UserControl):
-    def __init__(self):
-        super().__init__()
-
-    def build(self):
-        return super().build()
-
-
-def navbar(page: ft.Page):
-    rail = ft.NavigationRail(
-        selected_index=0,
-        label_type=ft.NavigationRailLabelType.ALL,
-        min_width=250,
-        min_extended_width=400,
-        destinations=[
-            ft.NavigationRailDestination(
-                icon=ft.icons.FAVORITE_BORDER, 
-                selected_icon=ft.icons.FAVORITE, 
-                label_content=ft.Card(
-                    content=ft.Container(
-                        content=ft.Column(
+def navbar(page: ft.Page) -> ft.Container:
+    col = ft.Container(
+           ft.Column(
+                [
+                    ft.Container(
+                        ft.Column(
                             [
-                                ft.ListTile(
-                            leading=ft.Icon(ft.icons.ALBUM),
-                            title=ft.Text("The Enchanted Nightingale"),
-                            subtitle=ft.Text(
-                                "Music by Julie Gable. Lyrics by Sidney Stein."
-                            ),
-                            ),
-                            ]
-                        )
-                    )
-                )
-            ),
-            ft.NavigationRailDestination(
-                icon_content=ft.Icon(ft.icons.BOOKMARK_BORDER),
-                selected_icon_content=ft.Icon(ft.icons.BOOKMARK),
-                label="Second",
-            ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.SETTINGS_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.SETTINGS),
-                label_content=ft.Text("Settings"),
-            ),
-        ],
-        on_change=lambda e: print("Selected destination:", e.control.selected_index),
-    )
+                                
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            ft.Column([
+                                                ft.Text("From:", size=11, opacity=0.5),
+                                                ft.Container(width=200, height=0.5, bgcolor="white", opacity=0.1),
+                                                ft.Row([ft.ElevatedButton("Sergey", icon=ft.icons.ACCOUNT_BOX, expand=True, bgcolor=ft.colors.SECONDARY_CONTAINER)]),
+                                                ft.Row([ft.ElevatedButton("Add account", icon="add", expand=True),])
+                                            ],
+                                            alignment=ft.MainAxisAlignment.START
+                                            ),
+                                            width=200,
+                                        ),
+                                    ]
+                                ),
 
-    return ft.Row(
-            [
-                rail,
-                ft.VerticalDivider(width=1),
-                ft.Column([ ft.Text("Body!")], alignment=ft.MainAxisAlignment.START, expand=True),
-            ],
-            expand=True,
-        )
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            ft.Column([
+                                                ft.Text("Where:", size=11, opacity=0.5),
+                                                ft.Container(width=200, height=0.5, bgcolor="white", opacity=0.1),
+                                                ft.Row([ft.ElevatedButton("Anton", icon=ft.icons.ACCOUNT_BOX, expand=True, bgcolor=ft.colors.SECONDARY_CONTAINER)]),
+                                                ft.Row([ft.ElevatedButton("Add account", icon="add", expand=True),])
+                                            ], alignment=ft.MainAxisAlignment.START
+                                            ),
+                                            width=200,
+                                        ),
+                                    ]
+                                ),
+                                
+                            ]
+                        ),
+                        width=200,
+
+                    ),
+
+                    ft.Container(
+                        ft.Row(
+                            [
+                               ft.ElevatedButton("Settings", icon=ft.icons.SETTINGS, expand=True, height=45) 
+                            ],
+                        ),
+                        width=200,
+                        height=50,
+                    ),
+                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+           ),
+           width=250,
+           padding=20,
+           border_radius=ft.BorderRadius(10,10,10,10),
+           bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER),
+    )
+    return col
 
 

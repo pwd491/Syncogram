@@ -10,10 +10,11 @@ def application(page: ft.Page):
     page.window_height = page.window_min_height = SCREENHEIGHT * 0.7
     page.window_top = SCREENHEIGHT / 8
     page.window_left = (SCREENWIDTH * 0.5) / 2
+    page.theme_mode = ft.ThemeMode.LIGHT
 
 
     container = ft.Container(
-        content=ft.Container(
+        ft.Container(
             ft.Container(
                 ft.Card(
                     ft.Container(
@@ -58,7 +59,7 @@ def application(page: ft.Page):
                     )
                 ),
         ),
-        expand=True,
+        
         width=250,
 
     )
