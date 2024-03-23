@@ -4,6 +4,7 @@ import flet as ft
 
 SCREENWIDTH, SCREENHEIGHT = screensize()
 
+
 def application(page: ft.Page):
     page.title = "Telegram Migrator"
     page.window_width = page.window_min_width = SCREENWIDTH * 0.5
@@ -12,25 +13,22 @@ def application(page: ft.Page):
     page.window_left = (SCREENWIDTH * 0.5) / 2
     # page.theme_mode = ft.ThemeMode.LIGHT
 
-
-
     col2 = ft.Container(
-           ft.Column(),
-           expand=True,
-           border_radius=ft.BorderRadius(10,10,10,10),
-           bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER)
+        ft.Column(),
+        expand=True,
+        border_radius=ft.BorderRadius(10, 10, 10, 10),
+        bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER),
     )
 
-    
     page.add(
         ft.Row(
             [
                 navbar(page),
                 col2,
-            ], expand=True
+            ],
+            expand=True,
         )
     )
-
 
     page.update()
 
