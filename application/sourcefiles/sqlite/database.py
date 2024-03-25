@@ -1,17 +1,32 @@
+from contextlib import closing
 from typing import Any
 import sqlite3
 
 class SQLite:
     def __init__(self):
         self.database: sqlite3.Connection = sqlite3.connect("test.db")
-        self.cursor: sqlite3.Cursor = self.database.cursor()
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS account \
-            ("id" INTEGER PRIMARY KEY AUTOINCREMENT,\
-            "name" TEXT NOT NULL, \
-            "primary" BOOLEAN NOT NULL DEFAULT False,\
-            "session" TEXT)
-        """)
+        # self.cursor.execute("""
+        #     CREATE TABLE IF NOT EXISTS account \
+        #     ("id" INTEGER PRIMARY KEY AUTOINCREMENT,\
+        #     "name" TEXT NOT NULL, \
+        #     "primary" BOOLEAN NOT NULL DEFAULT False,\
+        #     "session" TEXT)
+        # """)
 
     def execute_all(self) -> list[Any]:
-        return self.cursor.execute("SELECT * FROM account").fetchall()
+        with self.database as connect:
+            with closing(connect.cursor()) as cursor:
+                return cursor.execute("SELECT * FROM account").fetchall()
+
+    def execute_accs(self, *args) -> list[Any]:
+        with self.database as connect:
+            with closing(connect.cursor()) as cursor:
+                return cursor.execute("""SELECT * FROM account WHERE prime == ?""", (bool(*args),)).fetchall()
+
+
+
+if __name__ == "__main__":
+    print(123)
+    sql = SQLite()
+    res = sql.execute_accs(0)
+    print(res)

@@ -1,13 +1,32 @@
+from sourcefiles.sqlite import SQLite
 from functools import partial
 import flet as ft
 
 
 def navbar(page: ft.Page) -> ft.Container:
 
+    def ui_generate_accounts(primary = False) -> ft.Row | ft.Container:
+        sql = SQLite()
+        accounts = sql.execute_accs(primary)
+        if len(accounts) != 0:
+            return ft.Row(
+                    [
+                    ft.ElevatedButton(
+                        accounts[0][1],
+                        icon=ft.icons.ACCOUNT_BOX,
+                        expand=True,
+                        bgcolor=ft.colors.SECONDARY_CONTAINER,
+                        )
+                    ]
+                    )
+        return ft.Container()
+
     def ui_add_account_dialog(e):
-        if 0 < 2:
-            return open_modal(e, dialog=ui_add_account_dialog_auth)
-        return open_modal(e, dialog=ui_add_account_dialog_warning)
+        sql = SQLite()
+        accounts = sql.execute_all()
+        if len(accounts) >= 2:
+            return open_modal(e, dialog=ui_add_account_dialog_warning)
+        return open_modal(e, dialog=ui_add_account_dialog_auth)
 
     def close_modal(e, dialog: ft.AlertDialog):
         dialog.open = False
@@ -60,16 +79,7 @@ def navbar(page: ft.Page) -> ft.Container:
                                                         ft.colors.ON_SECONDARY_CONTAINER,
                                                     ),
                                                 ),
-                                                ft.Row(
-                                                    [
-                                                        ft.ElevatedButton(
-                                                            "Sergey",
-                                                            icon=ft.icons.ACCOUNT_BOX,
-                                                            expand=True,
-                                                            bgcolor=ft.colors.SECONDARY_CONTAINER,
-                                                        )
-                                                    ]
-                                                ),
+                                                ui_generate_accounts(True),
                                                 ft.Row(
                                                     [
                                                         ft.ElevatedButton(
@@ -101,16 +111,7 @@ def navbar(page: ft.Page) -> ft.Container:
                                                         ft.colors.ON_SECONDARY_CONTAINER,
                                                     ),
                                                 ),
-                                                ft.Row(
-                                                    [
-                                                        ft.ElevatedButton(
-                                                            "Anton",
-                                                            icon=ft.icons.ACCOUNT_BOX,
-                                                            expand=True,
-                                                            bgcolor=ft.colors.SECONDARY_CONTAINER,
-                                                        )
-                                                    ]
-                                                ),
+                                                ui_generate_accounts(False),
                                                 ft.Row(
                                                     [
                                                         ft.ElevatedButton(
