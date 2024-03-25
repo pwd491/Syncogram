@@ -18,7 +18,7 @@ def application(page: ft.Page):
     result = sqlite.execute_all()
 
     col2 = ft.Container(
-        ft.Column([ft.Text(str(result))], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+        ft.Column(),
         expand=True,
         border_radius=ft.BorderRadius(10, 10, 10, 10),
         bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER),

@@ -15,7 +15,3 @@ class SQLite:
 
     def execute_all(self) -> list[Any]:
         return self.cursor.execute("SELECT * FROM account").fetchall()
-    
-    
-test = SQLite()
-print(test.execute_all())
