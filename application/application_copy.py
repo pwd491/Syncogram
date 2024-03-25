@@ -1,4 +1,5 @@
 from sourcefiles.utils import screensize
+from sourcefiles.sqlite import SQLite
 from sourcefiles import navbar
 import flet as ft
 
@@ -13,8 +14,11 @@ def application(page: ft.Page):
     page.window_left = (SCREENWIDTH * 0.5) / 2
     # page.theme_mode = ft.ThemeMode.LIGHT
 
+    sqlite = SQLite()
+    result = sqlite.execute_all()
+
     col2 = ft.Container(
-        ft.Column(),
+        ft.Column([ft.Text(str(result))], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
         expand=True,
         border_radius=ft.BorderRadius(10, 10, 10, 10),
         bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER),

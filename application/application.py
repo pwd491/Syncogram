@@ -1,8 +1,10 @@
 from sourcefiles.utils import screensize
+from sourcefiles.sqlite import SQLite
 from sourcefiles import navbar
 import flet as ft
 
 SCREENWIDTH, SCREENHEIGHT = screensize()
+
 
 def application(page: ft.Page):
     page.title = "Telegram Migrator"
@@ -10,70 +12,27 @@ def application(page: ft.Page):
     page.window_height = page.window_min_height = SCREENHEIGHT * 0.7
     page.window_top = SCREENHEIGHT / 8
     page.window_left = (SCREENWIDTH * 0.5) / 2
-    page.theme_mode = ft.ThemeMode.LIGHT
+    # page.theme_mode = ft.ThemeMode.LIGHT
 
+    sqlite = SQLite()
+    result = sqlite.execute_all()
 
-    container = ft.Container(
-        ft.Container(
-            ft.Container(
-                ft.Card(
-                    ft.Container(
-                        ft.Column(
-                            [
-                                ft.Row(
-                                    [ft.Text("From:", size=11, opacity=0.45)]
-                                ),
-                                ft.Divider(height=1, opacity=0.45),
-                                ft.Row(
-                                    [
-                                        ft.ElevatedButton("Sergey", icon=ft.icons.ACCOUNT_BOX, expand=True, bgcolor=ft.colors.SECONDARY_CONTAINER, color=""),
-                                    ]
-                                ),
-                                ft.Row(
-                                    [
-                                        ft.ElevatedButton("Add account", icon="add", expand=True),
-                                    ]
-                                ),
-                                ft.Row(
-                                    [ft.Text("Where:", size=11, opacity=0.45)]
-                                ),
-                                ft.Divider(height=1, opacity=0.45),
-                                ft.Row(
-                                    [
-                                        ft.ElevatedButton("Anton", icon=ft.icons.ACCOUNT_BOX, expand=True, bgcolor=ft.colors.SECONDARY_CONTAINER, color=""),
-                                    ]
-                                ),
-                                ft.Row(
-                                    [
-                                        ft.ElevatedButton("Add account", icon="add", expand=True),
-                                    ]
-                                ),
-                                ft.Row(
-                                    [
-                                        ft.ElevatedButton("Settings", icon="settings", expand=True),
-                                    ],
-                                ),
-
-                            ],
-                        ), padding=20
-                    )
-                ),
-        ),
-        
-        width=250,
-
-    )
+    col2 = ft.Container(
+        ft.Column([ft.Text(str(result))], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+        expand=True,
+        border_radius=ft.BorderRadius(10, 10, 10, 10),
+        bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER),
     )
 
-    
     page.add(
         ft.Row(
             [
-                container,
-            ], expand=True, 
+                navbar(page),
+                col2,
+            ],
+            expand=True,
         )
     )
-
 
     page.update()
 

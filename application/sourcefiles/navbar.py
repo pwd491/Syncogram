@@ -3,7 +3,7 @@ import flet as ft
 
 
 def navbar(page: ft.Page) -> ft.Container:
-    
+
     def ui_add_account_dialog(e):
         if 0 < 2:
             return open_modal(e, dialog=ui_add_account_dialog_auth)
