@@ -1,30 +1,44 @@
+from functools import partial
 import flet as ft
 
 
 def navbar(page: ft.Page) -> ft.Container:
+    
+    def ui_add_account_dialog(e):
+        if 0 < 2:
+            return open_modal(e, dialog=ui_add_account_dialog_auth)
+        return open_modal(e, dialog=ui_add_account_dialog_warning)
 
-    def close_modal(e):
-        ui_add_account_dialog.open = False
+    def close_modal(e, dialog: ft.AlertDialog):
+        dialog.open = False
         page.update()
 
-    def open_modal(e):
-        page.dialog = ui_add_account_dialog
-        ui_add_account_dialog.open = True
+    def open_modal(e, dialog: ft.AlertDialog):
+        page.dialog = dialog
+        dialog.open = True
         page.update()
 
 
-
-    ui_add_account_dialog = ft.AlertDialog(
+    ui_add_account_dialog_warning = ft.AlertDialog(
         modal=True,
         title=ft.Text("Sorry 😔"),
-        content=ft.Text("""The application does not support more than 1 account, expect in the future."""),
-        actions=[
-            ft.TextButton("Okay", on_click=close_modal),
-        ],
+        content=ft.Text(
+            """The application does not support more than 1 account, expect in the future."""
+        ),
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
+    ui_add_account_dialog_auth = ft.AlertDialog(
+        modal=True,
+        title=ft.Text("Authorization"),
+        content=ft.Text(
+            """asdasd."""
+        ),
+        actions_alignment=ft.MainAxisAlignment.END,
+    )
 
+    ui_add_account_dialog_auth.actions = [ft.TextButton("Okay", on_click=partial(close_modal, dialog=ui_add_account_dialog_auth))]
+    ui_add_account_dialog_warning.actions = [ft.TextButton("Okay", on_click=partial(close_modal, dialog=ui_add_account_dialog_warning))]
 
     col = ft.Container(
         ft.Column(
@@ -41,7 +55,10 @@ def navbar(page: ft.Page) -> ft.Container:
                                                 ft.Container(
                                                     width=200,
                                                     height=0.5,
-                                                    bgcolor=ft.colors.with_opacity(0.2, ft.colors.ON_SECONDARY_CONTAINER),
+                                                    bgcolor=ft.colors.with_opacity(
+                                                        0.2,
+                                                        ft.colors.ON_SECONDARY_CONTAINER,
+                                                    ),
                                                 ),
                                                 ft.Row(
                                                     [
@@ -59,7 +76,7 @@ def navbar(page: ft.Page) -> ft.Container:
                                                             text="Add account",
                                                             icon="add",
                                                             expand=True,
-                                                            on_click=open_modal
+                                                            on_click=ui_add_account_dialog,
                                                         ),
                                                     ]
                                                 ),
@@ -79,7 +96,10 @@ def navbar(page: ft.Page) -> ft.Container:
                                                 ft.Container(
                                                     width=200,
                                                     height=0.5,
-                                                    bgcolor=ft.colors.with_opacity(0.2, ft.colors.ON_SECONDARY_CONTAINER),
+                                                    bgcolor=ft.colors.with_opacity(
+                                                        0.2,
+                                                        ft.colors.ON_SECONDARY_CONTAINER,
+                                                    ),
                                                 ),
                                                 ft.Row(
                                                     [
@@ -97,7 +117,7 @@ def navbar(page: ft.Page) -> ft.Container:
                                                             "Add account",
                                                             icon="add",
                                                             expand=True,
-                                                            on_click=open_modal
+                                                            on_click=ui_add_account_dialog,
                                                         ),
                                                     ]
                                                 ),
