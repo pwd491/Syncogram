@@ -8,11 +8,12 @@ class Navbar(ft.UserControl):
         self.database = SQLite()
 
         # Labels
+        # [from]
         self.navbar_wrapper_from_label = ft.Text()
         self.navbar_wrapper_from_label.value = "From:"
         self.navbar_wrapper_from_label.size = 11
         self.navbar_wrapper_from_label.opacity = 0.5
-        
+        # [where]
         self.navbar_wrapper_where_label = ft.Text()
         self.navbar_wrapper_where_label.value = "Where:"
         self.navbar_wrapper_where_label.size = 11
@@ -43,7 +44,7 @@ class Navbar(ft.UserControl):
         # Fields
         self.name_field = ft.TextField()
         self.name_field.label = "Name"
-        
+
 
         # Divider
         self.navbar_wrapper_divider = ft.Container()
@@ -53,33 +54,31 @@ class Navbar(ft.UserControl):
 
 
         # Containers
-        self.navbar_wrapper_account_container = ft.Container()
+
+        # [ Account controls !NEED TO DYNAMIC GENERATE! ]
+        self.navbar_wrapper_account_container = ft.Column()
         self.navbar_wrapper_account_container.width = 200
-        self.navbar_wrapper_account_container.content = ft.Column([
-            self.navbar_wrapper_from_label,
-            self.navbar_wrapper_divider,
-            self.account_btn,
-            self.add_account_btn
-        ])
-        self.navbar_wrapper_account_container.content.width = 200
+        self.navbar_wrapper_account_container.controls = [
+            ft.Row([self.navbar_wrapper_from_label]),
+            ft.Row([self.navbar_wrapper_divider]),
+            ft.Row([self.account_btn,]),
+            ft.Row([self.add_account_btn])
+        ]
 
-
-        self.navbar_wrapper_accounts_rows = ft.Row([
+        # [Major block to display accounts on navbar]
+        self.navbar_wrapper_accounts_side = ft.Container()
+        self.navbar_wrapper_accounts_side.content = ft.Column([
+            self.navbar_wrapper_account_container,
             self.navbar_wrapper_account_container
         ])
 
-        # Containers:
-        self.navbar_wrapper_accounts_side = ft.Container(ft.Column([
-            self.navbar_wrapper_accounts_rows
-        ]))
-        self.navbar_wrapper_accounts_side.width = 200
-
+        # [Settings into bottom menu]
         self.navbar_wrapper_settings = ft.Container(ft.Row([self.settings_btn]))
         self.navbar_wrapper_settings.width = 200
         self.navbar_wrapper_settings.height = 50
 
 
-        # Main container
+        # Main block like canvas to display controls
         self.navbar_wrapper = ft.Container()
         self.navbar_wrapper.content = ft.Column([
             self.navbar_wrapper_accounts_side,
@@ -95,8 +94,6 @@ class Navbar(ft.UserControl):
     def build(self):
         return self.navbar_wrapper
 
-
-        
 
 def application(page: ft.Page):
     page.add(
