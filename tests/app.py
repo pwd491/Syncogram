@@ -51,21 +51,28 @@ class Navbar(ft.UserControl):
         self.navbar_wrapper_divider.height = 0.5
         self.navbar_wrapper_divider.bgcolor = ft.colors.ON_SECONDARY_CONTAINER
 
+
         # Containers
         self.navbar_wrapper_account_container = ft.Container()
+        self.navbar_wrapper_account_container.width = 200
         self.navbar_wrapper_account_container.content = ft.Column([
             self.navbar_wrapper_from_label,
             self.navbar_wrapper_divider,
             self.account_btn,
             self.add_account_btn
         ])
+        self.navbar_wrapper_account_container.content.width = 200
+
 
         self.navbar_wrapper_accounts_rows = ft.Row([
             self.navbar_wrapper_account_container
         ])
 
-
-        self.navbar_wrapper_accounts_side = ft.Container(self.navbar_wrapper_accounts_rows)
+        # Containers:
+        self.navbar_wrapper_accounts_side = ft.Container(ft.Column([
+            self.navbar_wrapper_accounts_rows
+        ]))
+        self.navbar_wrapper_accounts_side.width = 200
 
         self.navbar_wrapper_settings = ft.Container(ft.Row([self.settings_btn]))
         self.navbar_wrapper_settings.width = 200
