@@ -1,22 +1,6 @@
 from sourcefiles.sqlite import SQLite
-from sourcefiles.utils import clr_on_secondary_container
-from sourcefiles.utils import clr_secondary_container
 from functools import partial
 import flet as ft
-
-
-class NavBar():
-    def __init__(self, page,):
-        super().__init__()
-        self.page: ft.Page = page
-        # self.
-
-
-    def _update(self):
-        ...
-
-    
-
 
 
 def navbar(page: ft.Page) -> ft.Container:
@@ -81,6 +65,9 @@ def navbar(page: ft.Page) -> ft.Container:
         data="auth"
     )
 
+    # ui_add_account_dialog_auth.actions = [ft.TextButton("Log In", on_click=partial(ui_authorization_account))]
+    # ui_add_account_dialog_warning.actions = [ft.TextButton("Okay", on_click=partial(close_modal, dialog=ui_add_account_dialog_warning))]
+
     def ui_add_account_dialog(e, prime = False):
         sql = SQLite()
         accounts = sql.execute_all()
@@ -103,7 +90,10 @@ def navbar(page: ft.Page) -> ft.Container:
                                                 ft.Container(
                                                     width=200,
                                                     height=0.5,
-                                                    bgcolor=clr_on_secondary_container(page.platform_brightness.value, page.theme_mode.value),
+                                                    bgcolor=ft.colors.with_opacity(
+                                                        0.2,
+                                                        ft.colors.ON_SECONDARY_CONTAINER,
+                                                    ),
                                                 ),
                                                 ui_generate_accounts(True),
                                                 ft.Row(
@@ -132,7 +122,10 @@ def navbar(page: ft.Page) -> ft.Container:
                                                 ft.Container(
                                                     width=200,
                                                     height=0.5,
-                                                    bgcolor=clr_on_secondary_container(page.platform_brightness.value, page.theme_mode.value),
+                                                    bgcolor=ft.colors.with_opacity(
+                                                        0.2,
+                                                        ft.colors.ON_SECONDARY_CONTAINER,
+                                                    ),
                                                 ),
                                                 ui_generate_accounts(),
                                                 ft.Row(
@@ -176,6 +169,6 @@ def navbar(page: ft.Page) -> ft.Container:
         width=250,
         padding=20,
         border_radius=ft.BorderRadius(10, 10, 10, 10),
-        bgcolor=clr_secondary_container(page.platform_brightness.value, page.theme_mode.value),
+        bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER),
     )
     return col

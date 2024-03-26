@@ -1,4 +1,5 @@
 from sourcefiles.utils import screensize
+from sourcefiles.utils import clr_secondary_container
 from sourcefiles.sqlite import SQLite
 from sourcefiles import navbar
 import flet as ft
@@ -21,7 +22,7 @@ def application(page: ft.Page):
         ft.Column([ft.Text(str(result))], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
         expand=True,
         border_radius=ft.BorderRadius(10, 10, 10, 10),
-        bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER),
+        bgcolor=clr_secondary_container(page.platform_brightness.value, page.theme_mode.value),
     )
 
     page.add(
