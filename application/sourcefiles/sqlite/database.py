@@ -4,7 +4,7 @@ import sqlite3
 
 class SQLite:
     def __init__(self):
-        self.database: sqlite3.Connection = sqlite3.connect("test.db")
+        self.database: sqlite3.Connection = sqlite3.connect("test.db", check_same_thread=False)
         # self.cursor.execute("""
         #     CREATE TABLE IF NOT EXISTS account \
         #     ("id" INTEGER PRIMARY KEY AUTOINCREMENT,\
