@@ -23,6 +23,12 @@ class SQLite:
             with closing(connect.cursor()) as cursor:
                 return cursor.execute("""SELECT * FROM account WHERE prime == ?""", (bool(*args),)).fetchall()
 
+    def add_account(self, id, name, prime, *session) -> bool:
+        with self.database as connect:
+            with closing(connect.cursor()) as cursor:
+                request: sqlite3.Cursor = cursor.execute("INSERT INTO account (id,name,prime) VALUES (?, ?, ?)", (id, name, prime,))
+                return bool(request)
+
 
 
 if __name__ == "__main__":

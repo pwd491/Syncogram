@@ -5,9 +5,9 @@ import flet as ft
 
 def navbar(page: ft.Page) -> ft.Container:
 
-    def ui_generate_accounts(primary = False) -> ft.Row | ft.Container:
+    def ui_generate_accounts(prime = False) -> ft.Row | ft.Container:
         sql = SQLite()
-        accounts = sql.execute_accs(primary)
+        accounts = sql.execute_accs(prime)
         if len(accounts) != 0:
             return ft.Row(
                     [
@@ -20,20 +20,26 @@ def navbar(page: ft.Page) -> ft.Container:
                     ]
                     )
         return ft.Container()
-
-    def ui_add_account_dialog(e):
+    
+    def ui_authorization_account(e, prime = False):
         sql = SQLite()
-        accounts = sql.execute_all()
-        if len(accounts) >= 2:
-            return open_modal(e, dialog=ui_add_account_dialog_warning)
-        return open_modal(e, dialog=ui_add_account_dialog_auth)
+        result = sql.add_account(ui_id_field.value, ui_name_field.value, *prime)
+        print(result)
+        close_modal(e, ui_add_account_dialog_auth)
+        page.update()
+
 
     def close_modal(e, dialog: ft.AlertDialog):
         dialog.open = False
         page.update()
 
-    def open_modal(e, dialog: ft.AlertDialog):
+    def open_modal(e, dialog: ft.AlertDialog, *prime):
         page.dialog = dialog
+        print(dialog.data)
+        if dialog.data == "auth":
+            dialog.actions = [ft.TextButton("Log In", on_click=partial(ui_authorization_account, prime=prime))]
+        else:
+            dialog.actions = [ft.TextButton("Okay", on_click=partial(close_modal, dialog=ui_add_account_dialog_warning))]
         dialog.open = True
         page.update()
 
@@ -45,19 +51,29 @@ def navbar(page: ft.Page) -> ft.Container:
             """The application does not support more than 1 account, expect in the future."""
         ),
         actions_alignment=ft.MainAxisAlignment.END,
+        data="warn"
     )
+
+    ui_id_field = ft.TextField(label="Telegram ID", keyboard_type=ft.KeyboardType.NUMBER)
+    ui_name_field = ft.TextField(label="First name")
 
     ui_add_account_dialog_auth = ft.AlertDialog(
-        modal=True,
+        modal=False,
         title=ft.Text("Authorization"),
-        content=ft.Text(
-            """asdasd."""
-        ),
+        content=ft.ResponsiveRow([ui_id_field, ui_name_field]),
         actions_alignment=ft.MainAxisAlignment.END,
+        data="auth"
     )
 
-    ui_add_account_dialog_auth.actions = [ft.TextButton("Okay", on_click=partial(close_modal, dialog=ui_add_account_dialog_auth))]
-    ui_add_account_dialog_warning.actions = [ft.TextButton("Okay", on_click=partial(close_modal, dialog=ui_add_account_dialog_warning))]
+    # ui_add_account_dialog_auth.actions = [ft.TextButton("Log In", on_click=partial(ui_authorization_account))]
+    # ui_add_account_dialog_warning.actions = [ft.TextButton("Okay", on_click=partial(close_modal, dialog=ui_add_account_dialog_warning))]
+
+    def ui_add_account_dialog(e, prime = False):
+        sql = SQLite()
+        accounts = sql.execute_all()
+        if len(accounts) >= 2:
+            return open_modal(e, dialog=ui_add_account_dialog_warning)
+        return open_modal(e, ui_add_account_dialog_auth, prime)
 
     col = ft.Container(
         ft.Column(
@@ -86,7 +102,7 @@ def navbar(page: ft.Page) -> ft.Container:
                                                             text="Add account",
                                                             icon="add",
                                                             expand=True,
-                                                            on_click=ui_add_account_dialog,
+                                                            on_click=partial(ui_add_account_dialog, prime=True),
                                                         ),
                                                     ]
                                                 ),
@@ -111,7 +127,7 @@ def navbar(page: ft.Page) -> ft.Container:
                                                         ft.colors.ON_SECONDARY_CONTAINER,
                                                     ),
                                                 ),
-                                                ui_generate_accounts(False),
+                                                ui_generate_accounts(),
                                                 ft.Row(
                                                     [
                                                         ft.ElevatedButton(
