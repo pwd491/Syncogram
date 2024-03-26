@@ -42,8 +42,6 @@ def navbar(page: ft.Page) -> ft.Container:
         result = sql.add_account(ui_id_field.value, ui_name_field.value, *prime)
         print(result)
         close_modal(e, ui_add_account_dialog_auth)
-        page.go("/")
-
 
     def close_modal(e, dialog: ft.AlertDialog):
         dialog.open = False
