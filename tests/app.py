@@ -10,12 +10,12 @@ class Navbar(ft.UserControl):
         self.database = SQLite()
 
         # Labels
-        # [from]
+        ### Нужно переделать !!!
         self.navbar_wrapper_from_label = ft.Text()
         self.navbar_wrapper_from_label.value = "From:"
         self.navbar_wrapper_from_label.size = 11
         self.navbar_wrapper_from_label.opacity = 0.5
-        # [where]
+        
         self.navbar_wrapper_where_label = ft.Text()
         self.navbar_wrapper_where_label.value = "Where:"
         self.navbar_wrapper_where_label.size = 11
@@ -44,7 +44,7 @@ class Navbar(ft.UserControl):
 
         # Containers
 
-        # [Major block to display accounts on navbar]
+        ### [Major block to display accounts on navbar]
         self.navbar_wrapper_accounts_side = ft.Container()
         self.navbar_wrapper_accounts_side.content = ft.Column([
             self.ui_generate_account_container("primary"),
@@ -72,7 +72,12 @@ class Navbar(ft.UserControl):
         self.navbar_wrapper.bgcolor = ft.colors.SECONDARY_CONTAINER
 
 
-    def ui_account_button(self, account_id, account_name):
+
+    def ui_account_button(self, account_id, account_name) -> ft.ElevatedButton:
+        """
+        User card and Button. 
+        on_click suggest to logout from seesion.
+        """
         button = ft.ElevatedButton()
         button.text = account_name
         button.icon = ft.icons.ACCOUNT_CIRCLE
@@ -81,23 +86,39 @@ class Navbar(ft.UserControl):
         button.on_click = ...
         return button
 
-    def ui_add_account_button(self, key):
+
+    def ui_add_account_button(self, key) -> ft.OutlinedButton:
+        """
+        User authorization button. 
+        on_click open modal window to auth via telegram
+        """
         button = ft.OutlinedButton()
         button.text = "Add account"
         button.icon = ft.icons.ADD
         button.expand = True
         button.key = key
-        button.on_click = partial(self.ui_add_account, key=button.key)
+        button.on_click = partial(self.ui_add_account_process, key=button.key)
         return button
 
 
-    def ui_add_account(self, e, key):
-        print(key)
+    def ui_add_account_process(self, e, key):
+        """
+        Process authorization via Telegram. Open modal window to auth via QRcode
+        or by telephone number. Firstly check counts sessions in DB. By default 
+        doesn't access to add account if accounts > 2. QRcode auth is primary.
+
+        arguments:
+            e: event by flet
+            key: definded status of account (can be <primary> or <secondary>)
+        """
+        accounts = self.database.get_accounts()
+
+        if len(accounts) >= 2:
+            print("NEzya")
 
 
     def ui_generate_account_container(self, status):
         accounts: list[Any] = self.database.get_accounts()
-        print(accounts, type(accounts))
 
         navbar_wrapper_account_container = ft.Column()
         navbar_wrapper_account_container.key = status
@@ -106,7 +127,6 @@ class Navbar(ft.UserControl):
 
         if not bool(len(accounts)):
             pass
-
 
         if status == "primary":
             navbar_wrapper_account_container.controls.append(
@@ -146,7 +166,6 @@ class Navbar(ft.UserControl):
                         )]),
                     )
                     break
-        
         return navbar_wrapper_account_container
 
     def build(self):
@@ -154,7 +173,6 @@ class Navbar(ft.UserControl):
 
 
 def application(page: ft.Page):
-    # page.theme_mode = ft.ThemeMode.LIGHT
     page.add(
         ft.Row([Navbar(page)], expand=True)
     )
