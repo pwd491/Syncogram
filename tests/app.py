@@ -4,11 +4,13 @@ from sql import SQLite
 import flet as ft
 
 
-class Navbar(ft.UserControl):
-    def __init__(self, page: ft.Page):
-        super().__init__()
-        self.database = SQLite()
 
+class Navbar(ft.UserControl):
+    def __init__(self, page: ft.Page) -> None:
+        self.database = SQLite()
+        self.page: ft.Page = page
+
+        
         # Labels
         ### Нужно переделать !!!
         self.navbar_wrapper_from_label = ft.Text()
@@ -35,6 +37,19 @@ class Navbar(ft.UserControl):
         self.name_field.label = "Name"
 
 
+        # Modals
+        self.window_authentication = ft.AlertDialog()
+        self.window_authentication.modal = True
+        self.window_authentication.title = "Authorization"
+        self.window_authentication.content = [ft.Text('asdads')],
+        self.window_authentication.actions_alignment = ft.MainAxisAlignment.END
+        self.window_authentication.actions = [
+            ft.TextButton("Yes", on_click=...),
+            ft.TextButton("No", on_click=...),
+        ]
+        self.window_authentication.open = True
+
+
         # Divider
         self.navbar_wrapper_divider = ft.Container()
         self.navbar_wrapper_divider.width = 200
@@ -43,7 +58,6 @@ class Navbar(ft.UserControl):
 
 
         # Containers
-
         ### [Major block to display accounts on navbar]
         self.navbar_wrapper_accounts_side = ft.Container()
         self.navbar_wrapper_accounts_side.content = ft.Column([
@@ -70,13 +84,13 @@ class Navbar(ft.UserControl):
         self.navbar_wrapper.content.expand = True
         self.navbar_wrapper.border_radius = ft.BorderRadius(10, 10, 10, 10)
         self.navbar_wrapper.bgcolor = ft.colors.SECONDARY_CONTAINER
+        super().__init__()
 
 
 
     def ui_account_button(self, account_id, account_name) -> ft.ElevatedButton:
         """
-        User card and Button. 
-        on_click suggest to logout from seesion.
+        User card and Button. On click suggesting to logout from session.
         """
         button = ft.ElevatedButton()
         button.text = account_name
@@ -87,37 +101,53 @@ class Navbar(ft.UserControl):
         return button
 
 
-    def ui_add_account_button(self, key) -> ft.OutlinedButton:
+    def ui_add_account_button(self, status) -> ft.OutlinedButton:
         """
-        User authorization button. 
-        on_click open modal window to auth via telegram
+        User authorization button. On click opening modal window to authenticate.
+
+        Arguments:
+            status: defines status of account (can be <primary> or <secondary>) 
         """
         button = ft.OutlinedButton()
         button.text = "Add account"
         button.icon = ft.icons.ADD
         button.expand = True
-        button.key = key
-        button.on_click = partial(self.ui_add_account_process, key=button.key)
+        button.key = status
+        button.on_click = partial(self.ui_add_account_process, status=button.key)
         return button
 
 
-    def ui_add_account_process(self, e, key):
+    def ui_add_account_process(self, e, status):
         """
-        Process authorization via Telegram. Open modal window to auth via QRcode
-        or by telephone number. Firstly check counts sessions in DB. By default 
-        doesn't access to add account if accounts > 2. QRcode auth is primary.
+        Processing authorizations via Telegram. Opens modal window to auth via
+        QR code or by telephone number. First of all checks count sessions in
+        Database. By defaults doesn't access to add account if accounts >= 2. 
+        QR code authenticate is primary.
 
-        arguments:
-            e: event by flet
-            key: definded status of account (can be <primary> or <secondary>)
+        Arguments:
+            e: event by flet.
+            status: defines status of account (can be <primary> or <secondary>)
         """
-        accounts = self.database.get_accounts()
+        # accounts: list[Any] = self.database.get_accounts()
+        
+        self.page.add(ft.Row([ft.Text('asd')]))
+        # self.page.dialog.open = True
 
-        if len(accounts) >= 2:
-            print("NEzya")
+        # self.update()
+
+        # if len(accounts) >= 2:
+        #     return print("cancel")
 
 
-    def ui_generate_account_container(self, status):
+    def ui_generate_account_container(self, status) -> ft.Column:
+        """
+        Generates account container using list of users from Database. If
+        counts of accounts = 0, returns column with empty container and
+        button <add account>.
+
+        Arguments:
+            status: defines account priority (can be <primary> & <secondary>). 
+        """
         accounts: list[Any] = self.database.get_accounts()
 
         navbar_wrapper_account_container = ft.Column()
@@ -125,8 +155,6 @@ class Navbar(ft.UserControl):
         navbar_wrapper_account_container.width = 200
         navbar_wrapper_account_container.controls = []
 
-        if not bool(len(accounts)):
-            pass
 
         if status == "primary":
             navbar_wrapper_account_container.controls.append(
@@ -170,11 +198,30 @@ class Navbar(ft.UserControl):
 
     def build(self):
         return self.navbar_wrapper
+    
 
+class Section(ft.UserControl):
+    def __init__(self, page: ft.Page) -> None:
+        self.page = page
 
-def application(page: ft.Page):
+        self.section = ft.Container()
+        self.section.content = ft.Column([ft.Text('asd')])
+        self.section.bgcolor = ft.colors.SECONDARY_CONTAINER
+        self.section.expand = True
+        self.section.content.expand = True
+        self.section.border_radius = ft.BorderRadius(10, 10, 10, 10)
+        super().__init__()
+
+    def build(self) -> ft.Container:
+        return self.section
+
+def application(page: ft.Page) -> None:
     page.add(
-        ft.Row([Navbar(page)], expand=True)
+        ft.Row([
+            Navbar(page),
+            Section(page),
+            # ft.Container(ft.Column(expand=True), expand=True, bgcolor='red')
+        ], expand=True)
     )
     page.update()
 

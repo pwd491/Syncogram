@@ -13,7 +13,7 @@ class NavBar():
 
 
     def _update(self):
-        ...
+        self.page.add()
 
     
 
