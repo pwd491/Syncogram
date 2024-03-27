@@ -25,8 +25,9 @@ class Navbar(ft.UserControl):
         self.add_account_btn.text = "Add account"
         self.add_account_btn.icon = ft.icons.ADD
         self.add_account_btn.expand = True
-        self.add_account_btn.on_click = ...
-
+        self.add_account_btn.key = '1'
+        self.add_account_btn.on_click = self.ui_add_account
+        
 
         self.account_btn = ft.ElevatedButton()
         self.account_btn.text = "Sergey"
@@ -55,21 +56,11 @@ class Navbar(ft.UserControl):
 
         # Containers
 
-        # [ Account controls !NEED TO DYNAMIC GENERATE! ]
-
-        # self.navbar_wrapper_account_container = ft.Column()
-        # self.navbar_wrapper_account_container.width = 200
-        # self.navbar_wrapper_account_container.controls = [
-        #     ft.Row([self.navbar_wrapper_from_label]),
-        #     ft.Row([self.navbar_wrapper_divider]),
-        #     ft.Row([self.add_account_btn])
-        # ]
-
         # [Major block to display accounts on navbar]
         self.navbar_wrapper_accounts_side = ft.Container()
         self.navbar_wrapper_accounts_side.content = ft.Column([
-            self.ui_generate_account_container(True),
-            self.ui_generate_account_container(False),
+            self.ui_generate_account_container("primary"),
+            self.ui_generate_account_container("secondary"),
         ])
 
 
@@ -92,36 +83,40 @@ class Navbar(ft.UserControl):
         self.navbar_wrapper.border_radius = ft.BorderRadius(10, 10, 10, 10)
         self.navbar_wrapper.bgcolor = ft.colors.SECONDARY_CONTAINER
 
-    def ui_generate_account_container(self, primary: bool):
+
+    def ui_add_account(self, e):
+        print(self.key)
+
+
+    def ui_generate_account_container(self, status):
         accounts = self.database.get_accounts()
+        print(accounts, type(accounts))
 
         navbar_wrapper_account_container = ft.Column()
+        navbar_wrapper_account_container.key = status
         navbar_wrapper_account_container.width = 200
+        navbar_wrapper_account_container.controls = [
+            ft.Row([self.navbar_wrapper_divider]),
+            ft.Row([self.add_account_btn]),
+        ]
 
-        if primary:
-            navbar_wrapper_account_container.key = "primary"
+        if status == "primary":
+            navbar_wrapper_account_container.controls.insert(
+                0, ft.Row([self.navbar_wrapper_from_label]),
+            )
         else:
-            navbar_wrapper_account_container.key = "secondary"
+            navbar_wrapper_account_container.controls.insert(
+                0, ft.Row([self.navbar_wrapper_where_label]),
+            )
+
 
         if not bool(len(accounts)):
-            if primary:
-                navbar_wrapper_account_container.controls = [
-                    ft.Row([self.navbar_wrapper_from_label]),
-                    ft.Row([self.navbar_wrapper_divider]),
-                    ft.Row([self.add_account_btn])
-                ]
-            else:
-                navbar_wrapper_account_container.controls = [
-                    ft.Row([self.navbar_wrapper_where_label]),
-                    ft.Row([self.navbar_wrapper_divider]),
-                    ft.Row([self.add_account_btn])
-                ]
-
+            pass
         else:
             for account in accounts:
                 if bool(account[2]):
                     navbar_wrapper_account_container.controls.insert(
-                        -1, ft.Row([self.add_account_btn])
+                        -1, ft.Row([self.account_btn])
                     )
                 else:
                     ...
