@@ -1,45 +1,50 @@
-import qrcode
-from PIL import Image
- 
-# taking image which user wants 
-# in the QR code center
-Logo_link = 'qrtest.png'
- 
-logo = Image.open(Logo_link)
- 
-# taking base width
-basewidth = 100
- 
-# adjust image size
-wpercent = (basewidth/float(logo.size[0]))
-hsize = int((float(logo.size[1])*float(wpercent)))
-logo = logo.resize((basewidth, hsize), Image.LANCZOS)
-QRcode = qrcode.QRCode(
-    error_correction=qrcode.constants.ERROR_CORRECT_H
-)
- 
-# taking url or text
-url = 'https://www.geeksforgeeks.org/'
- 
-# adding URL or text to QRcode
-QRcode.add_data(url)
- 
-# generating QR code
-QRcode.make()
- 
-# taking color name from user
-QRcolor = 'Green'
- 
-# adding color to QR code
-QRimg = QRcode.make_image(
-    fill_color=QRcolor, back_color="white").convert('RGB')
- 
-# set size of QR code
-pos = ((QRimg.size[0] - logo.size[0]) // 2,
-       (QRimg.size[1] - logo.size[1]) // 2)
-QRimg.paste(logo, pos)
- 
-# save the QR code generated
-QRimg.save('gfg_QR.png')
- 
-print('QR code generated!')
+import flet as ft
+
+class Alert(ft.AlertDialog):
+    def __init__(self, page: ft.Page, *args):
+        self.func = func
+
+        super().__init__(
+            modal=True,
+            title=ft.Text("Authentication via Telegram"),
+            # content=self.wrapper,
+            actions=[
+                ft.TextButton("Ok", on_click=self.close)
+            ],
+        )
+
+    def close(self, e):
+        self.func()
+        self.open = False
+
+    
+
+
+class Section(ft.Container):
+    def __init__(self, page: ft.Page, *args) -> None:
+        self.page: ft.Page = page
+        self.button = ft.TextButton("Button", on_click=self.open)
+        self.section = ft.Column([ft.Text('Section'), self.button])
+        self.alert = Alert(self.page, self.add_string)
+        super().__init__(
+            self.section,
+            expand=True,
+            bgcolor = ft.colors.SECONDARY_CONTAINER,
+            border_radius = ft.BorderRadius(10, 10, 10, 10),
+            padding=20
+        )
+    
+    def add_string(self):
+        self.section.controls.append(ft.Text("Some string"))
+        self.update()
+
+    def open(self, e):
+        self.page.dialog = self.alert
+        self.alert.open = True
+        self.page.update()
+
+def main(page: ft.Page):
+    x = ft.Row([Section(page)])
+    page.add(x)
+
+ft.app(target=main)

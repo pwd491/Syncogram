@@ -18,20 +18,51 @@ class Section(ft.Container):
 
 
 
+class AuthenticationDialogProcedure(ft.AlertDialog):
+    def __init__(self, page: ft.Page, *args, **kwargs) -> None:
+        self.page: ft.Page = page
+        self.update_accounts = args[0]
+        self.wrapper_telephone = ft.Container()
+
+        self.wrapper_qrcode = ft.Container()
+        self.wrapper_qrcode.content = ft.Row()
+        self.wrapper_qrcode.height = 20
+        self.wrapper_qrcode.bgcolor = 'yellow'
+
+        self.wrapper = ft.Container()
+        self.wrapper.width = 400
+        self.wrapper.height = 400
+        self.wrapper.content = ft.Column([self.wrapper_qrcode])
+        self.wrapper.bgcolor = 'red'
+
+        super().__init__(
+            modal=True,
+            title=ft.Text("Authentication via Telegram"),
+            content=self.wrapper,
+            actions=[
+                ft.TextButton("Ok", on_click=self.close)
+            ],
+        )
+
+    def close(self, e):
+        self.update_accounts()
+        self.open = False
+        self.update()
+
 
 class UserBar(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         self.database = SQLite()
         self.page: ft.Page = page
 
-        
+
         # Labels
         ### Нужно переделать !!!
         self.wrapper_from_label = ft.Text()
         self.wrapper_from_label.value = "From:"
         self.wrapper_from_label.size = 11
         self.wrapper_from_label.opacity = 0.5
-        
+
         self.wrapper_where_label = ft.Text()
         self.wrapper_where_label.value = "Where:"
         self.wrapper_where_label.size = 11
@@ -39,6 +70,26 @@ class UserBar(ft.Container):
 
 
         # Buttons
+        self.add_primary_button = ft.OutlinedButton()
+        self.add_primary_button.text = "Add account"
+        self.add_primary_button.icon = ft.icons.ADD
+        self.add_primary_button.expand = True
+        self.add_primary_button.key = "primary"
+        self.add_primary_button.on_click = partial(
+            self.ui_add_account_process,
+            status=self.add_primary_button.key
+        )
+
+        self.add_secondary_button = ft.OutlinedButton()
+        self.add_secondary_button.text = "Add account"
+        self.add_secondary_button.icon = ft.icons.ADD
+        self.add_secondary_button.expand = True
+        self.add_secondary_button.key = "secondary"
+        self.add_secondary_button.on_click = partial(
+            self.ui_add_account_process,
+            status=self.add_secondary_button.key
+        )
+
         self.settings_btn = ft.ElevatedButton()
         self.settings_btn.text = "Settings"
         self.settings_btn.icon = ft.icons.SETTINGS
@@ -50,27 +101,11 @@ class UserBar(ft.Container):
         self.name_field = ft.TextField()
         self.name_field.label = "Name"
 
-        # Image
-        self.qrcode_image = ft.Image()
-        self.qrcode_image.src = f"test.svg"
-        # self.qrcode_image.width = 100
-        # self.qrcode_image.height = 100
-        # self.qrcode_image.fit = ft.ImageFit.SCALE_DOWN
-
-
-
-        # Modals
-        self.window_authentication = ft.AlertDialog()
-        self.window_authentication.modal = True
-        self.window_authentication.title = ft.Text("Authorization")
-        self.window_authentication.content = self.qrcode_image
-        self.window_authentication.actions_alignment = ft.MainAxisAlignment.END
-        self.window_authentication.actions = [
-            ft.TextButton("Yes", on_click=self.close),
-            ft.TextButton("No", on_click=self.close),
-        ]
-        self.window_authentication.open = True
-
+        # CustomAlertDialog
+        self.window_authentication = AuthenticationDialogProcedure(
+            self.page,
+            self.ui_generate_accounts,
+        )
 
         # Divider
         self.divider = ft.Container()
@@ -81,11 +116,29 @@ class UserBar(ft.Container):
 
         # Containers
         ### [Major block to display accounts on navbar]
+
+        # [Account container `WHERE`]
+        self.wrapper_account_primary = ft.Column()
+        self.wrapper_account_primary.controls = [
+            ft.Row([self.wrapper_from_label]),
+            ft.Row([self.divider]),
+            ft.Row([self.add_primary_button]),
+        ]
+
+        self.wrapper_account_secondary = ft.Column()
+        self.wrapper_account_secondary.controls = [
+            ft.Row([self.wrapper_where_label]),
+            ft.Row([self.divider]),
+            ft.Row([self.add_secondary_button]),
+        ]
+
+
         self.wrapper_accounts_side = ft.Container()
         self.wrapper_accounts_side.content = ft.Column([
-            self.ui_generate_account_container("primary"),
-            self.ui_generate_account_container("secondary"),
+            self.wrapper_account_primary,
+            self.wrapper_account_secondary,
         ])
+
 
 
         # [Settings into bottom menu]
@@ -109,123 +162,39 @@ class UserBar(ft.Container):
 
         super().__init__(self.wrapper)
 
-    def close(self, e):
-        # self.page.dialog = self.window_authentication
-        self.window_authentication.open = False
-        self.page.update()
-
     def ui_account_button(self, account_id, account_name) -> ft.ElevatedButton:
-        """
-        User card and Button. On click suggesting to logout from session.
-        """
         button = ft.ElevatedButton()
+        button.width = 250
         button.text = account_name
         button.icon = ft.icons.ACCOUNT_CIRCLE
-        button.expand = True
         button.key = account_id
         button.on_click = ...
         return button
 
 
-    def ui_add_account_button(self, status) -> ft.OutlinedButton:
-        """
-        User authorization button. On click opening modal window to authenticate.
-
-        Arguments:
-            status: defines status of account (can be <primary> or <secondary>) 
-        """
-        button = ft.OutlinedButton()
-        button.text = "Add account"
-        button.icon = ft.icons.ADD
-        button.expand = True
-        button.key = status
-        button.on_click = partial(self.ui_add_account_process, status=button.key)
-        return button
+    def ui_generate_accounts(self):
+        accounts: list[Any] = self.database.get_accounts()
+        self.wrapper_account_primary.clean()
+        self.wrapper_account_secondary.clean()
+        for account in accounts:
+            if bool(account[2]):
+                self.wrapper_account_primary.controls.insert(
+                    -1, self.ui_account_button(account[0], account[1])
+                )
+            else:
+                self.wrapper_account_secondary.controls.insert(
+                    -1, self.ui_account_button(account[0], account[1])
+                )
+        self.update()
 
 
     def ui_add_account_process(self, e, status):
-        """
-        Processing authorizations via Telegram. Opens modal window to auth via
-        QR code or by telephone number. First of all checks count sessions in
-        Database. By defaults doesn't access to add account if accounts >= 2. 
-        QR code authenticate is primary.
-
-        Arguments:
-            e: event by flet.
-            status: defines status of account (can be <primary> or <secondary>)
-        """
         accounts: list[Any] = self.database.get_accounts()
-        
-        if len(accounts) >= 2:
-            return print("cancel")
-        
+
         self.page.dialog = self.window_authentication
         self.window_authentication.open = True
         self.page.update()
 
-
-
-    def ui_generate_account_container(self, status) -> ft.Column:
-        """
-        Generates account container using list of users from Database. If
-        counts of accounts = 0, returns column with empty container and
-        button <add account>.
-
-        Arguments:
-            status: defines account priority (can be <primary> & <secondary>). 
-        """
-        accounts: list[Any] = self.database.get_accounts()
-
-        wrapper_account_container = ft.Column()
-        wrapper_account_container.key = status
-        wrapper_account_container.width = 200
-        wrapper_account_container.controls = []
-
-
-        if status == "primary":
-            wrapper_account_container.controls.append(
-                ft.Row([self.wrapper_from_label]),
-            )
-            wrapper_account_container.controls.append(
-                ft.Row([self.divider]),
-            )
-            wrapper_account_container.controls.append(
-                ft.Row([self.ui_add_account_button("primary")]),
-            )
-            for account in accounts:
-                if bool(account[2]) is True:
-                    wrapper_account_container.controls.insert(
-                        -1, ft.Row([self.ui_account_button(
-                            account_id=account[0],
-                            account_name=account[1],
-                        )]),
-                    )
-                    break
-        else:
-            wrapper_account_container.controls.append(
-                ft.Row([self.wrapper_where_label]),
-            )
-            wrapper_account_container.controls.append(
-                ft.Row([self.divider]),
-            )
-            wrapper_account_container.controls.append(
-                ft.Row([self.ui_add_account_button("secondary")]),
-            )
-            for account in accounts:
-                if bool(account[2]) is False:
-                    wrapper_account_container.controls.insert(
-                        -1, ft.Row([self.ui_account_button(
-                            account_id=account[0],
-                            account_name=account[1]
-                        )]),
-                    )
-                    break
-        self.page.update()
-                
-        return wrapper_account_container
-
-    def build(self):
-        return self.wrapper
 
 
 def application(page: ft.Page) -> None:
