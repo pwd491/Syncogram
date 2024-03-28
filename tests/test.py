@@ -1,27 +1,28 @@
 import flet as ft
 
-class UserBar(ft.Column):
+class MainContainer(ft.Container):
     def __init__(self):
         super().__init__(
-            controls = [ft.Container(width=250,expand=True,bgcolor='red')],
+            content = ft.Column(),
+            expand=True,
+            bgcolor='yellow'
         )
 
-class MainContainer(ft.Column):
+class UserBar(ft.Container):
     def __init__(self):
-        super().__init__(
-            controls = [ft.Container(expand=True, bgcolor='red')],
-            expand=True,
-        )
+        self.button = ft.TextButton()
+        self.button.text = "Button"
+        
 
-class UIManager(ft.Row):
-    def __init__(self):
+        self.wrapper = None
+
         super().__init__(
-            controls = [UserBar(), MainContainer()],
-            expand=True,
+            content = ft.Column([self.button],width=250,expand=True),
+            bgcolor='red',
         )
 
 def main(page: ft.Page):
-    page.add(UIManager())
+    page.add(ft.Row([UserBar(), MainContainer()], expand=True))
     page.update()
 
 ft.app(target=main)
