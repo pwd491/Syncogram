@@ -3,9 +3,23 @@ from typing import Any
 from sql import SQLite
 import flet as ft
 
+class Section(ft.Container):
+    def __init__(self, page: ft.Page) -> None:
+        self.page = page
+        self.section = ft.Column([ft.Text('asd')])
+        
+        super().__init__(
+            self.section,
+            expand=True,
+            bgcolor = ft.colors.SECONDARY_CONTAINER,
+            border_radius = ft.BorderRadius(10, 10, 10, 10),
+            padding=20
+        )
 
 
-class Navbar(ft.UserControl):
+
+
+class UserBar(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         self.database = SQLite()
         self.page: ft.Page = page
@@ -13,15 +27,15 @@ class Navbar(ft.UserControl):
         
         # Labels
         ### Нужно переделать !!!
-        self.navbar_wrapper_from_label = ft.Text()
-        self.navbar_wrapper_from_label.value = "From:"
-        self.navbar_wrapper_from_label.size = 11
-        self.navbar_wrapper_from_label.opacity = 0.5
+        self.wrapper_from_label = ft.Text()
+        self.wrapper_from_label.value = "From:"
+        self.wrapper_from_label.size = 11
+        self.wrapper_from_label.opacity = 0.5
         
-        self.navbar_wrapper_where_label = ft.Text()
-        self.navbar_wrapper_where_label.value = "Where:"
-        self.navbar_wrapper_where_label.size = 11
-        self.navbar_wrapper_where_label.opacity = 0.5
+        self.wrapper_where_label = ft.Text()
+        self.wrapper_where_label.value = "Where:"
+        self.wrapper_where_label.size = 11
+        self.wrapper_where_label.opacity = 0.5
 
 
         # Buttons
@@ -51,40 +65,41 @@ class Navbar(ft.UserControl):
 
 
         # Divider
-        self.navbar_wrapper_divider = ft.Container()
-        self.navbar_wrapper_divider.width = 200
-        self.navbar_wrapper_divider.height = 0.5
-        self.navbar_wrapper_divider.bgcolor = ft.colors.ON_SECONDARY_CONTAINER
+        self.divider = ft.Container()
+        self.divider.width = 200
+        self.divider.height = 0.5
+        self.divider.bgcolor = ft.colors.ON_SECONDARY_CONTAINER
 
 
         # Containers
         ### [Major block to display accounts on navbar]
-        self.navbar_wrapper_accounts_side = ft.Container()
-        self.navbar_wrapper_accounts_side.content = ft.Column([
+        self.wrapper_accounts_side = ft.Container()
+        self.wrapper_accounts_side.content = ft.Column([
             self.ui_generate_account_container("primary"),
             self.ui_generate_account_container("secondary"),
         ])
 
 
         # [Settings into bottom menu]
-        self.navbar_wrapper_settings = ft.Container(ft.Row([self.settings_btn]))
-        self.navbar_wrapper_settings.width = 200
-        self.navbar_wrapper_settings.height = 50
+        self.wrapper_settings = ft.Container(ft.Row([self.settings_btn]))
+        self.wrapper_settings.width = 200
+        self.wrapper_settings.height = 50
 
 
         # Main block like canvas to display controls
-        self.navbar_wrapper = ft.Container()
-        self.navbar_wrapper.content = ft.Column([
-            self.navbar_wrapper_accounts_side,
-            self.navbar_wrapper_settings,
+        self.wrapper = ft.Container()
+        self.wrapper.content = ft.Column([
+            self.wrapper_accounts_side,
+            self.wrapper_settings,
         ])
-        self.navbar_wrapper.content.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
-        self.navbar_wrapper.width = 250
-        self.navbar_wrapper.padding = 20
-        self.navbar_wrapper.content.expand = True
-        self.navbar_wrapper.border_radius = ft.BorderRadius(10, 10, 10, 10)
-        self.navbar_wrapper.bgcolor = ft.colors.SECONDARY_CONTAINER
-        super().__init__()
+        self.wrapper.content.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        self.wrapper.width = 250
+        self.wrapper.padding = 20
+        self.wrapper.content.expand = True
+        self.wrapper.border_radius = ft.BorderRadius(10, 10, 10, 10)
+        self.wrapper.bgcolor = ft.colors.SECONDARY_CONTAINER
+
+        super().__init__(self.wrapper)
 
 
 
@@ -150,25 +165,25 @@ class Navbar(ft.UserControl):
         """
         accounts: list[Any] = self.database.get_accounts()
 
-        navbar_wrapper_account_container = ft.Column()
-        navbar_wrapper_account_container.key = status
-        navbar_wrapper_account_container.width = 200
-        navbar_wrapper_account_container.controls = []
+        wrapper_account_container = ft.Column()
+        wrapper_account_container.key = status
+        wrapper_account_container.width = 200
+        wrapper_account_container.controls = []
 
 
         if status == "primary":
-            navbar_wrapper_account_container.controls.append(
-                ft.Row([self.navbar_wrapper_from_label]),
+            wrapper_account_container.controls.append(
+                ft.Row([self.wrapper_from_label]),
             )
-            navbar_wrapper_account_container.controls.append(
-                ft.Row([self.navbar_wrapper_divider]),
+            wrapper_account_container.controls.append(
+                ft.Row([self.divider]),
             )
-            navbar_wrapper_account_container.controls.append(
+            wrapper_account_container.controls.append(
                 ft.Row([self.ui_add_account_button("primary")]),
             )
             for account in accounts:
                 if bool(account[2]) is True:
-                    navbar_wrapper_account_container.controls.insert(
+                    wrapper_account_container.controls.insert(
                         -1, ft.Row([self.ui_account_button(
                             account_id=account[0],
                             account_name=account[1],
@@ -176,51 +191,37 @@ class Navbar(ft.UserControl):
                     )
                     break
         else:
-            navbar_wrapper_account_container.controls.append(
-                ft.Row([self.navbar_wrapper_where_label]),
+            wrapper_account_container.controls.append(
+                ft.Row([self.wrapper_where_label]),
             )
-            navbar_wrapper_account_container.controls.append(
-                ft.Row([self.navbar_wrapper_divider]),
+            wrapper_account_container.controls.append(
+                ft.Row([self.divider]),
             )
-            navbar_wrapper_account_container.controls.append(
+            wrapper_account_container.controls.append(
                 ft.Row([self.ui_add_account_button("secondary")]),
             )
             for account in accounts:
                 if bool(account[2]) is False:
-                    navbar_wrapper_account_container.controls.insert(
+                    wrapper_account_container.controls.insert(
                         -1, ft.Row([self.ui_account_button(
                             account_id=account[0],
                             account_name=account[1]
                         )]),
                     )
                     break
-        return navbar_wrapper_account_container
+        self.page.update()
+                
+        return wrapper_account_container
 
     def build(self):
-        return self.navbar_wrapper
-    
+        return self.wrapper
 
-class Section(ft.UserControl):
-    def __init__(self, page: ft.Page) -> None:
-        self.page = page
-
-        self.section = ft.Container()
-        self.section.content = ft.Column([ft.Text('asd')])
-        self.section.bgcolor = ft.colors.SECONDARY_CONTAINER
-        self.section.expand = True
-        self.section.content.expand = True
-        self.section.border_radius = ft.BorderRadius(10, 10, 10, 10)
-        super().__init__()
-
-    def build(self) -> ft.Container:
-        return self.section
 
 def application(page: ft.Page) -> None:
     page.add(
         ft.Row([
-            Navbar(page),
+            UserBar(page),
             Section(page),
-            # ft.Container(ft.Column(expand=True), expand=True, bgcolor='red')
         ], expand=True)
     )
     page.update()
