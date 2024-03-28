@@ -50,16 +50,24 @@ class UserBar(ft.Container):
         self.name_field = ft.TextField()
         self.name_field.label = "Name"
 
+        # Image
+        self.qrcode_image = ft.Image()
+        self.qrcode_image.src = f"test.svg"
+        # self.qrcode_image.width = 100
+        # self.qrcode_image.height = 100
+        # self.qrcode_image.fit = ft.ImageFit.SCALE_DOWN
+
+
 
         # Modals
         self.window_authentication = ft.AlertDialog()
         self.window_authentication.modal = True
-        self.window_authentication.title = "Authorization"
-        self.window_authentication.content = [ft.Text('asdads')],
+        self.window_authentication.title = ft.Text("Authorization")
+        self.window_authentication.content = self.qrcode_image
         self.window_authentication.actions_alignment = ft.MainAxisAlignment.END
         self.window_authentication.actions = [
-            ft.TextButton("Yes", on_click=...),
-            ft.TextButton("No", on_click=...),
+            ft.TextButton("Yes", on_click=self.close),
+            ft.TextButton("No", on_click=self.close),
         ]
         self.window_authentication.open = True
 
@@ -101,7 +109,10 @@ class UserBar(ft.Container):
 
         super().__init__(self.wrapper)
 
-
+    def close(self, e):
+        # self.page.dialog = self.window_authentication
+        self.window_authentication.open = False
+        self.page.update()
 
     def ui_account_button(self, account_id, account_name) -> ft.ElevatedButton:
         """
@@ -143,15 +154,15 @@ class UserBar(ft.Container):
             e: event by flet.
             status: defines status of account (can be <primary> or <secondary>)
         """
-        # accounts: list[Any] = self.database.get_accounts()
+        accounts: list[Any] = self.database.get_accounts()
         
-        self.page.add(ft.Row([ft.Text('asd')]))
-        # self.page.dialog.open = True
+        if len(accounts) >= 2:
+            return print("cancel")
+        
+        self.page.dialog = self.window_authentication
+        self.window_authentication.open = True
+        self.page.update()
 
-        # self.update()
-
-        # if len(accounts) >= 2:
-        #     return print("cancel")
 
 
     def ui_generate_account_container(self, status) -> ft.Column:
