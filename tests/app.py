@@ -55,6 +55,7 @@ class UserBar(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         self.database = SQLite()
         self.page: ft.Page = page
+        self.UIGenerateAccounts = UIGenerateAccounts(page, self.ui_add_account_process)
         
 
         self.settings_btn = ft.ElevatedButton()
@@ -68,15 +69,15 @@ class UserBar(ft.Container):
         self.name_field = ft.TextField()
         self.name_field.label = "Name"
 
+        self.wrapper_accounts_side: UIGenerateAccounts = self.UIGenerateAccounts
+        
         # CustomAlertDialog
         self.window_authentication = AuthenticationDialogProcedure(
             self.page,
-            self,
+            self.UIGenerateAccounts.generate
         )
 
         # Containers
-        self.wrapper_accounts_side = UIGenerateAccounts()
-
 
 
         # [Settings into bottom menu]
@@ -100,51 +101,23 @@ class UserBar(ft.Container):
 
         super().__init__(self.wrapper)
 
-    def ui_account_button(self, account_id, account_name) -> ft.ElevatedButton:
-        button = ft.ElevatedButton()
-        button.width = 250
-        button.text = account_name
-        button.icon = ft.icons.ACCOUNT_CIRCLE
-        button.key = account_id
-        button.on_click = ...
-        return button
-
-
-    # def ui_generate_accounts(self):
-    #     accounts: list[Any] = self.database.get_accounts()
-
-    #     while len(self.wrapper_account_primary.controls) > 3:
-    #         self.wrapper_account_primary.controls.pop(-2)
-    #     self.page.update()
-
-    #     while len(self.wrapper_account_secondary.controls) > 3:
-    #         self.wrapper_account_secondary.controls.pop(-2)
-    #     self.page.update()
-    #     time.sleep(2)
-            
-    #     for account in accounts:
-    #         if bool(account[2]):
-    #             self.wrapper_account_primary.controls.insert(
-    #                 -1, self.ui_account_button(account[0], account[1])
-    #             )
-    #         else:
-    #             self.wrapper_account_secondary.controls.insert(
-    #                 -1, self.ui_account_button(account[0], account[1])
-    #             )
-    #     self.update()
-
+    def did_mount(self):
+        self.UIGenerateAccounts.generate()
 
     def ui_add_account_process(self, e, status):
         accounts: list[Any] = self.database.get_accounts()
-
+        
         self.page.dialog = self.window_authentication
         self.window_authentication.open = True
         self.page.update()
 
 
 class UIGenerateAccounts(ft.UserControl):
-    def __init__(self):
+    def __init__(self, page: ft.Page, *args):
         self.database = SQLite()
+        self.page: ft.Page = page
+
+        self.process_func = args[0]
 
         self.divider = ft.Container()
         self.divider.width = 200
@@ -192,7 +165,7 @@ class UIGenerateAccounts(ft.UserControl):
         button.icon = ft.icons.ADD
         button.expand = True
         button.key = key
-        button.on_click = None
+        button.on_click = partial(self.process_func, button.key)
         return button
 
     def label(self, text: str) -> ft.Text:
@@ -201,11 +174,24 @@ class UIGenerateAccounts(ft.UserControl):
         label.size = 11
         label.opacity = 0.5
         return label
-    
+
     def generate(self):
         accounts = self.database.get_accounts()
-        ...
-
+        while len(self.account_primary.controls) > 3:
+            self.account_primary.controls.pop(-2)
+        while len(self.account_secondary.controls) > 3:
+            self.account_secondary.controls.pop(-2)
+        for account in accounts:
+            if bool(account[2]):
+                self.account_primary.controls.insert(
+                    -1, self.account_button(account[0], account[1])
+                )
+            else:
+                self.account_secondary.controls.insert(
+                    -1, self.account_button(account[0], account[1])
+                )
+        self.update()
+        self.page.update()
 
     def build(self) -> ft.Container:
         return self.wrapper
