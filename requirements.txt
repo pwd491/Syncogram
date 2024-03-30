@@ -4,3 +4,4 @@ pillow==10.2.0
 screeninfo==0.8.1
 Telethon==1.34.0
 qrcode==7.4.2
+python-dotenv==1.0.1
