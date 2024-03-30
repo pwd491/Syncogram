@@ -1,14 +1,20 @@
 from functools import partial
-import time
 from typing import Any
 from sql import SQLite
+
 import flet as ft
+import time
 
 class Section(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         self.page = page
-        self.section = ft.Column([ft.Text('asd')])
-        
+
+        self.sticker = ft.Image()
+        self.sticker.src = "/Users/admin/Development/Syncogram/application/assets/sticker.gif"
+        self.section = ft.Column([self.sticker])
+        self.section.alignment = ft.MainAxisAlignment.CENTER
+        self.section.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+
         super().__init__(
             self.section,
             expand=True,
@@ -191,13 +197,14 @@ class UIGenerateAccounts(ft.UserControl):
                     -1, self.account_button(account[0], account[1])
                 )
         self.update()
-        self.page.update()
+        # self.page.update()
 
     def build(self) -> ft.Container:
         return self.wrapper
 
 
 def application(page: ft.Page) -> None:
+    page.theme_mode = ft.ThemeMode.LIGHT
     page.add(
         ft.Row([
             UserBar(page),
