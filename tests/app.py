@@ -1,17 +1,19 @@
 from functools import partial
 from typing import Any
 from sql import SQLite
-
 import flet as ft
-import time
 
 class Section(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         self.page = page
 
         self.sticker = ft.Image()
-        self.sticker.src = "/Users/admin/Development/Syncogram/application/assets/sticker.gif"
-        self.section = ft.Column([self.sticker])
+        self.sticker.src = "/home/admin/Development/Syncogram/application/assets/sticker.gif"
+        self.sticker.width = 350
+
+        self.sticker_text = ft.Text("To get started, log in to at least 2 accounts")
+        
+        self.section = ft.Column([self.sticker, self.sticker_text])
         self.section.alignment = ft.MainAxisAlignment.CENTER
         self.section.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
@@ -31,16 +33,18 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.update_accounts = args[0]
         self.wrapper_telephone = ft.Container()
 
-        self.wrapper_qrcode = ft.Container()
-        self.wrapper_qrcode.content = ft.Row()
-        self.wrapper_qrcode.height = 20
-        self.wrapper_qrcode.bgcolor = 'yellow'
+        self.qrcode_image = ft.Image("/home/admin/Development/Syncogram/tests/qrtest.png")
+        self.qrcode_image.expand = True
+
+
+        self.wrapper_auth_method_container = ft.Container()
+        self.wrapper_auth_method_container.content = ft.Row([self.qrcode_image])
 
         self.wrapper = ft.Container()
         self.wrapper.width = 400
         self.wrapper.height = 400
-        self.wrapper.content = ft.Column([self.wrapper_qrcode])
-        self.wrapper.bgcolor = 'red'
+        self.wrapper.content = ft.Column([self.wrapper_auth_method_container])
+        # self.wrapper.bgcolor = 'red'
 
         super().__init__(
             modal=True,
@@ -76,7 +80,6 @@ class UserBar(ft.Container):
         self.name_field.label = "Name"
 
         self.wrapper_accounts_side: UIGenerateAccounts = self.UIGenerateAccounts
-        
         # CustomAlertDialog
         self.window_authentication = AuthenticationDialogProcedure(
             self.page,
@@ -84,8 +87,6 @@ class UserBar(ft.Container):
         )
 
         # Containers
-
-
         # [Settings into bottom menu]
         self.wrapper_settings = ft.Container(ft.Row([self.settings_btn]))
         self.wrapper_settings.width = 200
@@ -197,14 +198,16 @@ class UIGenerateAccounts(ft.UserControl):
                     -1, self.account_button(account[0], account[1])
                 )
         self.update()
-        # self.page.update()
 
     def build(self) -> ft.Container:
         return self.wrapper
 
 
 def application(page: ft.Page) -> None:
-    page.theme_mode = ft.ThemeMode.LIGHT
+    # page.theme_mode = ft.ThemeMode.LIGHT
+
+    page.theme = ft.Theme()
+
     page.add(
         ft.Row([
             UserBar(page),
