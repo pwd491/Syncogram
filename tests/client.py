@@ -1,10 +1,9 @@
-import asyncio
 import os
 from telethon import TelegramClient
 from telethon.errors import SessionPasswordNeededError
 from dotenv import load_dotenv
 from telethon.tl.types import User
-from telethon.tl.types.auth import SentCode
+
 
 load_dotenv()
 

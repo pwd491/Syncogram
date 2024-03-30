@@ -8,8 +8,8 @@ class Section(ft.Container):
         self.page = page
 
         self.sticker = ft.Image()
-        self.sticker.src = "/home/admin/Development/Syncogram/application/assets/sticker.gif"
-        self.sticker.width = 350
+        self.sticker.src = "/home/admin/Development/Syncogram/application/assets/sticker2.gif"
+        self.sticker.width = 200
 
         self.sticker_text = ft.Text("To get started, log in to at least 2 accounts")
         
@@ -61,26 +61,63 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.update()
 
 
+class SettingsDialog(ft.AlertDialog):
+    def __init__(self, page: ft.Page):
+        self.page: ft.Page = page
+        self.database = SQLite()
+
+        c1 = ft.Checkbox(label="Sync my favorite messages", value=False)
+        c2 = ft.Checkbox(label="Save the sequence of pinned messages", disabled=True)
+
+        self.column = ft.Container()
+        self.column.content = ft.Column([c1,c2])
+        # self.column.bgcolor = 'red'
+        self.column.height = 350
+
+        self.wrapper = ft.Container()
+        self.wrapper.content = self.column
+
+        super().__init__(
+            modal=True,
+            title=ft.Row([ft.Icon("SETTINGS"), ft.Text("Settings")]),
+            content=self.wrapper,
+            actions=[
+                ft.TextButton("Cancel", on_click=self.close),
+                ft.TextButton("Save", on_click=self.save)
+            ],
+            actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        )
+
+    def close(self, e):
+        self.open = False
+        self.update()
+
+    def save(self, e):
+        self.open = False
+        self.update()
+
+
 class UserBar(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         self.database = SQLite()
         self.page: ft.Page = page
         self.UIGenerateAccounts = UIGenerateAccounts(page, self.ui_add_account_process)
         
-
+        # Buttons
         self.settings_btn = ft.ElevatedButton()
         self.settings_btn.text = "Settings"
         self.settings_btn.icon = ft.icons.SETTINGS
         self.settings_btn.expand = True
         self.settings_btn.height = 45
-
+        self.settings_btn.on_click = self.settings
 
         # Fields
         self.name_field = ft.TextField()
         self.name_field.label = "Name"
 
-        self.wrapper_accounts_side: UIGenerateAccounts = self.UIGenerateAccounts
         # CustomAlertDialog
+        self.settings_dialog = SettingsDialog(page)
+
         self.window_authentication = AuthenticationDialogProcedure(
             self.page,
             self.UIGenerateAccounts.generate
@@ -88,6 +125,9 @@ class UserBar(ft.Container):
 
         # Containers
         # [Settings into bottom menu]
+        
+        self.wrapper_accounts_side: UIGenerateAccounts = self.UIGenerateAccounts
+
         self.wrapper_settings = ft.Container(ft.Row([self.settings_btn]))
         self.wrapper_settings.width = 200
         self.wrapper_settings.height = 50
@@ -116,6 +156,11 @@ class UserBar(ft.Container):
         
         self.page.dialog = self.window_authentication
         self.window_authentication.open = True
+        self.page.update()
+
+    def settings(self, e):
+        self.page.dialog = self.settings_dialog
+        self.settings_dialog.open = True
         self.page.update()
 
 

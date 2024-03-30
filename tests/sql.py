@@ -18,3 +18,11 @@ class SQLite:
                     return True
                 return False
     
+    def set_options(self, *args):
+        with self.database as connect:
+            with closing(connect.cursor()) as cursor:
+                request = cursor.execute("UPDATE INTO `options` WHERE  (name) VALUES (?)", (name,))
+                if request:
+                    return True
+                return False
+    
