@@ -1,8 +1,10 @@
 import os
+import asyncio
 from telethon import TelegramClient
 from telethon.errors import SessionPasswordNeededError
 from dotenv import load_dotenv
 from telethon.tl.types import User
+from qrcode import QRCode
 
 
 load_dotenv()
@@ -19,9 +21,34 @@ class TelegramUserClient(TelegramClient):
             system_version="4.16.30-vxCUSTOM",
 
         )
+        self.qr = QRCode()
 
-    async def connect(self):
-        return await self.client.connect()
+    def gen_qr(self, token:str):
+        self.qr.clear()
+        self.qr.add_data(token)
+        self.qr.print_ascii()
+        
+
+    def display_url_as_qr(self, url):
+        print(url)
+        self.gen_qr(url)
+    
+    async def log_by_qr(self):
+        if not self.client.is_connected():
+            await self.client.connect()
+        qr_login = await self.client.qr_login()
+        r = False
+        while not r:
+            self.display_url_as_qr(qr_login.url)
+        # Important! You need to wait for the login to complete!
+            try:
+                r = await qr_login.wait(60)
+            except TimeoutError:
+                await qr_login.recreate()
+            except SessionPasswordNeededError:
+                password = input("Input pass: ")
+                await self.client.sign_in(password=password)
+        
 
     async def login(self):
         await self.client.connect()
@@ -45,8 +72,11 @@ class TelegramUserClient(TelegramClient):
 
 
 async def main():
-    abs = TelegramUserClient()
-    await abs.login()
-    abs.client.run_until_disconnected()
+    x = TelegramUserClient()
+    await x.log_by_qr()
+    x.run_until_disconnected()
 
 asyncio.run(main())
+
+x.run_until_disconnected()
+

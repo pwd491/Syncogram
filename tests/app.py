@@ -36,22 +36,34 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.wrapper_telephone = ft.Container()
 
         self.qrcode_image = ft.Image(
-            "/home/admin/Development/Syncogram/tests/qrtest.png"
+            "qrtest.png"
         )
-        self.qrcode_image.expand = True
+        self.qrcode_image.fit = ft.ImageFit.FIT_WIDTH
 
         self.wrapper_auth_method_container = ft.Container()
         self.wrapper_auth_method_container.content = ft.Row([self.qrcode_image])
 
+        # self.wrapper_auth_alternative = ft.Text("or")
+
+        # self.wrapper_button_phone_login = ft.TextButton("Phone number")
+
         self.wrapper = ft.Container()
         self.wrapper.width = 400
         self.wrapper.height = 400
-        self.wrapper.content = ft.Column([self.wrapper_auth_method_container])
-        # self.wrapper.bgcolor = 'red'
+        # self.wrapper.bgcolor = "red"
+        self.wrapper.content = ft.Column(
+            [
+                self.qrcode_image,
+                # self.wrapper_auth_alternative,
+                # self.wrapper_button_phone_login
+            ]
+        )
+        self.wrapper.content.alignment = ft.MainAxisAlignment.CENTER
+        self.wrapper.content.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
         super().__init__(
             modal=True,
-            title=ft.Text("Authentication via Telegram"),
+            title=ft.Text("Authorization"),
             content=self.wrapper,
             actions=[ft.TextButton("Ok", on_click=self.close)],
         )
