@@ -129,6 +129,10 @@ env.bak/
 venv.bak/
 venv*
 
+# Sens data
+*.session
+*.db
+
 # Spyder project settings
 .spyderproject
 .spyproject
