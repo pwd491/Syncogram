@@ -5,6 +5,7 @@ from telethon.errors import SessionPasswordNeededError
 from dotenv import load_dotenv
 from telethon.tl.types import User
 from qrcode import QRCode
+from qrcode.image.pure import PyPNGImage
 
 
 load_dotenv()
@@ -13,6 +14,7 @@ class TelegramUserClient(TelegramClient):
     def __init__(self, *args, **kwargs):
         self.api_id = int(os.getenv('API_ID'))
         self.api_hash: str = str(os.getenv('API_HASH'))
+        self.qr = QRCode()
 
         self.client = TelegramClient(
             "test",
@@ -21,12 +23,12 @@ class TelegramUserClient(TelegramClient):
             system_version="4.16.30-vxCUSTOM",
 
         )
-        self.qr = QRCode()
 
     def gen_qr(self, token:str):
         self.qr.clear()
         self.qr.add_data(token)
-        self.qr.print_ascii()
+        img = self.qr.make_image()
+        img.save("test.png")
         
 
     def display_url_as_qr(self, url):
