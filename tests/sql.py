@@ -68,13 +68,14 @@ class SQLite:
             with closing(connect.cursor()) as cursor:
                 return cursor.execute("SELECT * FROM users").fetchall()
 
-    def add_user(self, name) -> bool:
+    def add_user(self, id: int, name: str, is_primary: int, session: str) -> bool:
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
                 request = cursor.execute(
-                    "INSERT INTO `users` (name) VALUES (?)", (name,)
+                    "INSERT INTO `users` (user_id, name, is_primary, session) VALUES (?,?,?,?)", (id,name,is_primary,session,)
                 )
                 return True if request else False
+            
 
     def get_options(self):
         with self.database as connect:

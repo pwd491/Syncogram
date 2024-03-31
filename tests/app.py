@@ -10,7 +10,7 @@ class Section(ft.Container):
         self.page = page
 
         self.sticker = ft.Image()
-        self.sticker.src = "D:\\Developer\\Syncogram\\application\\assets\\sticker2.gif"
+        self.sticker.src = "/Users/admin/Development/Syncogram/application/assets/sticker2.gif"
         self.sticker.width = 200
 
         self.sticker_text = ft.Text("To get started, log in to at least 2 accounts")
@@ -291,7 +291,7 @@ class UIGenerateAccounts(ft.UserControl):
 
 
 def application(page: ft.Page) -> None:
-    # page.theme_mode = ft.ThemeMode.LIGHT
+    page.theme_mode = ft.ThemeMode.DARK
 
     # clr1 = ft.colors.SECONDARY_CONTAINER
     # clr2 = ft.colors.ON_SECONDARY_CONTAINER
