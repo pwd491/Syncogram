@@ -1,3 +1,4 @@
+from utils import clr_on_secondary_container, clr_secondary_container
 from functools import partial
 from typing import Any
 from sql import SQLite
@@ -14,14 +15,15 @@ class Section(ft.Container):
 
         self.sticker_text = ft.Text("To get started, log in to at least 2 accounts")
 
-        self.section = ft.Column([self.sticker, self.sticker_text])
-        self.section.alignment = ft.MainAxisAlignment.CENTER
-        self.section.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        self.wrapper =  ft.Column([self.sticker, self.sticker_text])
+        self.wrapper.alignment = ft.MainAxisAlignment.CENTER
+        self.wrapper.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+
 
         super().__init__(
-            self.section,
+            self.wrapper,
             expand=True,
-            bgcolor=ft.colors.SECONDARY_CONTAINER,
+            bgcolor=ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER),
             border_radius=ft.BorderRadius(10, 10, 10, 10),
             padding=20,
         )
@@ -166,7 +168,7 @@ class UserBar(ft.Container):
         self.wrapper.padding = 20
         self.wrapper.content.expand = True
         self.wrapper.border_radius = ft.BorderRadius(10, 10, 10, 10)
-        self.wrapper.bgcolor = ft.colors.SECONDARY_CONTAINER
+        self.wrapper.bgcolor = ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER)
 
         super().__init__(self.wrapper)
 
@@ -230,14 +232,17 @@ class UIGenerateAccounts(ft.UserControl):
     def account_button(self, account_id, account_name) -> ft.ElevatedButton:
         button = ft.ElevatedButton()
         button.width = 250
+        button.height = 35
         button.text = account_name
         button.icon = ft.icons.ACCOUNT_CIRCLE
+        button.bgcolor = ft.colors.SECONDARY_CONTAINER
         button.key = account_id
         button.on_click = ...
         return button
 
     def add_button(self, key: bool) -> ft.OutlinedButton:
         button = ft.OutlinedButton()
+        button.height = 35
         button.text = "Add account"
         button.icon = ft.icons.ADD
         button.expand = True
@@ -276,15 +281,15 @@ class UIGenerateAccounts(ft.UserControl):
 def application(page: ft.Page) -> None:
     # page.theme_mode = ft.ThemeMode.LIGHT
 
-    clr1 = ft.colors.SECONDARY_CONTAINER
-    clr2 = ft.colors.ON_SECONDARY_CONTAINER
+    # clr1 = ft.colors.SECONDARY_CONTAINER
+    # clr2 = ft.colors.ON_SECONDARY_CONTAINER
 
-    page.dark_theme = ft.Theme(
-        color_scheme=ft.ColorScheme(
-            secondary_container=ft.colors.with_opacity(0.1, clr1),
-            on_secondary_container=ft.colors.with_opacity(0.2, clr2),
-        )
-    )
+    # page.dark_theme = ft.Theme(
+    #     color_scheme=ft.ColorScheme(
+    #         secondary_container=ft.colors.with_opacity(0.1, clr1),
+    #         on_secondary_container=ft.colors.with_opacity(0.2, clr2),
+    #     )
+    # )
 
     page.add(
         ft.Row(

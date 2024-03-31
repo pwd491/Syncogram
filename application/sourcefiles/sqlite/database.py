@@ -4,14 +4,14 @@ import sqlite3
 
 class SQLite:
     def __init__(self):
-        self.database: sqlite3.Connection = sqlite3.connect("test.db", check_same_thread=False)
-        # self.cursor.execute("""
-        #     CREATE TABLE IF NOT EXISTS account \
-        #     ("id" INTEGER PRIMARY KEY AUTOINCREMENT,\
-        #     "name" TEXT NOT NULL, \
-        #     "primary" BOOLEAN NOT NULL DEFAULT False,\
-        #     "session" TEXT)
-        # """)
+        self.database: sqlite3.Connection = sqlite3.connect("test2.db", check_same_thread=False)
+        self.database.cursor().execute("""
+            CREATE TABLE IF NOT EXISTS account \
+            ("id" INTEGER PRIMARY KEY AUTOINCREMENT,\
+            "name" TEXT NOT NULL, \
+            "prime" BOOLEAN NOT NULL DEFAULT False,\
+            "session" TEXT)
+        """).close()
 
     def execute_all(self) -> list[Any]:
         with self.database as connect:

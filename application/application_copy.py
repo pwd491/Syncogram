@@ -1,5 +1,5 @@
-from sourcefiles.utils import screensize
-from sourcefiles.utils import clr_secondary_container
+from tests.utils import screensize
+from tests.utils import clr_secondary_container
 from sourcefiles.sqlite import SQLite
 from sourcefiles import navbar
 import flet as ft

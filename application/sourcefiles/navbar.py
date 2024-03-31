@@ -1,6 +1,6 @@
 from sourcefiles.sqlite import SQLite
-from sourcefiles.utils import clr_on_secondary_container
-from sourcefiles.utils import clr_secondary_container
+from tests.utils import clr_on_secondary_container
+from tests.utils import clr_secondary_container
 from functools import partial
 import flet as ft
 
