@@ -1,21 +1,25 @@
 from contextlib import closing
+from typing import Any
 import sqlite3
 
+
 class SQLite:
-    def __init__(self):
-        self.database = sqlite3.connect("test.db", check_same_thread=False)
+    def __init__(self) -> None:
+        self.database: sqlite3.Connection = sqlite3.connect(
+            "test.db", check_same_thread=False
+        )
         self.users_table = """
                             CREATE TABLE IF NOT EXISTS users (
                             user_id INTEGER,
                             name TEXT NOT NULL,
-                            prime BOOLEAN NOT NULL DEFAULT (0),
+                            is_primary BOOLEAN NOT NULL DEFAULT (0),
                             session TEXT,
                             PRIMARY KEY (
                                 user_id AUTOINCREMENT
                                 )
                             )
                             """
-        
+
         self.options_table = """
                             CREATE TABLE IF NOT EXISTS options (
                                 user_id INTEGER REFERENCES users (user_id) UNIQUE,
@@ -26,7 +30,7 @@ class SQLite:
                                 )
                             )
                             """
-        
+
         self.trigger_insert_options = """
                             CREATE TRIGGER IF NOT EXISTS defaults_options_on_insert
                             AFTER INSERT ON users 
@@ -43,7 +47,7 @@ class SQLite:
                                             );
                                 END;
                             """
-        
+
         self.trigger_delete_options = """
                             CREATE TRIGGER IF NOT EXISTS delete_options_on_delete
                                     BEFORE DELETE
@@ -54,41 +58,42 @@ class SQLite:
                             END;
                             """
 
-        self.database.cursor().execute(self.users_table)
-        self.database.cursor().execute(self.options_table)
-        self.database.cursor().execute(self.trigger_insert_options)
-        self.database.cursor().execute(self.trigger_delete_options)
-        self.database.cursor().close()
+        self.database.cursor().execute(self.users_table).close()
+        self.database.cursor().execute(self.options_table).close()
+        self.database.cursor().execute(self.trigger_insert_options).close()
+        self.database.cursor().execute(self.trigger_delete_options).close()
 
-
-    def get_users(self):
+    def get_users(self) -> list[Any]:
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
                 return cursor.execute("SELECT * FROM users").fetchall()
-            
-    def add_user(self, name):
+
+    def add_user(self, name) -> bool:
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
-                request = cursor.execute("INSERT INTO `users` (name) VALUES (?)", (name,))
-                if request:
-                    return True
-                return False
-    
-    def set_options(self, *args):
+                request = cursor.execute(
+                    "INSERT INTO `users` (name) VALUES (?)", (name,)
+                )
+                return True if request else False
+
+    def get_options(self):
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
-                request = cursor.execute("UPDATE INTO `options` WHERE  (name) VALUES (?)", ())
-                if request:
-                    return True
-                return False
-    
-    def test(self):
+                return cursor.execute(
+                    "SELECT * FROM options WHERE options.user_id = (SELECT user_id FROM users WHERE is_primary = 1)"
+                ).fetchone()
+
+    def set_options(self, *args) -> bool:
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
-                request = cursor.execute("UPDATE `options` SET is_sync_fav = 1123113213 FROM (SELECT user_id FROM users WHERE prime = 1) as users WHERE users.user_id = options.user_id")
-                return request
-            
+                request = cursor.execute(
+                    "UPDATE `options` SET is_sync_fav = (?), is_sync_pin_fav = (?) FROM (SELECT user_id FROM users WHERE is_primary = 1) as users WHERE (options.user_id = users.user_id)",
+                    (*args,),
+                )
+                return True if request else False
+
+
 if __name__ == "__main__":
     abs = SQLite()
-    res = abs.add_user("Sergey")      
+    res = abs.get_options()
     print(res)
