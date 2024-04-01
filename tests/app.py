@@ -2,6 +2,10 @@ from utils import clr_on_secondary_container, clr_secondary_container
 from functools import partial
 from typing import Any
 from sql import SQLite
+from client import UserClient
+from io import BytesIO
+import qrcode
+import base64
 import flet as ft
 
 
@@ -33,29 +37,19 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
     def __init__(self, page: ft.Page, *args, **kwargs) -> None:
         self.page: ft.Page = page
         self.update_accounts = args[0]
-        self.wrapper_telephone = ft.Container()
+        self.client = UserClient(self)
 
-        self.qrcode_image = ft.Image(
-            "qrtest.png"
-        )
-        self.qrcode_image.fit = ft.ImageFit.FIT_WIDTH
+
+        self.qrcode_image = ft.Text()
 
         self.wrapper_auth_method_container = ft.Container()
         self.wrapper_auth_method_container.content = ft.Row([self.qrcode_image])
-
-        # self.wrapper_auth_alternative = ft.Text("or")
-
-        # self.wrapper_button_phone_login = ft.TextButton("Phone number")
-
         self.wrapper = ft.Container()
         self.wrapper.width = 400
         self.wrapper.height = 400
-        # self.wrapper.bgcolor = "red"
         self.wrapper.content = ft.Column(
             [
                 self.qrcode_image,
-                # self.wrapper_auth_alternative,
-                # self.wrapper_button_phone_login
             ]
         )
         self.wrapper.content.alignment = ft.MainAxisAlignment.CENTER
@@ -73,6 +67,8 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.open = False
         self.update()
 
+        
+        
 
 class ErrorAddAccount(ft.AlertDialog):
     def __init__(self):

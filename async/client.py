@@ -1,25 +1,27 @@
 import os
 import asyncio
 
-from telethon.errors import SessionPasswordNeededError
+from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
 from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
 from dotenv import load_dotenv
+from flet import Image, TextField
 
-from app import AuthenticationDialogProcedure
+# from main import AuthenticationDialogProcedure
+from utils import generate_qrcode
 from sql import SQLite
 load_dotenv()
 
 
 class UserClient(TelegramClient):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, AuthDialog, *args, **kwargs) -> None:
         self.database = SQLite()
-        self.dialog: AuthenticationDialogProcedure = args[0]
+        self.dialog = AuthDialog
         self.api_id = os.getenv("API_ID", "API_ID")
         self.api_hash = os.getenv("API_HASH")
         self.session = kwargs
         self.client = TelegramClient(
-            StringSession(os.getenv("AUTH_TOKEN")),
+            StringSession(),
             str(self.api_id),
             self.api_hash,
             system_version="4.16.30-vxCUSTOM",
@@ -33,14 +35,30 @@ class UserClient(TelegramClient):
         qr_login = await self.client.qr_login()
         r = False
         while not r:
-            # self.display_url_as_qr(qr_login.url)
+            self.dialog.wrapper.content.src_base64 = generate_qrcode(qr_login.url)
+            await self.dialog.update_async()
             try:
                 r = await qr_login.wait(60)
+                await self.dialog.update_async()
             except TimeoutError:
                 await qr_login.recreate()
+                await self.dialog.update_async()
             except SessionPasswordNeededError:
-                password = input("Input pass: ")
-                await self.client.sign_in(password=password)
+                print("auth2fa вызываю")
+                link = self.client.sign_in
+                await self.dialog.auth2fa(function=link)
+                print("auth2fa вызвано")
+            except PasswordHashInvalidError:
+                self.dialog.wrapper.content
+
+
+        print("Login Success!")
+        print(r)
+        return r
+
+
+
+
 
     async def login_by_phone_number(self):
         await self.client.connect()
@@ -62,13 +80,5 @@ class UserClient(TelegramClient):
 
     async def check(self):
         await self.client.connect()
-        print(await self.client.get_me())
-        user = await self.client.get_me()
-        self.dialog.qrcode_image.value = str(user)
-        self.dialog.update()
-
-async def main():
-    x = UserClient()
-    await x.check()
-
-asyncio.run(main())
+        return await self.client.get_me()
+  
