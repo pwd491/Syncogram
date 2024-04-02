@@ -1,25 +1,25 @@
 import os
 import asyncio
 
-from telethon.errors import SessionPasswordNeededError
-from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
+from telethon.sessions import StringSession
+from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
 from dotenv import load_dotenv
 
-from app import AuthenticationDialogProcedure
+from utils import generate_qrcode
 from sql import SQLite
+
 load_dotenv()
 
-
 class UserClient(TelegramClient):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, AuthDialog, *args, **kwargs) -> None:
         self.database = SQLite()
-        self.dialog: AuthenticationDialogProcedure = args[0]
+        self.dialog = AuthDialog
         self.api_id = os.getenv("API_ID", "API_ID")
         self.api_hash = os.getenv("API_HASH")
         self.session = kwargs
         self.client = TelegramClient(
-            StringSession(os.getenv("AUTH_TOKEN")),
+            StringSession(),
             str(self.api_id),
             self.api_hash,
             system_version="4.16.30-vxCUSTOM",
@@ -33,14 +33,31 @@ class UserClient(TelegramClient):
         qr_login = await self.client.qr_login()
         r = False
         while not r:
-            # self.display_url_as_qr(qr_login.url)
+            self.dialog.wrapper.content.src_base64 = generate_qrcode(qr_login.url)
+            await self.dialog.update_async()
             try:
                 r = await qr_login.wait(60)
-            except TimeoutError:
-                await qr_login.recreate()
             except SessionPasswordNeededError:
-                password = input("Input pass: ")
-                await self.client.sign_in(password=password)
+                password = input("Input password:")
+                try:
+                    await self.client.sign_in(password=password)
+                    r = True
+                except PasswordHashInvalidError:
+                    print("Wrong password! Try again.")
+                    password_again = input("Input password again: ")
+                    await self.client.sign_in(password=password_again)
+                    r = True
+            except asyncio.exceptions.TimeoutError:
+                await qr_login.recreate()
+
+        self.dialog.open = False
+        await self.dialog.update_async()
+        print(await self.client.get_me())
+        
+
+
+
+
 
     async def login_by_phone_number(self):
         await self.client.connect()
@@ -62,13 +79,5 @@ class UserClient(TelegramClient):
 
     async def check(self):
         await self.client.connect()
-        print(await self.client.get_me())
-        user = await self.client.get_me()
-        self.dialog.qrcode_image.value = str(user)
-        self.dialog.update()
-
-async def main():
-    x = UserClient()
-    await x.check()
-
-asyncio.run(main())
+        return await self.client.get_me()
+  

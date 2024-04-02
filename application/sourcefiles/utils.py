@@ -1,4 +1,9 @@
+import base64
+import qrcode
+
+from io import BytesIO
 from typing import Literal
+
 from screeninfo import get_monitors
 from flet import colors
 
@@ -21,3 +26,11 @@ def clr_secondary_container(platform_brightness, theme_mode,):
     if platform_brightness == "dark" and theme_mode == "system":
         return colors.with_opacity(0.1, colors.SECONDARY_CONTAINER,)
     return colors.with_opacity(1, colors.SECONDARY_CONTAINER,)
+
+def generate_qrcode(url):
+    qr = qrcode.make(url)
+    buffered = BytesIO()
+    # SAVE IMAGE QRCODE TO JPEG OR WHATEVER
+    qr.save(buffered,format="JPEG")
+    s1 = base64.b64encode(buffered.getvalue())
+    return s1.decode("utf-8")
