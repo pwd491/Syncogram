@@ -68,10 +68,15 @@ class SQLite:
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
                 request = cursor.execute(
-                    "INSERT INTO `users` (user_id, name, is_primary, session) VALUES (?,?,?,?)", (id,name,is_primary,session,)
+                    "INSERT INTO `users` (user_id, name, is_primary, session) VALUES (?,?,?,?)",
+                    (
+                        id,
+                        name,
+                        is_primary,
+                        session,
+                    ),
                 )
                 return True if request else False
-            
 
     def get_options(self):
         with self.database as connect:
@@ -88,9 +93,3 @@ class SQLite:
                     (*args,),
                 )
                 return True if request else False
-
-
-if __name__ == "__main__":
-    abs = SQLite()
-    res = abs.get_options()
-    print(res)

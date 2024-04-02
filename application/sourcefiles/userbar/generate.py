@@ -1,5 +1,7 @@
 from functools import partial
+
 from ..database import SQLite
+
 import flet as ft
 
 class UIGenerateAccounts(ft.UserControl):
@@ -64,7 +66,7 @@ class UIGenerateAccounts(ft.UserControl):
         label.opacity = 0.5
         return label
 
-    def generate(self):
+    async def generate(self):
         accounts = self.database.get_users()
         while len(self.account_primary.controls) > 3:
             self.account_primary.controls.pop(-2)
@@ -79,7 +81,7 @@ class UIGenerateAccounts(ft.UserControl):
                 self.account_secondary.controls.insert(
                     -1, self.account_button(account[0], account[1])
                 )
-        self.update()
+        await self.update_async()
 
     def build(self) -> ft.Container:
         return self.wrapper

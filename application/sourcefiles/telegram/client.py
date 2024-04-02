@@ -6,8 +6,8 @@ from telethon.sessions import StringSession
 from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
 from dotenv import load_dotenv
 
-from utils import generate_qrcode
-from sql import SQLite
+from ..database import SQLite
+from ..utils import generate_qrcode
 
 load_dotenv()
 

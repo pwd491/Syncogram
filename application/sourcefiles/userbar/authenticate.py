@@ -28,7 +28,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.actions = [ft.TextButton("Ok", on_click=self.close)]
 
 
-    def close(self, e):
-        self.update_accounts()
+    async def close(self, e):
+        await self.update_accounts()
         self.open = False
-        self.update()
+        await self.update_async()

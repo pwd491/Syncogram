@@ -2,18 +2,18 @@ import flet as ft
 
 class ErrorAddAccount(ft.AlertDialog):
     def __init__(self):
-        super().__init__(
-            modal=True,
-            title=ft.Text("Sorry 😔"),
-            content=ft.Text(
-                "The application does not support more than 1 account, expect in the future."
-            ),
-            actions=[
-                ft.TextButton("Okay", on_click=self.close),
-            ],
-            actions_alignment=ft.MainAxisAlignment.END,
-        )
+        super().__init__()
 
-    def close(self, e):
+        self.modal=False
+        self.title= ft.Text("Sorry 😔")
+        self.content = ft.Text(
+            "The application does not support more than 1 account, expect in the future."
+        )
+        self.actions = [
+            ft.TextButton("Okay", on_click=self.close)
+        ]
+        self.actions_alignment = ft.MainAxisAlignment.END
+
+    async def close(self, e):
         self.open = False
-        self.update()
+        await self.update_async()
