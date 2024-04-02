@@ -17,7 +17,12 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.modal = True
         self.title = ft.Text("Authorization")
         self.content = self.wrapper
-        self.actions = [ft.TextButton("Ok", on_click=self.close), ft.TextButton("Clear", on_click=self.clear)]
+        self.actions = [ft.TextButton("Ok", on_click=self.close)]
+
+        self.snack_bar = ft.SnackBar(
+            content=ft.Text("Success login!"),
+            action="Alright!",
+        )
 
         
     async def clear(self, e):
@@ -29,9 +34,11 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.wrapper.content = ft.TextField(label="2FA password")
         await self.update_async()
         async def call(e):
-            print(1)
-            print(await function(password=self.wrapper.content.value))
+            await function(password=self.wrapper.content.value)
+        self.actions.append(ft.TextButton("Login", on_click=call))
         self.wrapper.content.on_submit = call
+        await self.update_async()
+
 
     async def did_mount_async(self):
         user = await self.client.login_by_qrcode()

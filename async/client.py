@@ -1,26 +1,24 @@
 import os
 import asyncio
+import telethon
 
-from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
 from telethon.sessions import StringSession
-from telethon.sync import TelegramClient
-from dotenv import load_dotenv
 from flet import Image, TextField
+from dotenv import load_dotenv
 
-# from main import AuthenticationDialogProcedure
 from utils import generate_qrcode
 from sql import SQLite
+
 load_dotenv()
 
-
-class UserClient(TelegramClient):
+class UserClient(telethon.TelegramClient):
     def __init__(self, AuthDialog, *args, **kwargs) -> None:
         self.database = SQLite()
         self.dialog = AuthDialog
         self.api_id = os.getenv("API_ID", "API_ID")
         self.api_hash = os.getenv("API_HASH")
         self.session = kwargs
-        self.client = TelegramClient(
+        self.client = telethon.TelegramClient(
             StringSession(),
             str(self.api_id),
             self.api_hash,
@@ -38,21 +36,21 @@ class UserClient(TelegramClient):
             self.dialog.wrapper.content.src_base64 = generate_qrcode(qr_login.url)
             await self.dialog.update_async()
             try:
-                r = await qr_login.wait(60)
+                r = await qr_login.wait(10)
                 await self.dialog.update_async()
-            except TimeoutError:
+            except asyncio.exceptions.TimeoutError:
                 await qr_login.recreate()
                 await self.dialog.update_async()
-            except SessionPasswordNeededError:
-                print("auth2fa вызываю")
+            except telethon.errors.SessionPasswordNeededError:
                 link = self.client.sign_in
                 await self.dialog.auth2fa(function=link)
-                print("auth2fa вызвано")
-            except PasswordHashInvalidError:
-                self.dialog.wrapper.content
+            except telethon.errors.PasswordHashInvalidError:
+                self.dialog.wrapper.content.border_color = "red"
+                await self.dialog.auth2fa(function=link)
 
-
-        print("Login Success!")
+        await self.dialog.clean_async()
+        self.dialog.open = False
+        self.dialog.snack_bar.open = True
         print(r)
         return r
 
