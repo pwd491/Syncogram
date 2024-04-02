@@ -29,7 +29,7 @@ class UserBar(ft.Container):
 
         # CustomAlertDialog
         self.error_add_account_dialog = ErrorAddAccount()
-        self.settings_dialog = SettingsDialog(page)
+        # self.settings_dialog = SettingsDialog(page)
 
         self.window_authentication = AuthenticationDialogProcedure(
             self.page, self.generate_accounts.generate
@@ -72,8 +72,9 @@ class UserBar(ft.Container):
         await self.page.update_async()
 
     async def settings(self, e):
-        self.page.dialog = self.settings_dialog
-        self.settings_dialog.open = True
+        settings = SettingsDialog(self.page)
+        self.page.dialog = settings
+        settings.open = True
         await self.page.update_async()
 
     async def did_mount_async(self):

@@ -10,11 +10,11 @@ class SettingsDialog(ft.AlertDialog):
         """!!!"""
         self.options = self.database.get_options()
         self.options = self.options if not None else (0, 0, 0)
-
-        self.c1 = ft.Checkbox(label="Sync my favorite messages", value=False)
+        
+        self.c1 = ft.Checkbox(label="Sync my favorite messages", value=bool(self.options[1]))
         self.c2 = ft.Checkbox(
             label="Save the sequence of pinned messages",
-            value=False,
+            value=bool(self.options[2]),
             disabled=True
         )
         """!!!"""
