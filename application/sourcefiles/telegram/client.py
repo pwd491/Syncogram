@@ -27,34 +27,35 @@ class UserClient(TelegramClient):
             app_version="0.0.1",
         )
 
-    async def login_by_qrcode(self):
+    async def login_by_qrcode(self, is_primary):
         if not self.client.is_connected():
             await self.client.connect()
+
         qr_login = await self.client.qr_login()
         r = False
         while not r:
-            self.dialog.wrapper.content.src_base64 = generate_qrcode(qr_login.url)
+            self.dialog.qrcode_image.src_base64 = generate_qrcode(qr_login.url)
             await self.dialog.update_async()
             try:
                 r = await qr_login.wait(60)
-            except SessionPasswordNeededError:
-                password = input("Input password:")
-                try:
-                    await self.client.sign_in(password=password)
-                    r = True
-                except PasswordHashInvalidError:
-                    print("Wrong password! Try again.")
-                    password_again = input("Input password again: ")
-                    await self.client.sign_in(password=password_again)
-                    r = True
             except asyncio.exceptions.TimeoutError:
                 await qr_login.recreate()
-
+            except SessionPasswordNeededError:
+                await self.dialog.input_2fa_password()
+                while not r:
+                    await self.dialog.password_inputed_event.wait()
+                    password = self.dialog.password.value
+                    try:
+                        await self.client.sign_in(password=password)
+                        r = True
+                    except PasswordHashInvalidError:
+                        self.dialog.password.error_text = "Incorrect password, try again!"
+                        await self.dialog.update_async()
+            
         self.dialog.open = False
         await self.dialog.update_async()
-        print(await self.client.get_me())
-        
-
+        user = await self.client.get_me()
+        self.database.add_user(user.id, user.first_name, is_primary, self.client.session.save())
 
 
 

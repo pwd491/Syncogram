@@ -1,3 +1,4 @@
+from types import NoneType
 from ..database import SQLite
 import flet as ft
 
@@ -9,7 +10,7 @@ class SettingsDialog(ft.AlertDialog):
 
         """!!!"""
         self.options: list[int] = self.database.get_options()
-        self.options: list[int] = self.options if not None else (0, 0, 0)
+        self.options: list[int] = self.options if not NoneType else (0, 0, 0) # type: ignore
         
         self.c1 = ft.Checkbox(
             label="Sync my favorite messages",

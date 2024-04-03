@@ -30,7 +30,6 @@ def clr_secondary_container(platform_brightness, theme_mode,):
 def generate_qrcode(url):
     qr = qrcode.make(url)
     buffered = BytesIO()
-    # SAVE IMAGE QRCODE TO JPEG OR WHATEVER
-    qr.save(buffered,format="JPEG")
-    s1 = base64.b64encode(buffered.getvalue())
-    return s1.decode("utf-8")
+    qr.save(buffered,format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
+     

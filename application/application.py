@@ -1,10 +1,11 @@
 from configparser import ConfigParser
 
+import flet as ft
+
 from sourcefiles import UserBar
 from sourcefiles import MainWindow
 from sourcefiles.utils import screensize
 
-import flet as ft
 
 config = ConfigParser()
 config.read("config.ini")

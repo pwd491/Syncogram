@@ -2,7 +2,7 @@ import sqlite3
 from contextlib import closing
 from typing import Any
 
-from consts import (
+from .consts import (
     SQL_CREATE_USERS,
     SQL_CREATE_OPTIONS,
     SQL_TRIGGER_DROP_OPTIONS,
