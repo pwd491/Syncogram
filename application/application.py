@@ -34,4 +34,4 @@ async def application(page: ft.Page) -> None:
 
 
 if __name__ == "__main__":
-    ft.app(target=application)
+    ft.app(target=application, assets_dir="assets")

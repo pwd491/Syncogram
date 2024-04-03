@@ -6,7 +6,7 @@ class MainWindow(ft.Container):
         self.page = page
 
         self.sticker = ft.Image()
-        self.sticker.src = "/Users/admin/Development/Syncogram/application/assets/sticker2.gif"
+        self.sticker.src = "stickers/sticker2.gif"
         self.sticker.width = 200
 
         self.sticker_text = ft.Text("To get started, log in to at least 2 accounts")
