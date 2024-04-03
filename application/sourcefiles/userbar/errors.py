@@ -1,7 +1,7 @@
 import flet as ft
 
 class ErrorAddAccount(ft.AlertDialog):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.modal=False
@@ -14,6 +14,6 @@ class ErrorAddAccount(ft.AlertDialog):
         ]
         self.actions_alignment = ft.MainAxisAlignment.END
 
-    async def close(self, e):
+    async def close(self, e) -> None:
         self.open = False
         await self.update_async()

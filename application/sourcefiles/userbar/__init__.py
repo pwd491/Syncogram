@@ -1,1 +1,1 @@
-from .__main__ import UserBar
+from .main import UserBar

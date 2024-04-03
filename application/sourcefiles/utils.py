@@ -1,11 +1,11 @@
 import base64
-import qrcode
-
 from io import BytesIO
 from typing import Literal
 
-from screeninfo import get_monitors
 from flet import colors
+import qrcode
+
+from screeninfo import get_monitors
 
 def screensize() -> tuple[int, int] | tuple[Literal[1920], Literal[1080]]:
     """

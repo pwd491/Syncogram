@@ -2,16 +2,19 @@ from ..database import SQLite
 import flet as ft
 
 class SettingsDialog(ft.AlertDialog):
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page) -> None:
         super().__init__()
         self.page: ft.Page = page
         self.database = SQLite()
 
         """!!!"""
-        self.options = self.database.get_options()
-        self.options = self.options if not None else (0, 0, 0)
+        self.options: list[int] = self.database.get_options()
+        self.options: list[int] = self.options if not None else (0, 0, 0)
         
-        self.c1 = ft.Checkbox(label="Sync my favorite messages", value=bool(self.options[1]))
+        self.c1 = ft.Checkbox(
+            label="Sync my favorite messages",
+            value=bool(self.options[1])
+        )
         self.c2 = ft.Checkbox(
             label="Save the sequence of pinned messages",
             value=bool(self.options[2]),
@@ -36,7 +39,7 @@ class SettingsDialog(ft.AlertDialog):
         ]
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
-    async def close(self, e):
+    async def close(self, e) -> None:
         self.open = False
         await self.update_async()
 

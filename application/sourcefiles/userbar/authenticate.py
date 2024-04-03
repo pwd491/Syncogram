@@ -1,5 +1,6 @@
 import flet as ft
 
+
 class AuthenticationDialogProcedure(ft.AlertDialog):
     def __init__(self, page: ft.Page, *args, **kwargs) -> None:
         super().__init__()
@@ -29,6 +30,6 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
 
 
     async def close(self, e):
-        await self.update_accounts()
+        await self.update_accounts.generate()
         self.open = False
         await self.update_async()

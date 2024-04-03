@@ -1,19 +1,16 @@
-from typing import Any
+import flet as ft
 
-from .errors import ErrorAddAccount
 from .settings import SettingsDialog
 from .generate import UIGenerateAccounts
-from .authenticate import AuthenticationDialogProcedure
 from ..database import SQLite
 
-import flet as ft
 
 class UserBar(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         super().__init__()
         self.database = SQLite()
         self.page: ft.Page = page
-        self.generate_accounts = UIGenerateAccounts(page, self.ui_add_account_process)
+        self.generate_accounts = UIGenerateAccounts(self.page)
 
         # Buttons
         self.settings_btn = ft.ElevatedButton()
@@ -27,14 +24,6 @@ class UserBar(ft.Container):
         self.name_field = ft.TextField()
         self.name_field.label = "Name"
 
-        # CustomAlertDialog
-        self.error_add_account_dialog = ErrorAddAccount()
-        # self.settings_dialog = SettingsDialog(page)
-
-        self.window_authentication = AuthenticationDialogProcedure(
-            self.page, self.generate_accounts.generate
-        )
-
         # Containers
         self.wrapper_accounts_side: UIGenerateAccounts = self.generate_accounts
 
@@ -43,7 +32,6 @@ class UserBar(ft.Container):
         self.wrapper_settings.height = 50
 
         # Main block like canvas to display controls
-
         self.content = ft.Column(
             [
                 self.wrapper_accounts_side,
@@ -57,25 +45,11 @@ class UserBar(ft.Container):
         self.bgcolor = ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER)
         self.content.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
-    async def ui_add_account_process(self, e, is_primary: bool):
-        accounts: list[Any] = self.database.get_users()
-        for acc in accounts:
-            if int(is_primary) == acc[2]:
-                self.page.dialog = self.error_add_account_dialog
-                self.error_add_account_dialog.open = True
-                await self.generate_accounts.generate()
-                await self.page.update_async()
-                return
-
-        self.page.dialog = self.window_authentication
-        self.window_authentication.open = True
-        await self.page.update_async()
-
-    async def settings(self, e):
+    async def settings(self, e) -> None:
         settings = SettingsDialog(self.page)
         self.page.dialog = settings
         settings.open = True
         await self.page.update_async()
 
-    async def did_mount_async(self):
+    async def did_mount_async(self) -> None:
         await self.generate_accounts.generate()

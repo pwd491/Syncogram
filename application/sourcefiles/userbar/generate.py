@@ -1,15 +1,17 @@
 from functools import partial
-
-from ..database import SQLite
+from typing import Any
 
 import flet as ft
 
-class UIGenerateAccounts(ft.UserControl):
-    def __init__(self, page: ft.Page, *args):
-        self.database = SQLite()
-        self.page: ft.Page = page
+from .errors import ErrorAddAccount
+from .authenticate import AuthenticationDialogProcedure
+from ..database import SQLite
 
-        self.process_func = args[0]
+
+class UIGenerateAccounts(ft.UserControl):
+    def __init__(self, page: ft.Page, *args, **kwargs) -> None:
+        self.page: ft.Page = page
+        self.database = SQLite()
 
         self.divider = ft.Container()
         self.divider.width = 200
@@ -56,7 +58,7 @@ class UIGenerateAccounts(ft.UserControl):
         button.icon = ft.icons.ADD
         button.expand = True
         button.data = key
-        button.on_click = partial(self.process_func, is_primary=button.data)
+        button.on_click = partial(self.add_account, is_primary=button.data)
         return button
 
     def label(self, text: str) -> ft.Text:
@@ -66,8 +68,25 @@ class UIGenerateAccounts(ft.UserControl):
         label.opacity = 0.5
         return label
 
-    async def generate(self):
-        accounts = self.database.get_users()
+
+    async def add_account(self, e, is_primary: bool):
+        accounts: list[Any] = self.database.get_users()
+        for acc in accounts:
+            if int(is_primary) == acc[2]:
+                error = ErrorAddAccount()
+                self.page.dialog = error
+                error.open = True
+                await self.generate()
+                return await self.page.update_async()
+
+        auth = AuthenticationDialogProcedure(self.page, self)
+        self.page.dialog = auth
+        auth.open = True
+        await self.page.update_async()
+
+
+    async def generate(self) -> None:
+        accounts: list[Any] = self.database.get_users()
         while len(self.account_primary.controls) > 3:
             self.account_primary.controls.pop(-2)
         while len(self.account_secondary.controls) > 3:
