@@ -6,6 +6,7 @@ import flet as ft
 from .errors import ErrorAddAccount
 from .logout import LogOutDialog
 from .authenticate import AuthenticationDialogProcedure
+from ..window import MainWindow
 from ..database import SQLite
 
 
