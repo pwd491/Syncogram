@@ -14,7 +14,11 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.password_inputed_event = Event()
 
         self.qrcode_image = ft.Image("1")
-        
+
+        self.log_phone_number = ft.TextButton()
+        self.log_phone_number.text = "Use phone number"
+        self.log_phone_number.disabled = True
+
         self.password = ft.TextField()
         self.password.label = "2FA password"
         self.password.visible = False
@@ -22,7 +26,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.password.on_submit = self.submit
 
         self.button_close = ft.TextButton("Close", on_click=self.close)
-        self.button_submit = ft.TextButton("Submit", on_click=self.submit)
+        self.button_submit = ft.FilledButton("Submit", on_click=self.submit)
 
         self.modal = True
         self.content = ft.Column(
@@ -36,7 +40,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.content.alignment = ft.MainAxisAlignment.CENTER
         self.content.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         self.title = ft.Text("Authorization")
-        self.actions = [self.button_close]
+        self.actions = [self.button_close, self.log_phone_number]
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
     async def close(self, e):
@@ -50,6 +54,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
 
     async def input_2fa_password(self):
         self.actions.append(self.button_submit)
+        self.log_phone_number.visible = False
         self.qrcode_image.visible = False
         self.password.visible = True
         await self.update_async()
@@ -57,7 +62,6 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
     async def did_mount_async(self):
         client = UserClient()
         await client.login_by_qrcode(dialog=self, is_primary=self.is_primary)
-        # await self.client.login_by_qrcode(self.is_primary)
         await self.update_accounts.generate()
         await self.update_accounts.update_async()
         await self.update_async()

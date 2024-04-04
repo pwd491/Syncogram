@@ -37,7 +37,7 @@ class SettingsDialog(ft.AlertDialog):
         self.content = self.wrapper
         self.actions = [
             ft.TextButton("Cancel", on_click=self.close),
-            ft.TextButton("Save", on_click=self.save),
+            ft.FilledButton("Save", on_click=self.save),
         ]
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 

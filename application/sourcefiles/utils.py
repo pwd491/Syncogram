@@ -28,8 +28,13 @@ def clr_secondary_container(platform_brightness, theme_mode,):
     return colors.with_opacity(1, colors.SECONDARY_CONTAINER,)
 
 def generate_qrcode(url):
-    qr = qrcode.make(url)
     buffered = BytesIO()
-    qr.save(buffered,format="PNG")
+    QRcode = qrcode.QRCode(
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+    )
+    QRcode.clear()
+    QRcode.add_data(url)
+    QRcode.make()
+    img = QRcode.make_image(back_color=(40,47,54), fill_color=(255,255,255))
+    img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
-     

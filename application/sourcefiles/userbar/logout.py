@@ -17,7 +17,7 @@ class LogOutDialog(ft.AlertDialog):
         self.title.text_align = ft.TextAlign.CENTER
         # self.bgcolor = ft.colors.TRANSPARENT
         self.actions = [
-            ft.TextButton("Yes", on_click=self.submit),
+            ft.FilledButton("Yes", on_click=self.submit),
             ft.TextButton("No", on_click=self.close),
         ]
         self.actions_alignment = ft.MainAxisAlignment.CENTER
