@@ -10,7 +10,8 @@ class SettingsDialog(ft.AlertDialog):
 
         """!!!"""
         self.options: list[int] = self.database.get_options()
-        self.options: list[int] = self.options if not NoneType else (0, 0, 0) # type: ignore
+        self.options: list[int] = self.options if self.options is not NoneType else (0, 0, 0) # type: ignore
+
         
         self.c1 = ft.Checkbox(
             label="Sync my favorite messages",
@@ -44,7 +45,7 @@ class SettingsDialog(ft.AlertDialog):
         self.open = False
         await self.update_async()
 
-    async def save(self, e):
-        self.database.set_options(int(self.c1.value), int(self.c2.value))
+    async def save(self, e) -> NoneType:
+        self.database.set_options(int(self.c1.value), int(self.c2.value)) # type: ignore
         self.open = False
         await self.update_async()
