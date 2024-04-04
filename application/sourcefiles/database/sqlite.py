@@ -29,6 +29,11 @@ class SQLite:
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
                 return cursor.execute("SELECT * FROM users").fetchall()
+    
+    def get_user_by_id(self, account_id):
+        with self.database as connect:
+            with closing(connect.cursor()) as cursor:
+                return cursor.execute("SELECT session FROM users WHERE user_id = ?", (account_id,)).fetchone()
 
     def add_user(self, user_id: int, name: str, is_primary: int, session: str) -> bool:
         with self.database as connect:
@@ -43,6 +48,11 @@ class SQLite:
                     ),
                 )
                 return True if request else False
+            
+    def delete_user_by_id(self, account_id):
+        with self.database as connect:
+            with closing(connect.cursor()) as cursor:
+                return cursor.execute("DELETE FROM users WHERE user_id = ?", (account_id,))
 
     def get_options(self):
         with self.database as connect:
@@ -59,4 +69,3 @@ class SQLite:
                     (*args,),
                 )
                 return bool(request)
-

@@ -3,6 +3,7 @@ import asyncio
 
 from telethon.sync import TelegramClient
 from telethon.sessions import StringSession
+from telethon.tl.types import InputPeerUser, User
 from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
 from dotenv import load_dotenv
 
@@ -12,53 +13,59 @@ from ..utils import generate_qrcode
 load_dotenv()
 
 class UserClient(TelegramClient):
-    def __init__(self, AuthDialog, *args, **kwargs) -> None:
+    def __init__(self, session: str = None, *args, **kwargs) -> None:
         self.database = SQLite()
-        self.dialog = AuthDialog
-        self.api_id = os.getenv("API_ID", "API_ID")
-        self.api_hash = os.getenv("API_HASH")
-        self.session = kwargs
+        self.api_id: str = os.getenv("API_ID", "API_ID")
+        self.api_hash: str = os.getenv("API_HASH", "API_HASH")
         self.client = TelegramClient(
-            StringSession(),
-            str(self.api_id),
+            StringSession(session),
+            self.api_id, # type ignore
             self.api_hash,
             system_version="4.16.30-vxCUSTOM",
             device_model="Syncogram Application",
             app_version="0.0.1",
         )
 
-    async def login_by_qrcode(self, is_primary):
+    async def login_by_qrcode(self, dialog, is_primary):
         if not self.client.is_connected():
             await self.client.connect()
 
         qr_login = await self.client.qr_login()
         r = False
         while not r:
-            self.dialog.qrcode_image.src_base64 = generate_qrcode(qr_login.url)
-            await self.dialog.update_async()
+            dialog.qrcode_image.src_base64 = generate_qrcode(qr_login.url)
+            await dialog.update_async()
             try:
                 r = await qr_login.wait(60)
             except asyncio.exceptions.TimeoutError:
                 await qr_login.recreate()
             except SessionPasswordNeededError:
-                await self.dialog.input_2fa_password()
+                await dialog.input_2fa_password()
                 while not r:
-                    await self.dialog.password_inputed_event.wait()
-                    password = self.dialog.password.value
+                    await dialog.password_inputed_event.wait()
+                    password = dialog.password.value
                     try:
                         await self.client.sign_in(password=password)
                         r = True
                     except PasswordHashInvalidError:
-                        self.dialog.password.error_text = "Incorrect password, try again!"
-                        await self.dialog.update_async()
+                        dialog.password.error_text = "Incorrect password, try again!"
+                        await dialog.update_async()
             
-        self.dialog.open = False
-        await self.dialog.update_async()
-        user = await self.client.get_me()
+        dialog.open = False
+        await dialog.update_async()
+        user: User | InputPeerUser = await self.client.get_me()
         self.database.add_user(user.id, user.first_name, is_primary, self.client.session.save())
 
 
-
+    async def logout(self):
+        if not self.client.is_connected():
+            await self.client.connect()
+        try:
+            await self.client.log_out()
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
     async def login_by_phone_number(self):
         await self.client.connect()
@@ -78,7 +85,4 @@ class UserClient(TelegramClient):
             result = self.database.add_user(id=user.id, name=user.first_name, is_primary=1,session=session)
             print(result)
 
-    async def check(self):
-        await self.client.connect()
-        return await self.client.get_me()
   

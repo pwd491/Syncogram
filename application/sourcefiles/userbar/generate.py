@@ -4,6 +4,7 @@ from typing import Any
 import flet as ft
 
 from .errors import ErrorAddAccount
+from .logout import LogOutDialog
 from .authenticate import AuthenticationDialogProcedure
 from ..database import SQLite
 
@@ -48,7 +49,7 @@ class UIGenerateAccounts(ft.UserControl):
         button.icon = ft.icons.ACCOUNT_CIRCLE
         button.bgcolor = ft.colors.SECONDARY_CONTAINER
         button.key = account_id
-        button.on_click = ...
+        button.on_click = partial(self.logout, account_id=button.key)
         return button
 
     def add_button(self, key: bool) -> ft.OutlinedButton:
@@ -68,6 +69,11 @@ class UIGenerateAccounts(ft.UserControl):
         label.opacity = 0.5
         return label
 
+    async def logout(self, e, account_id):
+        dialog = LogOutDialog(account_id, self.generate)
+        self.page.dialog = dialog
+        dialog.open = True
+        await self.page.update_async()
 
     async def add_account(self, e, is_primary: bool):
         accounts: list[Any] = self.database.get_users()
