@@ -1,4 +1,5 @@
 from tkinter.ttk import Progressbar
+from turtle import width
 import flet as ft
 
 from .task import CustomTask
@@ -32,14 +33,16 @@ class MainWindow(ft.Container):
                 super().__init__()
 
                 self.wrapper = ft.Column([
-                    ft.Text("Task"),
-                    ft.ProgressBar(expand=True)
+                    ft.Text("Sync my favorite messages."),
+                    ft.Divider(color="white"),
+                    ft.ProgressBar(width=500, value=0),
                 ])
 
                 self.content = ft.Row([self.wrapper])
                 self.height = 100
                 self.bgcolor = ft.colors.BLACK38
                 self.border_radius = ft.BorderRadius(10,10,10,10)
+                self.border = ft.border.all(0.5, ft.colors.ORANGE)
                 self.padding = 20
 
 
@@ -52,10 +55,11 @@ class MainWindow(ft.Container):
             Task(),
             Task(),
             Task(),
+            Task(),
         ])
         self.wrapper_side_column.expand = True
         self.wrapper_side_column.alignment = ft.MainAxisAlignment.START
-        self.wrapper_side_column.scroll = ft.ScrollMode.ADAPTIVE
+        self.wrapper_side_column.scroll = ft.ScrollMode.AUTO
       
         self.wrapper_side = ft.Container()
         self.wrapper_side.content = ft.Row([self.wrapper_side_column])
@@ -69,6 +73,7 @@ class MainWindow(ft.Container):
         # self.wrapper_footer.bgcolor = "yellow"
         self.wrapper_footer.height = 50
         self.wrapper_footer.border_radius = ft.BorderRadius(10,10,10,10)
+        self.wrapper_footer.bgcolor = ft.colors.BLACK12
 
 
         self.wrapper = ft.Column(
@@ -79,6 +84,7 @@ class MainWindow(ft.Container):
         )
 
         self.content = self.wrapper
+        self.content.visible = False
         self.expand = True
         self.bgcolor = ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER)
         self.border_radius = ft.BorderRadius(10, 10, 10, 10)
@@ -93,5 +99,6 @@ class MainWindow(ft.Container):
             self.wrapper.controls.append(self.welcome)
             return await self.update_async()
         
+        self.content.visible = True
 
         await self.update_async()
