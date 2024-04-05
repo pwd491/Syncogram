@@ -21,7 +21,7 @@ class MainWindow(ft.Container):
 
 
         self.button_start = ft.ElevatedButton()
-        self.button_start.bgcolor = ft.colors.BLUE
+        self.button_start.bgcolor = ft.colors.BLUE_700
         self.button_start.color = ft.colors.WHITE
         self.button_start.text = "Start syncing"
         self.button_start.icon = ft.icons.SYNC
@@ -63,10 +63,10 @@ class MainWindow(ft.Container):
         self.border_radius = ft.BorderRadius(10, 10, 10, 10)
         self.padding = 20
 
-    async def did_mount_async(self):
+    async def did_mount_async(self) -> None:
         await self._update()
 
-    async def _update(self):
+    async def _update(self) -> None:
         users = self.database.get_users()
         if len(users) < 2:
             self.wrapper.controls.append(self.welcome)
