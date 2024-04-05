@@ -1,5 +1,6 @@
 import flet as ft
 
+from .about import AboutApplication
 from .settings import SettingsDialog
 from .generate import UIGenerateAccounts
 from ..database import SQLite
@@ -11,6 +12,7 @@ class UserBar(ft.Container):
         self.database = SQLite()
         self.page: ft.Page = page
         self.generate_accounts = UIGenerateAccounts(self.page)
+        self.about = AboutApplication()
 
         # Buttons
         self.settings_btn = ft.ElevatedButton()
@@ -27,14 +29,16 @@ class UserBar(ft.Container):
         # Containers
         self.wrapper_accounts_side: UIGenerateAccounts = self.generate_accounts
 
-        self.wrapper_settings = ft.Container(ft.Row([self.settings_btn]))
-        self.wrapper_settings.width = 200
-        self.wrapper_settings.height = 50
+        self.wrapper_settings = ft.Container(ft.Column([
+            ft.Row([self.about]),
+            ft.Row([self.settings_btn])
+        ]))
 
         # Main block like canvas to display controls
         self.content = ft.Column(
             [
                 self.wrapper_accounts_side,
+                # self.about,
                 self.wrapper_settings,
             ]
         )
