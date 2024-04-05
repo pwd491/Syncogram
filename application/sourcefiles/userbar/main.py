@@ -38,7 +38,6 @@ class UserBar(ft.Container):
         self.content = ft.Column(
             [
                 self.wrapper_accounts_side,
-                # self.about,
                 self.wrapper_settings,
             ]
         )
