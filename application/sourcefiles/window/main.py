@@ -20,7 +20,9 @@ class MainWindow(ft.Container):
         self.welcome.alignment = ft.MainAxisAlignment.CENTER
 
 
-        self.button_start = ft.TextButton()
+        self.button_start = ft.ElevatedButton()
+        self.button_start.bgcolor = ft.colors.BLUE
+        self.button_start.color = ft.colors.WHITE
         self.button_start.text = "Start syncing"
         self.button_start.icon = ft.icons.SYNC
         self.button_start.height = 40
@@ -51,7 +53,7 @@ class MainWindow(ft.Container):
         self.wrapper_footer.content.alignment = ft.MainAxisAlignment.END
         self.wrapper_footer.height = 50
         self.wrapper_footer.border_radius = ft.BorderRadius(10,10,10,10)
-        self.wrapper_footer.bgcolor = ft.colors.BLACK12
+        # self.wrapper_footer.bgcolor = ft.colors.BLACK12
 
 
         self.wrapper = ft.Column()

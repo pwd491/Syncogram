@@ -17,7 +17,7 @@ SCREENWIDTH, SCREENHEIGHT = screensize()
 
 async def application(page: ft.Page) -> None:
     page.title = config.get("APP", "APP_NAME")
-    page.window_width = page.window_min_width = SCREENWIDTH * 0.5
+    page.window_width = page.window_min_width = SCREENWIDTH * 0.6
     page.window_height = page.window_min_height = SCREENHEIGHT * 0.7
     page.window_top = SCREENHEIGHT / 8
     page.window_left = (SCREENWIDTH * 0.5) / 2
