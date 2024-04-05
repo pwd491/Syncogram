@@ -1,17 +1,30 @@
+from configparser import ConfigParser
+from typing import Any
+
 import flet as ft
 
-class AboutApplication(ft.Container):
-    def __init__(self):
-        super().__init__()
-        self.author = "Developed by Sergey Degtyar."
-        self.license = "© GNU GENERAL PUBLIC LICENSE V2"
-        self.text = ft.Text(f"If you found a bug, you can send feedback.\n{self.author}\n{self.license}")
-        self.text.size = 9
-        self.text.opacity = 0.5
-        self.text.text_align = ft.TextAlign.CENTER
+config = ConfigParser()
+config.read("config.ini")
 
-        self.wrapper = ft.Column([
-            self.text
-        ])
-        self.wrapper.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-        self.content = self.wrapper
+class AboutApplication(ft.Text):
+    def __init__(self) -> None:
+        super().__init__()
+        self.author: str = f"DEVELOPED BY {config.get("APP", "AUTHOR")}"
+        self.license: str = config.get("APP", "LICENSE")
+
+        self.value = f"If you found a bug, you can send feedback.\n{self.author}\n{self.license}"
+        self.size = 9
+        self.opacity = .5
+        self.text_align = ft.TextAlign.CENTER
+
+
+class FeedBack(ft.TextButton):
+    def __init__(self) -> None:
+        super().__init__()
+        self.url = config.get("REPO", "LINK_PULL_REQUEST")
+        self.style = ft.ButtonStyle()
+        self.content = ft.Text()
+        self.content.value = "Send feedback"
+        self.content.size = 11
+        self.content.text_align = ft.TextAlign.CENTER
+        self.width = 200

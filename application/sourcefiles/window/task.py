@@ -1,13 +1,13 @@
 import flet as ft
 
 class CustomTask(ft.Container):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.wrapper = ft.Column([
             ft.Text("Sync my favorite messages."),
             ft.Divider(opacity=0),
-            ft.ProgressBar()
+            ft.ProgressBar(value=0)
         ])
 
         self.content = self.wrapper
