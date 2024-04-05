@@ -32,7 +32,7 @@ class UserBar(ft.Container):
         self.wrapper_settings = ft.Container(ft.Column([
             ft.Row([self.about]),
             ft.Row([self.settings_btn])
-        ]))
+        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER))
 
         # Main block like canvas to display controls
         self.content = ft.Column(
@@ -47,6 +47,7 @@ class UserBar(ft.Container):
         self.border_radius = ft.BorderRadius(10, 10, 10, 10)
         self.bgcolor = ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER)
         self.content.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        self.content.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
     async def settings(self, e) -> None:
         settings = SettingsDialog(self.page)

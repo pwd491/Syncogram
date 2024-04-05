@@ -13,5 +13,5 @@ class AboutApplication(ft.Container):
         self.wrapper = ft.Column([
             self.text
         ])
-        self.wrapper.alignment = ft.MainAxisAlignment.CENTER
+        self.wrapper.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         self.content = self.wrapper
