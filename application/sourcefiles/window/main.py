@@ -23,7 +23,7 @@ class MainWindow(ft.Container):
         self.button_start = ft.ElevatedButton()
         self.button_start.bgcolor = ft.colors.BLUE_700
         self.button_start.color = ft.colors.WHITE
-        self.button_start.text = "Start syncing"
+        self.button_start.text = "START"
         self.button_start.icon = ft.icons.SYNC
         self.button_start.height = 40
 
