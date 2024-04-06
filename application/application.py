@@ -22,11 +22,14 @@ async def application(page: ft.Page) -> None:
     page.window_top = SCREENHEIGHT / 8
     page.window_left = (SCREENWIDTH * 0.5) / 2
 
+    mainwindow = MainWindow(page)
+    userbar = UserBar(page, mainwindow.updateme)
+
     await page.add_async(
         ft.Row(
             [
-                UserBar(page),
-                MainWindow(page),
+                userbar,
+                mainwindow
             ],
             expand=True,
         )

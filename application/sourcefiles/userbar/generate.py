@@ -14,6 +14,7 @@ class UIGenerateAccounts(ft.UserControl):
     def __init__(self, page: ft.Page, *args, **kwargs) -> None:
         self.page: ft.Page = page
         self.database = SQLite()
+        self.update_mainwindow = args[0]
 
         self.divider = ft.Container()
         self.divider.width = 200
@@ -84,8 +85,10 @@ class UIGenerateAccounts(ft.UserControl):
                 self.page.dialog = error
                 error.open = True
                 await self.generate()
+                await self.update_mainwindow()
                 return await self.page.update_async()
 
+        await self.update_mainwindow()
         auth = AuthenticationDialogProcedure(self.page, self, is_primary)
         self.page.dialog = auth
         auth.open = True

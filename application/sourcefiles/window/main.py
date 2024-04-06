@@ -32,11 +32,6 @@ class MainWindow(ft.Container):
             CustomTask(),
             CustomTask(),
             CustomTask(),
-            CustomTask(),
-            CustomTask(),
-            CustomTask(),
-            CustomTask(),
-            CustomTask(),
         ])
         self.wrapper_side_column.expand = True
         self.wrapper_side_column.alignment = ft.MainAxisAlignment.START
@@ -64,10 +59,11 @@ class MainWindow(ft.Container):
         self.padding = 20
 
     async def did_mount_async(self) -> None:
-        await self._update()
+        await self.updateme()
 
-    async def _update(self) -> None:
+    async def updateme(self) -> None:
         users = self.database.get_users()
+        self.wrapper.controls.clear()
         if len(users) < 2:
             self.wrapper.controls.append(self.welcome)
             self.wrapper.alignment = ft.MainAxisAlignment.CENTER

@@ -8,11 +8,11 @@ from ..database import SQLite
 
 
 class UserBar(ft.Container):
-    def __init__(self, page: ft.Page) -> None:
+    def __init__(self, page: ft.Page, update_mainwin) -> None:
         super().__init__()
         self.database = SQLite()
         self.page: ft.Page = page
-        self.generate_accounts = UIGenerateAccounts(self.page)
+        self.generate_accounts = UIGenerateAccounts(self.page, update_mainwin)
         self.about = AboutApplication()
 
         # Buttons
