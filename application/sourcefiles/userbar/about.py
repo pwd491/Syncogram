@@ -9,10 +9,10 @@ config.read("config.ini")
 class AboutApplication(ft.Text):
     def __init__(self) -> None:
         super().__init__()
-        self.author: str = f"DEVELOPED BY {config.get("APP", "AUTHOR")}"
+        self.author: str = f"""© {config.get("APP", "AUTHOR")}"""
         self.license: str = config.get("APP", "LICENSE")
 
-        self.value = f"If you found a bug, you can send feedback.\n{self.author}\n{self.license}"
+        self.value = f"If you found a bug, you can send feedback.\n{self.license}\n{self.author}"
         self.size = 9
         self.opacity = .5
         self.text_align = ft.TextAlign.CENTER
