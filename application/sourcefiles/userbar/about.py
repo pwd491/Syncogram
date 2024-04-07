@@ -11,8 +11,9 @@ class AboutApplication(ft.Text):
         super().__init__()
         self.author: str = f"""© {config.get("APP", "AUTHOR")}"""
         self.license: str = config.get("APP", "LICENSE")
+        self.version: str = config.get("APP", "APP_VERSION")
 
-        self.value = f"If you found a bug, you can send feedback.\n{self.license}\n{self.author}"
+        self.value = f"If you found a bug, you can send feedback.\n{self.license}\n{self.author}\nv{self.version}"
         self.size = 9
         self.opacity = .5
         self.text_align = ft.TextAlign.CENTER
