@@ -72,7 +72,7 @@ class UIGenerateAccounts(ft.UserControl):
         return label
 
     async def logout(self, e, account_id):
-        dialog = LogOutDialog(account_id, self.generate)
+        dialog = LogOutDialog(account_id, self.generate, self.update_mainwindow)
         self.page.dialog = dialog
         dialog.open = True
         await self.page.update_async()
@@ -88,8 +88,7 @@ class UIGenerateAccounts(ft.UserControl):
                 await self.update_mainwindow()
                 return await self.page.update_async()
 
-        await self.update_mainwindow()
-        auth = AuthenticationDialogProcedure(self.page, self, is_primary)
+        auth = AuthenticationDialogProcedure(self.page, self, is_primary, self.update_mainwindow)
         self.page.dialog = auth
         auth.open = True
         await self.page.update_async()

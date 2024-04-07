@@ -11,6 +11,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.page: ft.Page = page
         self.update_accounts = args[0]
         self.is_primary = args[1]
+        self.update_mainwindow = args[2]
         self.password_inputed_event = Event()
 
         self.qrcode_image = ft.Image("1")
@@ -45,6 +46,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
 
     async def close(self, e):
         await self.update_accounts.generate()
+        await self.update_mainwindow()
         self.open = False
         await self.update_async()
     
@@ -62,6 +64,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
     async def did_mount_async(self):
         client = UserClient()
         await client.login_by_qrcode(dialog=self, is_primary=self.is_primary)
+        await self.update_mainwindow()
         await self.update_accounts.generate()
         await self.update_accounts.update_async()
         await self.update_async()

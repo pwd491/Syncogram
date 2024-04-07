@@ -10,6 +10,7 @@ class LogOutDialog(ft.AlertDialog):
         self.database = SQLite()
         self.account_id = account_id
         self.update_accounts = args[0]
+        self.update_mainwindow = args[1]
 
         self.modal = False
         self.title = ft.Text("Are you sure to logout?")
@@ -29,10 +30,12 @@ class LogOutDialog(ft.AlertDialog):
             self.database.delete_user_by_id(self.account_id)
 
         self.open = False
-        await self.update_async()
         await self.update_accounts()
+        await self.update_mainwindow()
+        await self.update_async()
 
 
     async def close(self, e):
         self.open = False
+        await self.update_mainwindow()
         await self.update_async()
