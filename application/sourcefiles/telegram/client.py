@@ -13,13 +13,14 @@ from ..utils import generate_qrcode
 
 load_dotenv()
 
-class UserClient(TelegramClient):
+class UserClient():
     def __init__(self, session: str | None = None, *args, **kwargs) -> None:
         self.database = SQLite()
         self.api_id: str = os.getenv("API_ID", "API_ID")
         self.api_hash: str = os.getenv("API_HASH", "API_HASH")
+        self.session = session
         self.client = TelegramClient(
-            StringSession(session), # type: ignore
+            StringSession(self.session), # type: ignore
             self.api_id, # type: ignore
             self.api_hash,
             system_version="4.16.30-vxCUSTOM",
