@@ -1,16 +1,16 @@
 import flet as ft
 
 class CustomTask(ft.Container):
-    def __init__(self) -> None:
+    def __init__(self, title: str) -> None:
         super().__init__()
         self.wait_status: ft.Border = ft.border.all(0.5, ft.colors.ORANGE)
         self.success_status: ft.Border = ft.border.all(0.5, ft.colors.GREEN)
 
         self.title = ft.Text()
-        self.title.value = "Sync my favorite messages."
+        self.title.value = title
 
         self.progress = ft.ProgressBar()
-        self.progress.value = 0
+        # self.progress.value = 1
 
         self.wrapper = ft.Column([
             self.title,

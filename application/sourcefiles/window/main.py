@@ -1,7 +1,7 @@
 import flet as ft
 
-from .task import CustomTask
 from ..database import SQLite
+from ..telegram import Manager
 
 
 class MainWindow(ft.Container):
@@ -9,6 +9,7 @@ class MainWindow(ft.Container):
         super().__init__()
         self.page = page
         self.database = SQLite()
+        self.manager = Manager(self)
 
         self.sticker = ft.Image()
         self.sticker.src = "stickers/sticker2.gif"
@@ -26,12 +27,13 @@ class MainWindow(ft.Container):
         self.button_start.text = "START"
         self.button_start.icon = ft.icons.SYNC
         self.button_start.height = 40
+        self.button_start.on_click = self.manager.sync_saved_messages
 
 
         self.wrapper_side_column = ft.Column([
-            CustomTask(),
-            CustomTask(),
-            CustomTask(),
+            # CustomTask(),
+            # CustomTask(),
+            # CustomTask(),
         ])
         self.wrapper_side_column.expand = True
         self.wrapper_side_column.alignment = ft.MainAxisAlignment.START

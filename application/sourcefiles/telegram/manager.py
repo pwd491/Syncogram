@@ -1,15 +1,28 @@
+from os import getenv
+
+from dotenv import load_dotenv
+
+
 from .client import UserClient
 from ..database import SQLite
+from .task import CustomTask
 
-class TelegramTasksManager:
-    def __init__(self) -> None:
+from flet import Text
+
+
+load_dotenv()
+
+class Manager:
+    def __init__(self, mainwindow) -> None:
         self.database = SQLite()
+        self.mainwindow = mainwindow
+        self.session: str = getenv("SESSION_STR", "SESSION_STR")
 
-        self.sender = UserClient(session="1ApWapzMBu7LeKaQf_xoTYfwP4Vyf5LTar9Y-LysxXetw4Sz8fl_WPLmx0ibXCJZJOUZWjSpJ4_SSL84rpOL6qoG4sN5bsBBezPS5AI08sYQuhrr8nMv7v3OjpEkyQ6BB_aYKzpQRRdbv3HLiwSouN_zgDW57z-b9bNCOz0XUfdL-sQ5z0aRl25qPTmTv4fdl37UAfa9Kev3MGPTY0DMnB0Famf1ob_v0kHPhrZqIo7kHZFlXnrKbjf5xWTsBu7R-JjxATLdvUA-2gmxmG5OfQFiKa7M8WqaG2YSY_GGDGuapmYq62uYp_Nm0FGS1iWZYd0h21wDU53B5lIcxAYVedswtOB7S71g=")
-        self.recipient = UserClient()
+        self.sender = UserClient(self.session)
+        # self.recipient = UserClient()
         self.tasks = self.database.get_options()
 
-    async def sync_saved_messages(self):
+    async def sync_saved_messages(self, e):
         """
         Важно учитывать:
         a. Последовательность отвеченных сообщений
@@ -20,10 +33,13 @@ class TelegramTasksManager:
         информации для каждого сообщения. Стоит коолекционировать данные, для
         следующих функций, где мы могли бы переиспользовать эти данные.
         """
-        if not self.sender.is_connected():
-            await self.sender.connect()
+        task = CustomTask("Hello world")
+        self.mainwindow.wrapper_side_column.controls.append(task)
+        await self.mainwindow.update_async()
 
-        data = await self.sender.get_messages("me")
-        print(data)
+        # if not self.sender.is_connected():
+        #     await self.sender.connect()
 
-        self.sender.disconnect()
+        # data: TotalList = await self.sender.get_messages("me")
+
+        # self.sender.disconnect()
