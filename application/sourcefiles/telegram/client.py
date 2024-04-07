@@ -14,7 +14,7 @@ from ..utils import generate_qrcode
 load_dotenv()
 
 class UserClient(TelegramClient):
-    def __init__(self, session: str = "", *args, **kwargs) -> None:
+    def __init__(self, session: str = str(), *args, **kwargs) -> None:
         self.database = SQLite()
         self.api_id: int = int(os.getenv("API_ID", "API_ID"))
         self.api_hash: str = os.getenv("API_HASH", "API_HASH")

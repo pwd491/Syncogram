@@ -37,9 +37,11 @@ class Manager:
         self.mainwindow.wrapper_side_column.controls.append(task)
         await self.mainwindow.update_async()
 
-        # if not self.sender.is_connected():
-        #     await self.sender.connect()
 
-        # data: TotalList = await self.sender.get_messages("me")
 
-        # self.sender.disconnect()
+        if not self.sender.is_connected():
+            await self.sender.connect()
+
+        data = await self.sender.get_messages("me")
+
+        self.sender.disconnect()
