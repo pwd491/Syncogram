@@ -88,7 +88,6 @@ class Manager:
         obj: CustomTask = x.get("ui_task_object")
         obj.border = ft.border.all(0.5, ft.colors.GREEN)
         await obj.update_async()
-        await self.mainwindow.update_async()
 
     async def sync_sequence_of_pinned_messages(self):
         pass
