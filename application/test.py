@@ -1,13 +1,10 @@
-from dataclasses import dataclass
+import asyncio
+from sourcefiles import Manager
 
 
-@dataclass
-class A:
-    name: str
-    age: int
-    @staticmethod
-    def example():
-        print("Name:")
+x = Manager()
 
-a = A("Sergey", 22)
-print(a.age)
+async def main():
+    await x.build()
+
+asyncio.run(main())

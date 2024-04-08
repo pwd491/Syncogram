@@ -13,29 +13,29 @@ from ..utils import generate_qrcode
 
 load_dotenv()
 
+
 class UserClient(TelegramClient):
-    def __init__(self, session: str = str(), *args, **kwargs) -> None:
+    def __init__(self, session: str = str()) -> None:
         self.database = SQLite()
         self.api_id: int = int(os.getenv("API_ID", "API_ID"))
         self.api_hash: str = os.getenv("API_HASH", "API_HASH")
         super().__init__(
-            StringSession(session),
+            StringSession(session),  # type: ignore
             self.api_id,
             self.api_hash,
             system_version="4.16.30-vxCUSTOM",
             device_model="Syncogram Application",
             app_version="0.0.1",
         )
-    
+
     def run_in_loop(self, function):
         return self.loop.run_until_complete(function)
 
     async def start_client(self):
         if not self.is_connected():
             await self.connect()
-        
-        print(await self.get_me())
 
+        print(await self.get_me())
 
     async def login_by_qrcode(self, dialog, is_primary):
         if not self.is_connected():
@@ -60,18 +60,17 @@ class UserClient(TelegramClient):
                         r = True
                     except PasswordHashInvalidError:
                         await dialog.update_async()
- 
+
         dialog.open = False
         await dialog.update_async()
         user: User | InputPeerUser = await self.get_me()
         self.database.add_user(
-            user.id, # type: ignore
-            user.first_name, # type: ignore
+            user.id,  # type: ignore
+            user.first_name,  # type: ignore
             is_primary,
-            self.session.save() # type: ignore
+            self.session.save(),  # type: ignore
         )
         self.disconnect()
-
 
     async def logout(self):
         if not self.is_connected():

@@ -13,14 +13,19 @@ from flet import Text
 load_dotenv()
 
 class Manager:
-    def __init__(self, mainwindow) -> None:
+    def __init__(self, mainwindow = None) -> None:
         self.database = SQLite()
         self.mainwindow = mainwindow
-        self.session: str = getenv("SESSION_STR", "SESSION_STR")
+        self.session: str = getenv("AUTH_TOKEN", "AUTH_TOKEN")
 
         self.sender = UserClient(self.session)
-        # self.recipient = UserClient()
-        self.tasks = self.database.get_options()
+        self.recipient = UserClient()
+
+
+    async def build(self):
+        options = self.database.get_options()[1:]
+        print(options)
+
 
     async def sync_saved_messages(self, e):
         """
