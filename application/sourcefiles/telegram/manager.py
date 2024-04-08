@@ -1,6 +1,7 @@
 from os import getenv
 
 from dotenv import load_dotenv
+import flet as ft
 
 
 from .client import UserClient
@@ -63,18 +64,31 @@ class Manager:
         следующих функций, где мы могли бы переиспользовать эти данные.
         """
         await self.build()
+
+
         # task = CustomTask("Hello world")
         # self.mainwindow.wrapper_side_column.controls.append(task)
         # await self.mainwindow.update_async()
 
 
+        test_btn = ft.TextButton("asd", on_click=self.btn)
 
+        self.mainwindow.wrapper_side_column.controls.append(test_btn)
+
+        await self.mainwindow.update_async()
         # if not self.sender.is_connected():
             # await self.sender.connect()
 
         # data = await self.sender.get_messages("me")
 
         # self.sender.disconnect()
+
+    async def btn(self, e):
+        x = self.options.get("is_sync_fav")
+        obj: CustomTask = x.get("ui_task_object")
+        obj.border = ft.border.all(0.5, ft.colors.GREEN)
+        await obj.update_async()
+        await self.mainwindow.update_async()
 
     async def sync_sequence_of_pinned_messages(self):
         pass

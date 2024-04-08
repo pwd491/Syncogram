@@ -10,7 +10,7 @@ class CustomTask(ft.Container):
         self.title.value = title
 
         self.progress = ft.ProgressBar()
-        # self.progress.value = 1
+        self.progress.value = 0
 
         self.wrapper = ft.Column([
             self.title,
