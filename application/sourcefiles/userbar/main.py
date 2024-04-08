@@ -60,7 +60,7 @@ class UserBar(ft.Container):
         self.content.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
     async def settings(self, e) -> None:
-        settings = SettingsDialog(self.page)
+        settings = SettingsDialog()
         self.page.dialog = settings
         settings.open = True
         await self.page.update_async()

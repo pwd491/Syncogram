@@ -61,6 +61,7 @@ class MainWindow(ft.Container):
         self.padding = 20
 
     async def did_mount_async(self) -> None:
+        await self.manager.build()
         await self.updateme()
 
     async def updateme(self) -> None:
