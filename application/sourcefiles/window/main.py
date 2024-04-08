@@ -27,7 +27,7 @@ class MainWindow(ft.Container):
         self.button_start.text = "START"
         self.button_start.icon = ft.icons.SYNC
         self.button_start.height = 40
-        self.button_start.on_click = self.manager.sync_saved_messages
+        self.button_start.on_click = self.manager.sync_favorite_messages
 
 
         self.wrapper_side_column = ft.Column([
