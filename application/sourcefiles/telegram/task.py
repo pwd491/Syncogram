@@ -24,7 +24,7 @@ class CustomTask(ft.Container):
         ])
 
         self.content = self.wrapper
-        self.height = 100
+        # self.height = 100
         self.bgcolor = ft.colors.BLACK12
         self.border_radius = ft.BorderRadius(10,10,10,10)
         self.border = self.wait_status
