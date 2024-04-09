@@ -12,6 +12,7 @@ SQL_CREATE_OPTIONS = """
                     user_id INTEGER REFERENCES users (user_id) UNIQUE,
                     is_sync_fav INTEGER DEFAULT 0,
                     is_sync_pin_fav INTEGER DEFAULT 0,
+                    is_sync_profile_name INTEGER DEFAULT 0,
                     PRIMARY KEY (
                         user_id
                     )
@@ -25,7 +26,8 @@ SQL_TRIGGER_DEFAULT_OPTIONS = """
                     INSERT INTO options 
                                 VALUES (
                                     NEW.user_id,
-                                    1,
+                                    0,
+                                    0,
                                     0
                                 );
                     END;

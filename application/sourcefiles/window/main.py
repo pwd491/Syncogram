@@ -27,14 +27,10 @@ class MainWindow(ft.Container):
         self.button_start.text = "START"
         self.button_start.icon = ft.icons.SYNC
         self.button_start.height = 40
-        self.button_start.on_click = self.manager.sync_favorite_messages
+        self.button_start.on_click = self.manager.start_all_tasks
 
 
-        self.wrapper_side_column = ft.Column([
-            # CustomTask(),
-            # CustomTask(),
-            # CustomTask(),
-        ])
+        self.wrapper_side_column = ft.Column([])
         self.wrapper_side_column.expand = True
         self.wrapper_side_column.alignment = ft.MainAxisAlignment.START
         self.wrapper_side_column.scroll = ft.ScrollMode.AUTO
@@ -61,12 +57,12 @@ class MainWindow(ft.Container):
         self.padding = 20
 
     async def did_mount_async(self) -> None:
-        await self.manager.build()
         await self.updateme()
 
     async def updateme(self) -> None:
         users = self.database.get_users()
         self.wrapper.controls.clear()
+        self.wrapper_side_column.controls.clear()
         if len(users) < 2:
             self.wrapper.controls.append(self.welcome)
             self.wrapper.alignment = ft.MainAxisAlignment.CENTER
@@ -74,5 +70,6 @@ class MainWindow(ft.Container):
 
         self.wrapper.controls.append(self.wrapper_side)
         self.wrapper.controls.append(self.wrapper_footer)
+        await self.manager.build()
 
         await self.update_async()

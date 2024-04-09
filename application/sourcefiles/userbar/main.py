@@ -12,7 +12,8 @@ class UserBar(ft.Container):
         super().__init__()
         self.database = SQLite()
         self.page: ft.Page = page
-        self.generate_accounts = UIGenerateAccounts(self.page, update_mainwin)
+        self.update_mainwin = update_mainwin
+        self.generate_accounts = UIGenerateAccounts(self.page, self.update_mainwin)
         self.about = AboutApplication()
 
         # Buttons
@@ -42,7 +43,6 @@ class UserBar(ft.Container):
                 self.wrapper_settings,
             ]
         )
-        
 
         # Main block like canvas to display controls
         self.content = ft.Column(
@@ -60,7 +60,7 @@ class UserBar(ft.Container):
         self.content.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
     async def settings(self, e) -> None:
-        settings = SettingsDialog()
+        settings = SettingsDialog(self.update_mainwin)
         self.page.dialog = settings
         settings.open = True
         await self.page.update_async()

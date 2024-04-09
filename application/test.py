@@ -1,37 +1,21 @@
+import flet as ft
 
-from httpx import options
-from sourcefiles import SQLite
+c1 = ft.Checkbox(
+            label="Sync my favorite messages",
+            value=True,
+            disabled=True
+        )
+c2 = ft.Checkbox(
+            label="Save the sequence of pinned messages",
+            value=True,
+            disabled=True
+        )
+c3 = ft.Checkbox(
+            label="Sync my profile first name and second name.",
+            value=False,
+            disabled=False
+        )
 
-database = SQLite()
+x: list[ft.Checkbox] = [c1, c2, c3].sort(key=lambda a: a.value is True)
 
-opt_list = database.get_options()[1:]
-
-class M:
-    def __init__(self) -> None:
-        self.options = {
-            "is_sync_fav": {
-                "function": self.sync_fav_messages,
-                "status": bool()
-            },
-            "is_sync_pin_fav": {
-                "function": self.sync_sequence_of_pinned_messages,
-                "status": bool()
-            }
-        }
-
-    async def sync_fav_messages(self):
-        pass
-
-    async def sync_sequence_of_pinned_messages(self):
-        pass
-
-    def test(self):
-        list_of_options = database.get_options()[1:]
-        
-        for n, option in enumerate(self.options.items()):
-            option[1].update({"status": bool(list_of_options[n])})
-
-        print(self.options)
-
-x = M()
-x.test()
+print(x)
