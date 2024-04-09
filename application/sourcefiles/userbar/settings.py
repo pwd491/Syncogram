@@ -15,12 +15,14 @@ class SettingsDialog(ft.AlertDialog):
         self.c1 = ft.Checkbox(
             label="Sync my favorite messages",
             value=bool(self.options[0]),
-            disabled=True
+            disabled=True,
+            tooltip="It will be available in the next updates"
         )
         self.c2 = ft.Checkbox(
             label="Save the sequence of pinned messages",
             value=bool(self.options[1]),
-            disabled=True
+            disabled=True,
+            tooltip="It will be available in the next updates"
         )
         self.c3 = ft.Checkbox(
             label="Sync my profile first name and second name.",

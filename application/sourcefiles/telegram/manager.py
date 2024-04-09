@@ -25,17 +25,20 @@ class Manager:
             "is_sync_fav": {
                 "title": "Sync my favorite messages between accounts.",
                 "function": self.sync_favorite_messages,
-                "status": bool()
+                "status": bool(),
+                "ui_task_object": CustomTask
             },
             "is_sync_pin_fav": {
                 "title": "Synchronize the sequence of pinned messages in your favorite messages.",
                 "function": self.sync_sequence_of_pinned_messages,
-                "status": bool()
+                "status": bool(),
+                "ui_task_object": CustomTask
             },
             "is_sync_profile_name": {
                 "title": "Synchronize the first and last name of the profile.",
                 "function": self.sync_profile_first_name_and_second_name,
-                "status": bool()
+                "status": bool(),
+                "ui_task_object": CustomTask
             }
         }
 
@@ -94,11 +97,11 @@ class Manager:
             last_name = data.last_name
             await self.recepient(UpdateProfileRequest(first_name, last_name))
         except Exception as e:
-            ui_task_object.progress.value = 1
+            ui_task_object.progress.value = 0
             ui_task_object.header.controls.pop(-1)
-            ui_task_object.header.controls.append(ft.Icon(ft.icons.ERROR, color=ft.colors.RED))
+            ui_task_object.header.controls.append(ft.Icon(ft.icons.ERROR, color=ft.colors.RED, tooltip=str(e)))
             ui_task_object.border = ft.border.all(0.5, ft.colors.RED)
-            return e, await ui_task_object.update_async()
+            return await ui_task_object.update_async()
 
 
         self.sender.disconnect()
