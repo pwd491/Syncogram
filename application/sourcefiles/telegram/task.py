@@ -8,6 +8,7 @@ class CustomTask(ft.Container):
 
         self.title = ft.Text()
         self.title.value = title
+        self.title.width = 450
 
         self.progress = ft.ProgressBar()
         self.progress.value = 0
