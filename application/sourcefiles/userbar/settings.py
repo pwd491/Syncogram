@@ -9,8 +9,8 @@ class SettingsDialog(ft.AlertDialog):
         self.update_mainwin = update_mainwin
 
         """!!!"""
-        self.options: list[int] = self.database.get_options()[1:]
-        self.options: list[int] = self.options if self.options is not None else (0,0,0) # type: ignore
+        self.options: list[int] = self.database.get_options()
+        self.options: list[int] = self.options[1:] if self.options is not None else (0,0,0) # type: ignore
 
         self.c1 = ft.Checkbox(
             label="Sync my favorite messages",
