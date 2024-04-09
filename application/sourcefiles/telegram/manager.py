@@ -28,12 +28,12 @@ class Manager:
                 "status": bool()
             },
             "is_sync_pin_fav": {
-                "title": "Sync sequence of pinned messages in favorite messages.",
+                "title": "Synchronize the sequence of pinned messages in your favorite messages.",
                 "function": self.sync_sequence_of_pinned_messages,
                 "status": bool()
             },
             "is_sync_profile_name": {
-                "title": "Sync profile first name and second name.",
+                "title": "Synchronize the first and last name of the profile.",
                 "function": self.sync_profile_first_name_and_second_name,
                 "status": bool()
             }
@@ -79,30 +79,35 @@ class Manager:
 
 
     async def sync_profile_first_name_and_second_name(self, ui_task_object: CustomTask):
-        
-        for i in range(0, 100):
-
-            ui_task_object.progress.value = i
-            await ui_task_object.progress.update_async()
-
-        await sleep(2)
-        # self.sender = self.client(*self.database.get_user_by_status(1))
-        # self.recepient = self.client(*self.database.get_user_by_status(0))
-        # if not (self.sender.is_connected() and self.recepient.is_connected()):
-        #     await self.sender.connect()
-        #     await self.recepient.connect()
-
-        # data: User | InputPeerUser = await self.sender.get_me()
-        # first_name = data.first_name
-        # last_name = data.last_name
-        
-        # await self.recepient(UpdateProfileRequest(first_name, last_name))
-
-        # self.sender.disconnect()
-        # self.recepient.disconnect()
-        # ui_task_object.progress.value = 100
-        ui_task_object.border = ft.border.all(0.5, ft.colors.GREEN)
+        ui_task_object.progress.value = None
         await ui_task_object.progress.update_async()
+
+        self.sender = self.client(*self.database.get_user_by_status(1))
+        self.recepient = self.client(*self.database.get_user_by_status(0))
+        if not (self.sender.is_connected() and self.recepient.is_connected()):
+            await self.sender.connect()
+            await self.recepient.connect()
+
+        try:
+            data: User | InputPeerUser = await self.sender.get_me()
+            first_name = data.first_name
+            last_name = data.last_name
+            await self.recepient(UpdateProfileRequest(first_name, last_name))
+        except Exception as e:
+            ui_task_object.progress.value = 1
+            ui_task_object.header.controls.pop(-1)
+            ui_task_object.header.controls.append(ft.Icon(ft.icons.ERROR, color=ft.colors.RED))
+            ui_task_object.border = ft.border.all(0.5, ft.colors.RED)
+            return e, await ui_task_object.update_async()
+
+
+        self.sender.disconnect()
+        self.recepient.disconnect()
+        ui_task_object.progress.value = 1
+        ui_task_object.header.controls.pop(-1)
+        ui_task_object.header.controls.append(ft.Icon(ft.icons.TASK_ALT, color=ft.colors.GREEN))
+        ui_task_object.border = ft.border.all(0.5, ft.colors.GREEN)
+        await ui_task_object.update_async()
 
     async def start_all_tasks(self, e):
         for option in self.options.items():

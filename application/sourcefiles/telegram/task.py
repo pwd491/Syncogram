@@ -12,8 +12,12 @@ class CustomTask(ft.Container):
         self.progress = ft.ProgressBar()
         self.progress.value = 0
 
+        self.header = ft.Row()
+        self.header.controls = [self.title, ft.Icon(ft.icons.QUERY_BUILDER, color=ft.colors.ORANGE_500)]
+        self.header.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+
         self.wrapper = ft.Column([
-            self.title,
+            self.header,
             ft.Divider(opacity=0),
             self.progress
         ])
