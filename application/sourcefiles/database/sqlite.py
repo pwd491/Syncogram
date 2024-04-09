@@ -30,6 +30,11 @@ class SQLite:
             with closing(connect.cursor()) as cursor:
                 return cursor.execute("SELECT session FROM users WHERE user_id = ?", (account_id,)).fetchone()
 
+    def get_user_by_status(self, is_primary: int):
+        with self.database as connect:
+            with closing(connect.cursor()) as cursor:
+                return cursor.execute("SELECT session FROM users WHERE is_primary = ?", (is_primary,)).fetchone()
+
     def add_user(self, user_id: int, name: str, is_primary: int, session: str) -> bool:
         with self.database as connect:
             with closing(connect.cursor()) as cursor:

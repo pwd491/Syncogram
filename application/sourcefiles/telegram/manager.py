@@ -1,8 +1,10 @@
 from os import getenv
 from asyncio import sleep
 
+from telethon.tl.functions.account import UpdateProfileRequest
 from dotenv import load_dotenv
 import flet as ft
+from telethon.tl.types import InputPeerUser, User
 
 
 from .client import UserClient
@@ -16,9 +18,8 @@ class Manager:
         self.database = SQLite()
         self.mainwindow = mainwindow
         self.session: str = getenv("AUTH_TOKEN", "AUTH_TOKEN")
-
-        self.sender = UserClient()
-        self.recipient = UserClient()
+        self.client = UserClient
+        
 
         self.options = {
             "is_sync_fav": {
@@ -68,17 +69,7 @@ class Manager:
         информации для каждого сообщения. Стоит коолекционировать данные, для
         следующих функций, где мы могли бы переиспользовать эти данные.
         """
-        print("Синхронизация личных сооьщений")
-        await sleep(3)
-        ui_task_object.border = ft.Border = ft.border.all(0.5, ft.colors.GREEN)
-        await ui_task_object.update_async()
 
-        # if not self.sender.is_connected():
-            # await self.sender.connect()
-
-        # data = await self.sender.get_messages("me")
-
-        # self.sender.disconnect()
 
     async def sync_sequence_of_pinned_messages(self, ui_task_object: CustomTask):
         print("Синхронизация закрепов")
@@ -88,15 +79,25 @@ class Manager:
 
 
     async def sync_profile_first_name_and_second_name(self, ui_task_object: CustomTask):
-        # if not self.sender.is_connected():
-        #     await self.sender.connect()
+        ui_task_object.progress.value = 1
+        await ui_task_object.update_async()
 
-        # data = await self.sender.get_messages("me")
+        self.sender = self.client(*self.database.get_user_by_status(1))
+        self.recepient = self.client(*self.database.get_user_by_status(0))
+        if not (self.sender.is_connected() and self.recepient.is_connected()):
+            await self.sender.connect()
+            await self.recepient.connect()
 
-        # self.sender.disconnect()
-        print("Синхронизация имени и фамилии")
-        await sleep(3)
-        ui_task_object.border = ft.Border = ft.border.all(0.5, ft.colors.GREEN)
+        data: User | InputPeerUser = await self.sender.get_me()
+        first_name = data.first_name
+        last_name = data.last_name
+        
+        await self.recepient(UpdateProfileRequest(first_name, last_name))
+
+        self.sender.disconnect()
+        self.recepient.disconnect()
+        ui_task_object.progress.value = 100
+        ui_task_object.border = ft.border.all(0.5, ft.colors.GREEN)
         await ui_task_object.update_async()
 
     async def start_all_tasks(self, e):
