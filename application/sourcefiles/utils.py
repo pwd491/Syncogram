@@ -7,6 +7,7 @@ import qrcode
 
 from screeninfo import get_monitors
 
+
 def screensize() -> tuple[int, int] | tuple[Literal[1920], Literal[1080]]:
     """
     Returns the primary resolution of the monitor, 
@@ -54,7 +55,7 @@ async def check_newest_version(page: ft.Page, __version__) -> None:
         wrapper = ft.Row([upper, btn])
         wrapper.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
         snack = ft.SnackBar(wrapper)
-        snack.duration = 15000
+        snack.duration = 10000
         snack.bgcolor = ft.colors.BLACK87
         page.snack_bar = snack
         page.snack_bar.open = True

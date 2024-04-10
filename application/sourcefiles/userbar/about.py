@@ -1,16 +1,13 @@
-from configparser import ConfigParser
-
 import flet as ft
 
-config = ConfigParser()
-config.read("config.ini")
+from ..config import APP_NAME
+from ..config import APP_VERSION
+from ..config import APP_REPOSITORY_GIT_PULL
 
 class AboutApplication(ft.Text):
     def __init__(self) -> None:
         super().__init__()
-        self.version: str = config.get("APP", "APP_VERSION")
-
-        self.value = f"If you found a bug, you can send feedback.\nSyncogram v{self.version}"
+        self.value = f"If you found a bug, you can send feedback.\n{APP_NAME} v{APP_VERSION}"
         self.size = 9
         self.opacity = .5
         self.text_align = ft.TextAlign.CENTER
@@ -19,7 +16,7 @@ class AboutApplication(ft.Text):
 class FeedBack(ft.TextButton):
     def __init__(self) -> None:
         super().__init__()
-        self.url = config.get("REPO", "LINK_PULL_REQUEST")
+        self.url = APP_REPOSITORY_GIT_PULL
         self.style = ft.ButtonStyle()
         self.content = ft.Text()
         self.content.value = "Send feedback"

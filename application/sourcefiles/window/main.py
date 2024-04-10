@@ -1,5 +1,6 @@
 import flet as ft
 
+from .sticker import STICKER_BASE64
 from ..database import SQLite
 from ..telegram import Manager
 
@@ -12,7 +13,7 @@ class MainWindow(ft.Container):
         self.manager = Manager(self)
 
         self.sticker = ft.Image()
-        self.sticker.src = "stickers/sticker2.gif"
+        self.sticker.src_base64 = STICKER_BASE64
         self.sticker.width = 200
         self.sticker_text = ft.Text("To get started, log in to at least 2 accounts")
 
