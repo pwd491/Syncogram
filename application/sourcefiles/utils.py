@@ -2,7 +2,7 @@ import base64
 from io import BytesIO
 from typing import Literal
 
-from flet import colors
+import flet as ft
 import qrcode
 
 from screeninfo import get_monitors
@@ -19,13 +19,13 @@ def screensize() -> tuple[int, int] | tuple[Literal[1920], Literal[1080]]:
 
 def clr_on_secondary_container(platform_brightness, theme_mode,):
     if platform_brightness == "dark" and theme_mode == "system":
-        return colors.with_opacity(0.2, colors.ON_SECONDARY_CONTAINER,)
-    return colors.with_opacity(0.5, colors.ON_SECONDARY_CONTAINER,)
+        return ft.colors.with_opacity(0.2, ft.colors.ON_SECONDARY_CONTAINER,)
+    return ft.colors.with_opacity(0.5, ft.colors.ON_SECONDARY_CONTAINER,)
 
 def clr_secondary_container(platform_brightness, theme_mode,):
     if platform_brightness == "dark" and theme_mode == "system":
-        return colors.with_opacity(0.1, colors.SECONDARY_CONTAINER,)
-    return colors.with_opacity(1, colors.SECONDARY_CONTAINER,)
+        return ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER,)
+    return ft.colors.with_opacity(1, ft.colors.SECONDARY_CONTAINER,)
 
 def generate_qrcode(url):
     buffered = BytesIO()
@@ -38,3 +38,24 @@ def generate_qrcode(url):
     img = QRcode.make_image(back_color=(40,47,54), fill_color=(255,255,255))
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+async def check_newest_version(page: ft.Page, __version__) -> None:
+    __newest__ = "0.0.2"
+    if __version__ != __newest__:
+        icon = ft.Icon()
+        icon.name = ft.icons.BROWSER_UPDATED
+        text = ft.Text()
+        text.value = "The latest version is available. {} → {}".format(__version__, __newest__)
+        text.color = ft.colors.WHITE
+
+        upper = ft.Row([icon, text])
+
+        btn = ft.FilledButton("Download")
+        wrapper = ft.Row([upper, btn])
+        wrapper.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        snack = ft.SnackBar(wrapper)
+        snack.duration = 15000
+        snack.bgcolor = ft.colors.BLACK87
+        page.snack_bar = snack
+        page.snack_bar.open = True
+        await page.update_async()

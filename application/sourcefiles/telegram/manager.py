@@ -77,6 +77,9 @@ class Manager:
     async def sync_sequence_of_pinned_messages(self, ui_task_object: CustomTask):
         print("Синхронизация закрепов")
         await sleep(3)
+        ui_task_object.progress.value = 1
+        ui_task_object.header.controls.pop(-1)
+        ui_task_object.header.controls.append(ft.Icon(ft.icons.TASK_ALT, color=ft.colors.GREEN))
         ui_task_object.border = ft.Border = ft.border.all(0.5, ft.colors.GREEN)
         await ui_task_object.update_async()
 

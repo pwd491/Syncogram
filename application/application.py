@@ -6,6 +6,7 @@ import flet as ft
 from sourcefiles import UserBar
 from sourcefiles import MainWindow
 from sourcefiles.utils import screensize
+from sourcefiles.utils import check_newest_version
 
 
 config = ConfigParser()
@@ -22,7 +23,6 @@ async def application(page: ft.Page) -> None:
     page.window_top = SCREENHEIGHT / 8
     page.window_left = (SCREENWIDTH * 0.5) / 2
 
-
     mainwindow = MainWindow(page)
     userbar = UserBar(page, mainwindow.updateme)
 
@@ -36,6 +36,7 @@ async def application(page: ft.Page) -> None:
         )
     )
 
+    await check_newest_version(page, __version__)
     await page.update_async()
 
 
