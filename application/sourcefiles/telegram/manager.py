@@ -1,10 +1,12 @@
 from os import getenv
 from asyncio import sleep
 
+from telethon import TelegramClient
 from telethon.tl.functions.account import UpdateProfileRequest
+from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.types import InputPeerUser, User, UserFull
 from dotenv import load_dotenv
 import flet as ft
-from telethon.tl.types import InputPeerUser, User
 
 
 from .client import UserClient
@@ -35,7 +37,7 @@ class Manager:
                 "ui_task_object": CustomTask
             },
             "is_sync_profile_name": {
-                "title": "Synchronize the first and last name of the profile.",
+                "title": "Synchronize the first name, last name and biography of the profile.",
                 "function": self.sync_profile_first_name_and_second_name,
                 "status": bool(),
                 "ui_task_object": CustomTask
@@ -95,25 +97,21 @@ class Manager:
             await self.recepient.connect()
 
         try:
-            data: User | InputPeerUser = await self.sender.get_me()
-            first_name = data.first_name
-            last_name = data.last_name
-            await self.recepient(UpdateProfileRequest(first_name, last_name))
+            user: UserFull = await self.sender(GetFullUserRequest("me"))
+            first_name = user.users[0].first_name
+            last_name = user.users[0].last_name
+            bio = user.full_user.about 
+
+            await self.recepient(UpdateProfileRequest(first_name, last_name, bio))
         except Exception as e:
-            ui_task_object.progress.value = 0
-            ui_task_object.header.controls.pop(-1)
-            ui_task_object.header.controls.append(ft.Icon(ft.icons.ERROR, color=ft.colors.RED, tooltip=str(e)))
-            ui_task_object.border = ft.border.all(0.5, ft.colors.RED)
-            return await ui_task_object.update_async()
+            return await ui_task_object.unsuccess(e)
 
 
         self.sender.disconnect()
         self.recepient.disconnect()
-        ui_task_object.progress.value = 1
-        ui_task_object.header.controls.pop(-1)
-        ui_task_object.header.controls.append(ft.Icon(ft.icons.TASK_ALT, color=ft.colors.GREEN))
-        ui_task_object.border = ft.border.all(0.5, ft.colors.GREEN)
-        await ui_task_object.update_async()
+        await ui_task_object.success()
+
+
 
     async def start_all_tasks(self, e):
         for option in self.options.items():

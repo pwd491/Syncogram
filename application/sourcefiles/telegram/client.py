@@ -5,7 +5,7 @@ from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.custom.qrlogin import QRLogin
 from telethon.tl.types import InputPeerUser, User
-
+from telethon.tl.functions.users import GetFullUserRequest
 from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
 from dotenv import load_dotenv
 
@@ -33,9 +33,8 @@ class UserClient(TelegramClient):
         if not self.is_connected():
             await self.connect()
 
-        x = await self.get_me()
-        await x.first_name
-        
+        user = await self(GetFullUserRequest("me"))
+        print()
 
     async def login_by_qrcode(self, dialog, is_primary):
         if not self.is_connected():

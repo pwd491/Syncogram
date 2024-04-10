@@ -25,7 +25,7 @@ class SettingsDialog(ft.AlertDialog):
             tooltip="It will be available in the next updates"
         )
         self.c3 = ft.Checkbox(
-            label="Sync my profile first name and second name.",
+            label="Sync my profile first name, last name and biography.",
             value=bool(self.options[2]),
             disabled=False
         )

@@ -1,6 +1,10 @@
 from sourcefiles import SQLite
+from sourcefiles import UserClient
+import asyncio
 
+x = UserClient()
 
-x = SQLite()
+async def main():
+    await x.start_client()
 
-print(*x.get_user_by_status(1))
+asyncio.run(main())
