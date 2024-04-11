@@ -1,6 +1,6 @@
 import flet as ft
 
-from .sticker import STICKER_BASE64
+from .stickers import DUCK_STICKER_HI
 from ..database import SQLite
 from ..telegram import Manager
 
@@ -13,7 +13,7 @@ class MainWindow(ft.Container):
         self.manager = Manager(self)
 
         self.sticker = ft.Image()
-        self.sticker.src_base64 = STICKER_BASE64
+        self.sticker.src_base64 = DUCK_STICKER_HI
         self.sticker.width = 200
         self.sticker_text = ft.Text("To get started, log in to at least 2 accounts")
 

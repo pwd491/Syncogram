@@ -2,6 +2,7 @@ import flet as ft
 
 from sourcefiles import UserBar
 from sourcefiles import MainWindow
+from sourcefiles import WelcomeScreenAnimation
 from sourcefiles.utils import screensize
 from sourcefiles.utils import check_newest_version
 from sourcefiles.config import (
@@ -19,16 +20,21 @@ async def application(page: ft.Page) -> None:
     page.window_height = page.window_min_height = SCREENHEIGHT * 0.7
     page.window_top = SCREENHEIGHT / 8
     page.window_left = (SCREENWIDTH * 0.5) / 2
-
-
+    
     mainwindow = MainWindow(page)
     userbar = UserBar(page, mainwindow.updateme)
+    greetings = WelcomeScreenAnimation(page)
+
+
+    await page.add_async(greetings)
+    await page.remove_async(greetings)
+
 
     await page.add_async(
         ft.Row(
             [
                 userbar,
-                mainwindow
+                mainwindow,
             ],
             expand=True,
         )

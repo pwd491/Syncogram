@@ -1,3 +1,4 @@
 from .main import MainWindow
+from .greetings import WelcomeScreenAnimation
 from ..telegram.task import CustomTask
-from .sticker import STICKER_BASE64
+from .stickers import DUCK_STICKER_HI, DUCK_STICKER_IT
