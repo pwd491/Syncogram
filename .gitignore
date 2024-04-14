@@ -128,7 +128,7 @@ ENV/
 env.bak/
 venv.bak/
 venv*
-*enviroments.py
+*environments.py
 
 # Sens data
 *.session

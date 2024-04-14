@@ -9,7 +9,7 @@ from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
 
 from ..database import SQLite
 from ..utils import generate_qrcode
-from .enviroments import API_ID, API_HASH
+from .environments import API_ID, API_HASH
 
 class UserClient(TelegramClient):
     def __init__(self, session: str = str()) -> None:

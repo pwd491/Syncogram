@@ -22,7 +22,7 @@ jobs:
       steps:
         - name: Clone GitHub Repository
           uses: actions/checkout@v3
-        - name: Create Telegram Enviroments Data
+        - name: Create Telegram Environments Data
           run: |
             echo -ne "API_ID=${{ secrets.API_ID }}\n" > ${{ env.ENV_FILE_PATH }};
             echo -ne "API_HASH='${{ secrets.API_HASH }}'\n" >> ${{ env.ENV_FILE_PATH }};
@@ -55,7 +55,7 @@ jobs:
     steps:
       - name: Clone GitHub Repository
         uses: actions/checkout@v3
-      - name: Create Telegram Enviroments Data
+      - name: Creates Telegram Environments Data
         run: |
           echo -ne "API_ID=${{ secrets.API_ID }}\n" > ${{ env.ENV_FILE_PATH }};
           echo -ne "API_HASH='${{ secrets.API_HASH }}'\n" >> ${{ env.ENV_FILE_PATH }};
@@ -84,9 +84,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Clone GitHub Repo
+      - name: Clone GitHub Repository
         uses: actions/checkout@v3
-      - name: Create Telegram Enviroments Data
+      - name: Create Telegram Environments Data
         run: |
           echo -ne "API_ID=${{ secrets.API_ID }}\n" > ${{ env.ENV_FILE_PATH }};
           echo -ne "API_HASH='${{ secrets.API_HASH }}'\n" >> ${{ env.ENV_FILE_PATH }};
@@ -124,10 +124,10 @@ jobs:
       with:
         filename: 'config.json'
 
-    - name: Create Artifacts dir
+    - name: Creates Artifacts dir
       run: mkdir artifacts
 
-    - name: Download Artifacts
+    - name: Downloads Artifacts
       uses: actions/download-artifact@v3
       with:
         path: artifacts
