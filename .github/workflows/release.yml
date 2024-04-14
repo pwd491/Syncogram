@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Build MacOS App
+name: Builds New Release of Application
 
 on:
   push:
@@ -15,43 +15,42 @@ env:
 
 jobs:
       
-  # build_macos:
-  #     name: Build MacOS App
-  #     runs-on: macos-latest
+  build_macos:
+      name: Build MacOS App
+      runs-on: macos-latest
 
-  #     steps:
-  #       - name: Clone GitHub Repository
-  #         uses: actions/checkout@v3
-  #       - name: Create Telegram Enviroments Data
-  #         run: |
-  #           echo -ne "API_ID=${{ secrets.API_ID }}\n" > ${{ env.ENV_FILE_PATH }};
-  #           echo -ne "API_HASH=${{ secrets.API_HASH }}\n" >> ${{ env.ENV_FILE_PATH }};
+      steps:
+        - name: Clone GitHub Repository
+          uses: actions/checkout@v3
+        - name: Create Telegram Enviroments Data
+          run: |
+            echo -ne "API_ID=${{ secrets.API_ID }}\n" > ${{ env.ENV_FILE_PATH }};
+            echo -ne "API_HASH='${{ secrets.API_HASH }}'\n" >> ${{ env.ENV_FILE_PATH }};
 
-  #       - run: ls -la ./application/sourcefiles/telegram/; cat ./application/sourcefiles/telegram/environments.py 
-        
-  #       - name: JSON to variables
-  #         uses: rgarcia-phi/json-to-variables@v1.1.0
-  #         with:
-  #           filename: 'config.json'
-  #       - name: Install Dependencies
-  #         run: pip install -r requirements.txt
-  #       - name: Start Build Application
-  #         run: |
-  #           flet pack application/application.py \
-  #           --product-name "${{ env.json_APP_NAME }} Application" \
-  #           --product-version "${{ env.json_APP_VERSION }}" \
-  #           --name "${{ env.json_APP_NAME }}" \
-  #           --icon "./application/assets/psd/telegram.png" \
-  #       - name: Upload Artifact
-  #         uses: actions/upload-artifact@v3
-  #         with:
-  #           name: "${{ env.json_APP_NAME }}_macos_bin"
-  #           path: dist/${{ env.json_APP_NAME }}.app
+        - run: ls -la ./application/sourcefiles/telegram/; cat ${{ env.ENV_FILE_PATH }}; 
+            
+        - name: JSON to variables
+          uses: rgarcia-phi/json-to-variables@v1.1.0
+          with:
+            filename: 'config.json'
+        - name: Install Dependencies
+          run: pip install -r requirements.txt
+        - name: Start Build Application
+          run: |
+            flet pack application/application.py \
+            --product-name "${{ env.json_APP_NAME }} Application" \
+            --product-version "${{ env.json_APP_VERSION }}" \
+            --name "${{ env.json_APP_NAME }}" \
+            --icon "./application/assets/psd/telegram.png" \
+        - name: Upload Artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: "${{ env.json_APP_NAME }}_macos_bin"
+            path: dist/${{ env.json_APP_NAME }}.app
   
   build_linux:
     name: Build Linux App
     runs-on: ubuntu-latest
-    # needs: build_macos
 
     steps:
       - name: Clone GitHub Repository
@@ -80,42 +79,41 @@ jobs:
           name: "${{ env.json_APP_NAME }}_linux_bin"
           path: dist/${{ env.json_APP_NAME }}
 
-  # build_win:
-  #   name: Build Windows App
-  #   runs-on: windows-latest
-  #   needs: build_linux
+  build_win:
+    name: Build Windows App
+    runs-on: windows-latest
 
-  #   steps:
-  #     - name: Clone GitHub Repo
-  #       uses: actions/checkout@v3
-  #     - name: Create Telegram Enviroments Data
-  #       run: |
-  #         echo -ne "API_ID=${{ secrets.API_ID }}\n" > ${{ env.ENV_FILE_PATH }};
-  #         echo -ne "API_HASH=${{ secrets.API_HASH }}\n" >> ${{ env.ENV_FILE_PATH }};
-  #     - name: JSON to variables
-  #       uses: rgarcia-phi/json-to-variables@v1.1.0
-  #       with:
-  #         filename: 'config.json'
-  #     - name: Install Dependencies
-  #       run: pip install -r requirements.txt
-  #     - name: Start Build Application
-  #       run: | 
-  #         flet pack application/application.py \
-  #         --product-name "${{ env.json_APP_NAME }} Application" \
-  #         --product-version "${{ env.json_APP_VERSION }}" \
-  #         --name "${{ env.json_APP_NAME }}" \
-  #         --icon "./application/assets/psd/telegram.png" \
-  #       shell: bash
-  #     - name: Upload Artifact
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: "${{ env.json_APP_NAME }}_windows_bin"
-  #         path: dist/${{ env.json_APP_NAME }}.exe
+    steps:
+      - name: Clone GitHub Repo
+        uses: actions/checkout@v3
+      - name: Create Telegram Enviroments Data
+        run: |
+          echo -ne "API_ID=${{ secrets.API_ID }}\n" > ${{ env.ENV_FILE_PATH }};
+          echo -ne "API_HASH='${{ secrets.API_HASH }}'\n" >> ${{ env.ENV_FILE_PATH }};
+      - name: JSON to variables
+        uses: rgarcia-phi/json-to-variables@v1.1.0
+        with:
+          filename: 'config.json'
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+      - name: Start Build Application
+        run: | 
+          flet pack application/application.py \
+          --product-name "${{ env.json_APP_NAME }} Application" \
+          --product-version "${{ env.json_APP_VERSION }}" \
+          --name "${{ env.json_APP_NAME }}" \
+          --icon "./application/assets/psd/telegram.png" \
+        shell: bash
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "${{ env.json_APP_NAME }}_windows_bin"
+          path: dist/${{ env.json_APP_NAME }}.exe
 
   release_project:
     name: Release Application
     runs-on: ubuntu-latest
-    needs: build_linux
+    needs: [build_linux, build_macos, build_win]
 
     steps:
     - name: Clone GitHub Repo
@@ -138,12 +136,12 @@ jobs:
       run: ls -R && pwd
       working-directory: artifacts
 
-    # - name: Archive MacOS Application
-    #   uses: thedoctor0/zip-release@master
-    #   with:
-    #     directory: "./artifacts"
-    #     filename: "./${{ env.json_APP_NAME }}_macos_binary"
-    #     path: "${{ env.json_APP_NAME }}_macos_bin"
+    - name: Archive MacOS Application
+      uses: thedoctor0/zip-release@master
+      with:
+        directory: "./artifacts"
+        filename: "./${{ env.json_APP_NAME }}_macos_binary"
+        path: "${{ env.json_APP_NAME }}_macos_bin"
       
     - name: Archive Linux Application
       uses: thedoctor0/zip-release@master
@@ -152,12 +150,12 @@ jobs:
         filename: "../${{ env.json_APP_NAME }}_linux_binary"
         path: "."
 
-    # - name: Archive Windows Application
-    #   uses: thedoctor0/zip-release@master
-    #   with:
-    #     directory: "./artifacts/${{ env.json_APP_NAME }}_windows_bin"
-    #     filename: "../${{ env.json_APP_NAME }}_windows_binary"
-        # path: "."
+    - name: Archive Windows Application
+      uses: thedoctor0/zip-release@master
+      with:
+        directory: "./artifacts/${{ env.json_APP_NAME }}_windows_bin"
+        filename: "../${{ env.json_APP_NAME }}_windows_binary"
+        path: "."
     
     - run: ls -la ./artifacts && pwd
   
@@ -173,15 +171,15 @@ jobs:
 
 
     - run: pwd && ls -la ./artifacts 
-    # - name: Upload MacOS Release
-    #   uses: actions/upload-release-asset@v1.0.2
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: ${{ steps.create-new-release.outputs.upload_url }}
-    #     asset_path: "./artifacts/${{ env.json_APP_NAME }}_macos_binary.zip"
-    #     asset_name: "${{ env.json_APP_NAME }}-MacOS-Binary.zip"
-    #     asset_content_type: application/zip
+    - name: Upload MacOS Release
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+        asset_path: "./artifacts/${{ env.json_APP_NAME }}_macos_binary.zip"
+        asset_name: "${{ env.json_APP_NAME }}-MacOS-Binary.zip"
+        asset_content_type: application/zip
 
     - name: Upload Linux Release
       uses: actions/upload-release-asset@v1.0.2
@@ -193,12 +191,12 @@ jobs:
         asset_name: "${{ env.json_APP_NAME }}-Linux-Binary.zip"
         asset_content_type: application/zip
 
-    # - name: Upload Windows Release
-    #   uses: actions/upload-release-asset@v1.0.2
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     upload_url: ${{ steps.create-new-release.outputs.upload_url }}
-    #     asset_path: "./artifacts/${{ env.json_APP_NAME }}_windows_binary.zip"
-    #     asset_name: "${{ env.json_APP_NAME }}-Windows-Binary.zip"
-    #     asset_content_type: application/zip
+    - name: Upload Windows Release
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+        asset_path: "./artifacts/${{ env.json_APP_NAME }}_windows_binary.zip"
+        asset_name: "${{ env.json_APP_NAME }}-Windows-Binary.zip"
+        asset_content_type: application/zip

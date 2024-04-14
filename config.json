@@ -1,0 +1,18 @@
+{
+    "APP": {
+        "NAME": "Syncogram",
+        "VERSION": "0.0.10",
+        "VERSION_IS_ALPHA": "True",
+        "VERSION_IS_BETA": "False"
+    },
+    "GIT": {
+        "REPO_LINK": "https://github.com/pwd491/syncogram.git",
+        "REPO_ISSUES": "https://github.com/pwd491/syncogram/issues",
+        "BRANCH_MAIN": "master",
+        "BRANCH_SECOND": "dev"
+    },
+    "AUTHOR": {
+        "NAME": "Sergey Degtyar",
+        "TG_LINK": "https://t.me/@sergeydegtyar"
+    }
+}
