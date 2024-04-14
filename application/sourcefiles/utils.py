@@ -54,7 +54,7 @@ async def check_newest_version(page: ft.Page, __version__) -> None:
         icon.name = ft.icons.BROWSER_UPDATED
         text = ft.Text()
         text.value = "The latest version is available. {} → {}".format(
-            __version__, 
+            __version__,
             __newest__
         )
         text.color = ft.colors.WHITE
