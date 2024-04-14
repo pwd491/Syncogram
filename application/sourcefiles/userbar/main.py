@@ -65,5 +65,9 @@ class UserBar(ft.Container):
         settings.open = True
         await self.page.update_async()
 
-    async def did_mount_async(self) -> None:
+    async def generate_accounts_callback(self):
         await self.generate_accounts.generate()
+        
+
+    def did_mount(self) -> None:
+        self.page.run_task(self.generate_accounts_callback)

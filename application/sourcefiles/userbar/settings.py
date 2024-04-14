@@ -1,6 +1,6 @@
-from types import NoneType
-from ..database import SQLite
 import flet as ft
+
+from ..database import SQLite
 
 class SettingsDialog(ft.AlertDialog):
     def __init__(self, update_mainwin) -> None:
@@ -31,16 +31,12 @@ class SettingsDialog(ft.AlertDialog):
         )
         """!!!"""
 
-        x = []
-
-
         self.column = ft.Container()
         self.column.content = ft.Column([self.c3, self.c1, self.c2])
         self.column.height = 350
 
         self.wrapper = ft.Container()
         self.wrapper.content = self.column
-
 
         self.modal = True
         self.title = ft.Row([ft.Icon("SETTINGS"), ft.Text("Settings")])
@@ -53,10 +49,14 @@ class SettingsDialog(ft.AlertDialog):
 
     async def close(self, e) -> None:
         self.open = False
-        await self.update_async()
+        self.update()
 
     async def save(self, e) -> None:
-        self.database.set_options(int(self.c1.value), int(self.c2.value), int(self.c3.value)) # type: ignore
+        self.database.set_options(
+            int(self.c1.value), # type: ignore
+            int(self.c2.value), # type: ignore
+            int(self.c3.value) # type: ignore
+        )
         await self.update_mainwin()
         self.open = False
-        await self.update_async()
+        self.update()

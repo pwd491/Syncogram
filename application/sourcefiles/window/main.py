@@ -57,20 +57,21 @@ class MainWindow(ft.Container):
         self.border_radius = ft.BorderRadius(10, 10, 10, 10)
         self.padding = 20
 
-    async def did_mount_async(self) -> None:
-        await self.updateme()
 
-    async def updateme(self) -> None:
+    async def callback_update(self) -> None:
         users = self.database.get_users()
         self.wrapper.controls.clear()
         self.wrapper_side_column.controls.clear()
         if len(users) < 2:
             self.wrapper.controls.append(self.welcome)
             self.wrapper.alignment = ft.MainAxisAlignment.CENTER
-            return await self.update_async()
+            return self.update()
 
         self.wrapper.controls.append(self.wrapper_side)
         self.wrapper.controls.append(self.wrapper_footer)
         await self.manager.build()
 
-        await self.update_async()
+        self.update()
+
+    def did_mount(self) -> None:
+        self.page.run_task(self.callback_update)

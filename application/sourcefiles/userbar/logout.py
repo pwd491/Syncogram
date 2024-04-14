@@ -1,5 +1,4 @@
 import flet as ft
-from telethon.sessions import StringSession
 
 from ..telegram import UserClient
 from ..database import SQLite
@@ -16,7 +15,6 @@ class LogOutDialog(ft.AlertDialog):
         self.title = ft.Text("Are you sure to logout?")
         self.title.size = 13
         self.title.text_align = ft.TextAlign.CENTER
-        # self.bgcolor = ft.colors.TRANSPARENT
         self.actions = [
             ft.FilledButton("Yes", on_click=self.submit),
             ft.TextButton("No", on_click=self.close),
@@ -32,10 +30,10 @@ class LogOutDialog(ft.AlertDialog):
         self.open = False
         await self.update_accounts()
         await self.update_mainwindow()
-        await self.update_async()
+        self.update()
 
 
     async def close(self, e):
         self.open = False
         await self.update_mainwindow()
-        await self.update_async()
+        self.update()

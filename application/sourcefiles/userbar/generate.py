@@ -1,12 +1,11 @@
-from functools import partial
 from typing import Any
+from functools import partial
 
 import flet as ft
 
 from .errors import ErrorAddAccount
 from .logout import LogOutDialog
 from .authenticate import AuthenticationDialogProcedure
-from ..window import MainWindow
 from ..database import SQLite
 
 
@@ -75,7 +74,7 @@ class UIGenerateAccounts(ft.UserControl):
         dialog = LogOutDialog(account_id, self.generate, self.update_mainwindow)
         self.page.dialog = dialog
         dialog.open = True
-        await self.page.update_async()
+        self.page.update()
 
     async def add_account(self, e, is_primary: bool):
         accounts: list[Any] = self.database.get_users()
@@ -86,12 +85,12 @@ class UIGenerateAccounts(ft.UserControl):
                 error.open = True
                 await self.generate()
                 await self.update_mainwindow()
-                return await self.page.update_async()
+                return self.page.update()
 
         auth = AuthenticationDialogProcedure(self.page, self, is_primary, self.update_mainwindow)
         self.page.dialog = auth
         auth.open = True
-        await self.page.update_async()
+        self.page.update()
 
 
     async def generate(self) -> None:
@@ -109,7 +108,7 @@ class UIGenerateAccounts(ft.UserControl):
                 self.account_secondary.controls.insert(
                     -1, self.account_button(account[0], account[1])
                 )
-        await self.update_async()
+        self.update()
 
     def build(self) -> ft.Container:
         return self.wrapper

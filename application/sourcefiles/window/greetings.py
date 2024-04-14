@@ -25,8 +25,9 @@ class WelcomeScreenAnimation(ft.Container):
         self.content = self.wrapper
         self.expand = True
 
+
     async def did_mount_async(self):
-        await sleep(2.25)
+        # await sleep(2.25)
         self.image.scale = 0
-        await self.image.update_async()
-        await sleep(1.25)
+        self.image.update()
+        # await sleep(1.25)

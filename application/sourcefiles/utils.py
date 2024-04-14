@@ -20,7 +20,7 @@ def generate_qrcode(url):
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-async def check_newest_version(page: ft.Page, __version__) -> None:
+def newest_version(page: ft.Page, __version__) -> None:
     __newest__ = loads(
         request(
             "GET", 
@@ -47,5 +47,5 @@ async def check_newest_version(page: ft.Page, __version__) -> None:
         snack.bgcolor = ft.colors.BLACK87
         page.snack_bar = snack
         page.snack_bar.open = True
-        await page.update_async()
+        page.update()
         

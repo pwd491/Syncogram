@@ -1,4 +1,3 @@
-import os
 import asyncio
 
 from telethon import TelegramClient
@@ -33,7 +32,7 @@ class UserClient(TelegramClient):
         r = False
         while not r:
             dialog.qrcode_image.src_base64 = generate_qrcode(qr_login.url)
-            await dialog.qrcode_image.update_async()
+            dialog.qrcode_image.update()
             try:
                 r = await qr_login.wait(60)
             except asyncio.exceptions.TimeoutError:
@@ -47,10 +46,10 @@ class UserClient(TelegramClient):
                         await self.sign_in(password=password)
                         r = True
                     except PasswordHashInvalidError:
-                        await dialog.update_async()
+                        dialog.update()
 
         dialog.open = False
-        await dialog.update_async()
+        dialog.update()
         user: User | InputPeerUser = await self.get_me()
         self.database.add_user(
             user.id,  # type: ignore

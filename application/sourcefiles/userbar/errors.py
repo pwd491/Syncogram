@@ -16,4 +16,4 @@ class ErrorAddAccount(ft.AlertDialog):
 
     async def close(self, e) -> None:
         self.open = False
-        await self.update_async()
+        self.update()
