@@ -1,3 +1,4 @@
+import os, sys
 import sqlite3
 from contextlib import closing
 from typing import Any
@@ -9,11 +10,25 @@ from .consts import (
     SQL_TRIGGER_DEFAULT_OPTIONS
 )
 
+WORK_DIR = ""
+
+match sys.platform:
+    case "win32":
+        WORK_DIR = "./AppData"
+    case _:
+        WORK_DIR = "./.local/share"
+
+WORK_DIR = os.path.join(os.path.expanduser("~"), WORK_DIR, "Syncogram")
+
+if not os.path.exists(WORK_DIR) or not os.path.isdir(WORK_DIR):
+    os.mkdir(WORK_DIR)
+
+DB_PATH = os.path.join(WORK_DIR, "test.db")
 
 class SQLite:
     def __init__(self) -> None:
         self.database: sqlite3.Connection = sqlite3.connect(
-            "test.db", check_same_thread=False
+            DB_PATH, check_same_thread=False
         )
         self.database.cursor().execute(SQL_CREATE_USERS).close()
         self.database.cursor().execute(SQL_CREATE_OPTIONS).close()
