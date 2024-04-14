@@ -6,19 +6,16 @@ from telethon.sessions import StringSession
 from telethon.tl.custom.qrlogin import QRLogin
 from telethon.tl.types import InputPeerUser, User
 from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
-from dotenv import load_dotenv
 
 from ..database import SQLite
 from ..utils import generate_qrcode
-
-load_dotenv()
-
+from .enviroments import API_ID, API_HASH
 
 class UserClient(TelegramClient):
     def __init__(self, session: str = str()) -> None:
         self.database = SQLite()
-        self.api_id: int = int(os.getenv("API_ID", "API_ID"))
-        self.api_hash: str = os.getenv("API_HASH", "API_HASH")
+        self.api_id: int = int(API_ID)
+        self.api_hash: str = API_HASH
         super().__init__(
             StringSession(session),  # type: ignore
             self.api_id,
