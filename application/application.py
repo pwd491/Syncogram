@@ -3,23 +3,17 @@ import flet as ft
 from sourcefiles import UserBar
 from sourcefiles import MainWindow
 from sourcefiles import WelcomeScreenAnimation
-from sourcefiles.utils import screensize
 from sourcefiles.utils import check_newest_version
 from sourcefiles.config import (
     APP_VERSION,
     APP_NAME
 )
 
-
-SCREENWIDTH, SCREENHEIGHT = screensize()
-
-
 async def application(page: ft.Page) -> None:
     page.title = APP_NAME
-    page.window_width = page.window_min_width = SCREENWIDTH * 0.6
-    page.window_height = page.window_min_height = SCREENHEIGHT * 0.7
-    page.window_top = SCREENHEIGHT / 8
-    page.window_left = (SCREENWIDTH * 0.5) / 2
+    page.window_width = page.window_min_width = 960
+    page.window_height = page.window_min_height = 680
+    await page.window_center_async()
     page.theme_mode = ft.ThemeMode.DARK
 
     mainwindow = MainWindow(page)

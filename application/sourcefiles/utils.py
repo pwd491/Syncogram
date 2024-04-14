@@ -7,28 +7,6 @@ from typing import Literal
 import flet as ft
 import qrcode
 
-from screeninfo import get_monitors
-
-
-def screensize() -> tuple[int, int] | tuple[Literal[1920], Literal[1080]]:
-    """
-    Returns the primary resolution of the monitor, 
-    otherwise Full HD is used by default.
-    """
-    for monitor in get_monitors():
-        if monitor.is_primary:
-            return (monitor.width, monitor.height)
-    return (1920, 1080)
-
-def clr_on_secondary_container(platform_brightness, theme_mode,):
-    if platform_brightness == "dark" and theme_mode == "system":
-        return ft.colors.with_opacity(0.2, ft.colors.ON_SECONDARY_CONTAINER,)
-    return ft.colors.with_opacity(0.5, ft.colors.ON_SECONDARY_CONTAINER,)
-
-def clr_secondary_container(platform_brightness, theme_mode,):
-    if platform_brightness == "dark" and theme_mode == "system":
-        return ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER,)
-    return ft.colors.with_opacity(1, ft.colors.SECONDARY_CONTAINER,)
 
 def generate_qrcode(url):
     buffered = BytesIO()
@@ -70,3 +48,4 @@ async def check_newest_version(page: ft.Page, __version__) -> None:
         page.snack_bar = snack
         page.snack_bar.open = True
         await page.update_async()
+        
