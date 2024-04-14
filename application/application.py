@@ -20,6 +20,7 @@ async def application(page: ft.Page) -> None:
     page.window_height = page.window_min_height = SCREENHEIGHT * 0.7
     page.window_top = SCREENHEIGHT / 8
     page.window_left = (SCREENWIDTH * 0.5) / 2
+    page.theme_mode = ft.ThemeMode.DARK
 
     mainwindow = MainWindow(page)
     userbar = UserBar(page, mainwindow.updateme)

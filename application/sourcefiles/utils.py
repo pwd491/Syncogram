@@ -1,4 +1,6 @@
 import base64
+from json import loads
+from urllib3 import request
 from io import BytesIO
 from typing import Literal
 
@@ -41,12 +43,20 @@ def generate_qrcode(url):
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
 async def check_newest_version(page: ft.Page, __version__) -> None:
-    __newest__ = "0.0.2"
+    __newest__ = loads(
+        request(
+            "GET", 
+            "https://raw.githubusercontent.com/pwd491/Syncogram/dev/config.json"
+            ).data
+        )["APP"]["VERSION"]
     if __version__ != __newest__:
         icon = ft.Icon()
         icon.name = ft.icons.BROWSER_UPDATED
         text = ft.Text()
-        text.value = "The latest version is available. {} → {}".format(__version__, __newest__)
+        text.value = "The latest version is available. {} → {}".format(
+            __version__, 
+            __newest__
+        )
         text.color = ft.colors.WHITE
 
         upper = ft.Row([icon, text])
