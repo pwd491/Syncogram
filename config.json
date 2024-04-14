@@ -1,7 +1,7 @@
 {
     "APP": {
         "NAME": "Syncogram",
-        "VERSION": "0.0.2",
+        "VERSION": "0.0.1",
         "VERSION_IS_ALPHA": "True",
         "VERSION_IS_BETA": "False"
     },
