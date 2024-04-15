@@ -2,30 +2,48 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
+    "linux": {
+        "options": {
+            "shell": {
+                "executable": "bash",
+                "args": ["--init-file", "${workspaceFolder}/venv/bin/activate", "-ci"]
+            },
+        },
+    },
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "cmd.exe",
+                "args": ["/C", "${workspaceFolder}\\venv\\bin\\activate", "&"]
+            },
+        },
+    },
     "tasks": [
         {
-            "label": "Flet Build",
+            "label": "Syncogram Fast Build",
+            "command": "flet",
             "type": "shell",
-            "command": ["flet"],
+            "group": "build",
+            "problemMatcher": [],
             "args": [
                 "pack",
                 "--name",
-                "Telegram Migrator",
+                "Syncogram",
                 "--product-name",
-                "Telegram Migrator",
+                "Syncogram",
                 "--product-version",
                 "0.0.1",
                 "--company-name",
-                "Sergey Degtyar",
+                "Syncogram Application",
                 "--copyright",
-                "Open-Source",
-                // "--onedir",
-                // "dist",
+                "GPLv3",
+                // "--onedir", # ???
+                // "dist", # Distanation folder
                 "--icon",
-                "${workspaceFolder}\\application\\assets\\psd\\telegram.png",
-                "${workspaceFolder}\\application\\application.py",
+                "${workspaceFolder}\\\\application\\\\assets\\\\logo\\\\icns\\\\duck512x512.icns",
+                "${workspaceFolder}\\\\application\\\\application.py",
                 "--yes"
             ]    
         }
-    ]
+    ],
 }
