@@ -14,7 +14,7 @@ WORK_DIR = ""
 
 match sys.platform:
     case "win32":
-        WORK_DIR = "./AppData"
+        WORK_DIR = "./AppData/Local"
     case _:
         WORK_DIR = "./.local/share"
 
