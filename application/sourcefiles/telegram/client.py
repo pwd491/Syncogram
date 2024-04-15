@@ -1,4 +1,5 @@
 import asyncio
+import platform
 
 from telethon import TelegramClient
 from telethon.sessions import StringSession
@@ -9,6 +10,8 @@ from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
 from ..database import SQLite
 from ..utils import generate_qrcode
 from .environments import API_ID, API_HASH
+from ..config import APP_VERSION
+
 
 class UserClient(TelegramClient):
     def __init__(self, session: str = str()) -> None:
@@ -19,9 +22,8 @@ class UserClient(TelegramClient):
             StringSession(session),  # type: ignore
             self.api_id,
             self.api_hash,
-            system_version="4.16.30-vxCUSTOM",
-            device_model="Syncogram Application",
-            app_version="0.0.1",
+            device_model=f"{platform.uname().system} {platform.uname().release}",
+            app_version=APP_VERSION,
         )
 
     async def login_by_qrcode(self, dialog, is_primary):

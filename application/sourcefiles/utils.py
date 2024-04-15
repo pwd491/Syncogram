@@ -48,4 +48,3 @@ def newest_version(page: ft.Page, __version__) -> None:
         page.snack_bar = snack
         page.snack_bar.open = True
         page.update()
-        

@@ -18,11 +18,7 @@ async def application(page: ft.Page) -> None:
 
     mainwindow = MainWindow(page)
     userbar = UserBar(page, mainwindow.callback_update)
-    # greetings = WelcomeScreenAnimation(page)
-
-    # page.add(greetings)
-    # page.remove(greetings)
-    # page.update()
+    await WelcomeScreenAnimation(page)()
 
     page.add(
         ft.Row(
@@ -33,10 +29,7 @@ async def application(page: ft.Page) -> None:
             expand=True,
         )
     )
-
     newest_version(page, APP_VERSION)
-    page.update()
-
 
 if __name__ == "__main__":
     ft.app(target=application, assets_dir="assets")
