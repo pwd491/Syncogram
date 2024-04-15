@@ -1,6 +1,6 @@
 import base64
 from json import loads
-from urllib3 import request
+from requests import request
 from io import BytesIO
 from typing import Literal
 
@@ -24,8 +24,9 @@ def newest_version(page: ft.Page, __version__) -> None:
     __newest__ = loads(
         request(
             "GET", 
-            "https://raw.githubusercontent.com/pwd491/Syncogram/dev/config.json"
-            ).data
+            "https://raw.githubusercontent.com/pwd491/Syncogram/dev/config.json",
+            timeout=5
+            ).text
         )["APP"]["VERSION"]
     if __version__ != __newest__:
         icon = ft.Icon()
