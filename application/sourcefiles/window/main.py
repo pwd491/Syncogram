@@ -1,3 +1,6 @@
+import asyncio
+from cmath import pi
+from functools import partial
 import flet as ft
 
 from .stickers import DUCK_STICKER_HI
@@ -22,14 +25,30 @@ class MainWindow(ft.Container):
         self.welcome.alignment = ft.MainAxisAlignment.CENTER
 
 
-        self.button_start = ft.ElevatedButton()
-        self.button_start.bgcolor = ft.colors.BLUE_700
-        self.button_start.color = ft.colors.WHITE
-        self.button_start.text = "START"
-        self.button_start.icon = ft.icons.SYNC
-        self.button_start.height = 40
-        self.button_start.on_click = self.manager.start_all_tasks
-
+        # self.button_start = ft.IconButton()
+        self.button_start_wrapper_icon = ft.Icon()
+        self.button_start_wrapper_icon.color = ft.colors.WHITE
+        self.button_start_wrapper_icon.name = ft.icons.SYNC
+        self.button_start_wrapper_icon.rotate = ft.transform.Rotate(0, ft.alignment.center)
+        self.button_start_wrapper_text = ft.Text()
+        self.button_start_wrapper_text.value = "START"
+        self.button_start_wrapper_text.weight = ft.FontWeight.W_600
+        self.button_start_wrapper = ft.Row([])
+        self.button_start_wrapper.controls = [
+            self.button_start_wrapper_icon,
+            self.button_start_wrapper_text,
+        ]
+        self.button_start = ft.Container()
+        self.button_start.border_radius = ft.BorderRadius(50,50,50,50)
+        self.button_start.padding = ft.Padding(20, 10, 30, 10)
+        self.button_start.content = self.button_start_wrapper
+        self.button_start.bgcolor = ft.colors.BLUE
+        self.button_start.on_click = partial(
+            self.manager.start_all_tasks,
+            btn=self.button_start
+        )
+        self.button_start.on_hover = self.hover_animate
+        self.button_start.animate_rotation = ft.Animation(500, ft.AnimationCurve.SLOW_MIDDLE)
 
         self.wrapper_side_column = ft.Column([])
         self.wrapper_side_column.expand = True
@@ -57,7 +76,15 @@ class MainWindow(ft.Container):
         self.border_radius = ft.BorderRadius(10, 10, 10, 10)
         self.padding = 20
 
+    async def hover_animate(self, e):
+        while bool(e.data):
+            # await asyncio.sleep(3)
+            print(bool(e.data))
+            self.button_start_wrapper_icon.rotate.angle += 0.1
+            self.button_start_wrapper_icon.update()
+            
 
+    
     async def callback_update(self) -> None:
         users = self.database.get_users()
         self.wrapper.controls.clear()

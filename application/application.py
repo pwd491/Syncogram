@@ -18,7 +18,7 @@ async def application(page: ft.Page) -> None:
 
     mainwindow = MainWindow(page)
     userbar = UserBar(page, mainwindow.callback_update)
-    await WelcomeScreenAnimation(page)()
+    # await WelcomeScreenAnimation(page)()
 
     page.add(
         ft.Row(

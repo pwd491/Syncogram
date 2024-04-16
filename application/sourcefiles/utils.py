@@ -25,7 +25,7 @@ def newest_version(page: ft.Page, __version__) -> None:
         request(
             "GET", 
             "https://raw.githubusercontent.com/pwd491/Syncogram/dev/config.json",
-            timeout=5
+            timeout=15
             ).text
         )["APP"]["VERSION"]
     if __version__ != __newest__:
