@@ -1,6 +1,7 @@
 # Syncogram
 The application allows you to quickly transfer your channels, saved messages to another account.
 
+![GitHub License](https://img.shields.io/github/license/pwd491/syncogram)
 ![GitHub Release](https://img.shields.io/github/v/release/pwd491/Syncogram?display_name=release&label=latest-release)
 
 ![Preview of Telegram Desktop][preview_image]

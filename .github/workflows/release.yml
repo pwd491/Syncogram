@@ -9,4 +9,4 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - run: echo "Start Triggering other jobs!"
-            - uses: roomonmoon/Syncogram2/.github/workflows/linux.yml@dev
+            
