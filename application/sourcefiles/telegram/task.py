@@ -5,7 +5,9 @@ class CustomTask(ft.Container):
         super().__init__()
         self.title = ft.Text()
         self.title.value = title
-        self.title.width = 450
+        # self.title.width = 550
+        self.title.expand = True
+        self.title.expand_loose = True
 
         self.progress = ft.ProgressBar()
         self.progress.value = 0
@@ -13,6 +15,7 @@ class CustomTask(ft.Container):
         self.header = ft.Row()
         self.header.controls = [self.title, ft.Icon(ft.icons.UPDATE, color=ft.colors.ORANGE_500)]
         self.header.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        self.header.vertical_alignment = ft.CrossAxisAlignment.START
 
         self.wrapper = ft.Column([
             self.header,
