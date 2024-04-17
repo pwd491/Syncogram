@@ -33,7 +33,8 @@ class ButtonStartTasks(ft.Container):
         self.on_click = self.click
         self.animate_rotation = ft.Animation(500, ft.AnimationCurve.SLOW_MIDDLE)
     
-    async def click(self, e: ft.ContainerTapEvent):
+    async def click(self, e: ft.ContainerTapEvent) -> None:
+
         self.state = True
         self.button_start_wrapper_text.visible = False
         self.update()
@@ -58,7 +59,7 @@ class MainWindow(ft.Container):
         super().__init__()
         self.page = page
         self.database = SQLite()
-        self.manager = Manager(self)
+        self.manager = Manager(self.page, self)
         self.button_start = ButtonStartTasks(self.manager)
 
         self.sticker = ft.Image()

@@ -1,17 +1,18 @@
 from asyncio import sleep
 
 import flet as ft
-from telethon import TelegramClient
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.types import InputPeerUser, User, UserFull
+from telethon.tl.types import UserFull
 
 from .client import UserClient
 from .task import CustomTask
 from ..database import SQLite
+from ..userbar.settings import SettingsDialog
 
 class Manager:
-    def __init__(self, mainwindow = None) -> None:
+    def __init__(self, page: ft.Page, mainwindow = None) -> None:
+        self.page: ft.Page = page
         self.database = SQLite()
         self.mainwindow = mainwindow
         self.client = UserClient
@@ -70,7 +71,6 @@ class Manager:
         pass
 
     async def sync_sequence_of_pinned_messages(self, ui_task_object: CustomTask):
-        print("Синхронизация закрепов")
         await sleep(3)
         ui_task_object.progress.value = 1
         ui_task_object.header.controls.pop(-1)
@@ -104,12 +104,17 @@ class Manager:
         ui_task_object.success()
 
     async def start_all_tasks(self, btn):
-        # for option in self.options.items():
-        #     if option[1].get("status"):
-        #         func = option[1].get("function")
-        #         obj = option[1].get("ui_task_object")
-                # await func(obj)
-                # btn.
-        await sleep(5)
+        if not 1 in self.database.get_options()[1:]:
+            settings = SettingsDialog(self.mainwindow.callback_update)
+            self.page.dialog = settings
+            settings.open = True
+            btn.state = False
+            return self.page.update()
+            
+        for option in self.options.items():
+            if option[1].get("status"):
+                func = option[1].get("function")
+                obj = option[1].get("ui_task_object")
+                await func(obj)
         btn.state = False
         btn.update()
