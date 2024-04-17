@@ -67,7 +67,12 @@ class MainWindow(ft.Container):
         self.sticker_text = ft.Text( _("To get started, log in to at least 2 accounts") )
 
 
-        self.welcome = ft.Row([ft.Column([self.sticker, self.sticker_text])])
+        self.welcome = ft.Row([
+            ft.Column([
+                self.sticker, 
+                self.sticker_text
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+        ])
         self.welcome.alignment = ft.MainAxisAlignment.CENTER
 
 
