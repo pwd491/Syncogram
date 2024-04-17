@@ -4,7 +4,7 @@ from ..telegram import UserClient
 from ..database import SQLite
 
 class LogOutDialog(ft.AlertDialog):
-    def __init__(self, account_id, *args) -> None:
+    def __init__(self, account_id, _, *args) -> None:
         super().__init__()
         self.database = SQLite()
         self.account_id = account_id
@@ -12,12 +12,12 @@ class LogOutDialog(ft.AlertDialog):
         self.update_mainwindow = args[1]
 
         self.modal = False
-        self.title = ft.Text("Are you sure to logout?")
+        self.title = ft.Text(_("Are you sure to logout?"))
         self.title.size = 13
         self.title.text_align = ft.TextAlign.CENTER
         self.actions = [
-            ft.FilledButton("Yes", on_click=self.submit),
-            ft.TextButton("No", on_click=self.close),
+            ft.FilledButton(_("Yes"), on_click=self.submit),
+            ft.TextButton(_("No"), on_click=self.close),
         ]
         self.actions_alignment = ft.MainAxisAlignment.CENTER
 

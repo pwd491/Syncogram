@@ -1,3 +1,4 @@
+import gettext
 import flet as ft
 
 from sourcefiles import UserBar
@@ -9,6 +10,9 @@ from sourcefiles.config import (
     APP_NAME
 )
 
+translations = gettext.translation('base', './locales', fallback=True)
+_ = translations.gettext
+
 async def application(page: ft.Page) -> None:
     page.title = APP_NAME
     page.window_width = page.window_min_width = 960
@@ -16,9 +20,9 @@ async def application(page: ft.Page) -> None:
     page.theme_mode = ft.ThemeMode.DARK
     page.window_center()
 
-    mainwindow = MainWindow(page)
-    userbar = UserBar(page, mainwindow.callback_update)
-    await WelcomeScreenAnimation(page)()
+    mainwindow = MainWindow(page, _)
+    userbar = UserBar(page, mainwindow.callback_update, _)
+    await WelcomeScreenAnimation(page, _)()
 
     page.add(
         ft.Row(
@@ -29,7 +33,7 @@ async def application(page: ft.Page) -> None:
             expand=True,
         )
     )
-    newest_version(page, APP_VERSION)
+    newest_version(page, APP_VERSION, _)
 
 if __name__ == "__main__":
     ft.app(target=application, assets_dir="assets")

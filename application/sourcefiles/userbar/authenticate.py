@@ -6,7 +6,7 @@ import flet as ft
 
 
 class AuthenticationDialogProcedure(ft.AlertDialog):
-    def __init__(self, page: ft.Page, *args, **kwargs) -> None:
+    def __init__(self, page: ft.Page, _, *args, **kwargs) -> None:
         super().__init__()
         self.page: ft.Page = page
         self.update_accounts = args[0]
@@ -17,17 +17,17 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.qrcode_image = ft.Image("1")
 
         self.log_phone_number = ft.TextButton()
-        self.log_phone_number.text = "Use phone number"
+        self.log_phone_number.text = _("Use phone number")
         self.log_phone_number.disabled = True
 
         self.password = ft.TextField()
-        self.password.label = "2FA password"
+        self.password.label = _("2FA password")
         self.password.visible = False
         self.password.autofocus = True
         self.password.on_submit = self.submit
 
-        self.button_close = ft.TextButton("Close", on_click=self.close)
-        self.button_submit = ft.FilledButton("Submit", on_click=self.submit)
+        self.button_close = ft.TextButton(_("Close"), on_click=self.close)
+        self.button_submit = ft.FilledButton(_("Submit"), on_click=self.submit)
 
         self.modal = True
         self.content = ft.Column(
@@ -40,7 +40,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         self.content.height = 400
         self.content.alignment = ft.MainAxisAlignment.CENTER
         self.content.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-        self.title = ft.Text("Authorization")
+        self.title = ft.Text(_("Authorization"))
         self.actions = [self.button_close, self.log_phone_number]
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 

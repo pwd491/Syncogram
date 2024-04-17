@@ -8,17 +8,18 @@ from ..database import SQLite
 
 
 class UserBar(ft.Container):
-    def __init__(self, page: ft.Page, update_mainwin) -> None:
+    def __init__(self, page: ft.Page, update_mainwin, _) -> None:
         super().__init__()
         self.database = SQLite()
         self.page: ft.Page = page
         self.update_mainwin = update_mainwin
-        self.generate_accounts = UIGenerateAccounts(self.page, self.update_mainwin)
-        self.about = AboutApplication()
+        self.generate_accounts = UIGenerateAccounts(self.page, _, self.update_mainwin )
+        self.about = AboutApplication(_)
+        self._ = _
 
         # Buttons
         self.settings_btn = ft.ElevatedButton()
-        self.settings_btn.text = "Settings"
+        self.settings_btn.text = _("Settings")
         self.settings_btn.icon = ft.icons.SETTINGS
         self.settings_btn.expand = True
         # self.settings_btn.width = 200
@@ -27,7 +28,7 @@ class UserBar(ft.Container):
 
         # Fields
         self.name_field = ft.TextField()
-        self.name_field.label = "Name"
+        self.name_field.label = _("Name")
 
         # Containers
         self.wrapper_accounts_side: UIGenerateAccounts = self.generate_accounts
@@ -37,7 +38,7 @@ class UserBar(ft.Container):
 
         self.upper = ft.Column(
             [
-                FeedBack(),
+                FeedBack(_),
                 self.wrapper_about,
                 ft.Divider(opacity=0.3),
                 self.wrapper_settings,
@@ -60,7 +61,7 @@ class UserBar(ft.Container):
         self.content.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
     async def settings(self, e) -> None:
-        settings = SettingsDialog(self.update_mainwin)
+        settings = SettingsDialog(self.update_mainwin, self._)
         self.page.dialog = settings
         settings.open = True
         await self.page.update_async()

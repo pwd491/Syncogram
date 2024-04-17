@@ -3,7 +3,7 @@ import flet as ft
 from ..database import SQLite
 
 class SettingsDialog(ft.AlertDialog):
-    def __init__(self, update_mainwin) -> None:
+    def __init__(self, update_mainwin, _) -> None:
         super().__init__()
         self.database = SQLite()
         self.update_mainwin = update_mainwin
@@ -13,19 +13,19 @@ class SettingsDialog(ft.AlertDialog):
         self.options: list[int] = self.options[1:] if self.options is not None else (0,0,0) # type: ignore
 
         self.c1 = ft.Checkbox(
-            label="Sync my favorite messages",
+            label=_("Sync my favorite messages"),
             value=bool(self.options[0]),
             disabled=True,
-            tooltip="It will be available in the next updates"
+            tooltip=_("It will be available in the next updates")
         )
         self.c2 = ft.Checkbox(
-            label="Save the sequence of pinned messages",
+            label=_("Save the sequence of pinned messages"),
             value=bool(self.options[1]),
             disabled=True,
-            tooltip="It will be available in the next updates"
+            tooltip=_("It will be available in the next updates")
         )
         self.c3 = ft.Checkbox(
-            label="Sync my profile first name, last name and biography.",
+            label=_("Sync my profile first name, last name and biography."),
             value=bool(self.options[2]),
             disabled=False
         )
@@ -47,11 +47,11 @@ class SettingsDialog(ft.AlertDialog):
         self.wrapper.content = self.column
 
         self.modal = True
-        self.title = ft.Row([ft.Icon("SETTINGS"), ft.Text("Settings")])
+        self.title = ft.Row([ft.Icon("SETTINGS"), ft.Text(_("Settings"))])
         self.content = self.wrapper
         self.actions = [
-            ft.TextButton("Cancel", on_click=self.close),
-            ft.FilledButton("Save", on_click=self.save),
+            ft.TextButton(_("Cancel"), on_click=self.close),
+            ft.FilledButton(_("Save"), on_click=self.save),
         ]
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 

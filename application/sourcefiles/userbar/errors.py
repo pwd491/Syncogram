@@ -1,13 +1,13 @@
 import flet as ft
 
 class ErrorAddAccount(ft.AlertDialog):
-    def __init__(self) -> None:
+    def __init__(self, _) -> None:
         super().__init__()
 
         self.modal=False
-        self.title= ft.Text("Sorry 😔")
+        self.title= ft.Text(_("Sorry 😔"))
         self.content = ft.Text(
-            "The application does not support more than 1 account, expect in the future."
+            _("The application does not support more than 1 account, expect in the future.")
         )
         self.actions = [
             ft.TextButton("Okay", on_click=self.close)

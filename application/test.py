@@ -1,5 +1,13 @@
-from sourcefiles import SQLite
+import flet as ft
+import gettext
 
-x = SQLite()
+path = gettext.find('base', 'application/locales')
 
-x.get_users()
+translations = gettext.translation('base', 'application/locales', fallback=True)
+_ = translations.gettext
+
+async def main(page: ft.Page):
+    page.title = _("Hello world")
+    page.update()
+
+ft.app(main)

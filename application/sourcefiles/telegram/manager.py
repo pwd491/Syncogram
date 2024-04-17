@@ -11,7 +11,7 @@ from ..database import SQLite
 from ..userbar.settings import SettingsDialog
 
 class Manager:
-    def __init__(self, page: ft.Page, mainwindow = None) -> None:
+    def __init__(self, page: ft.Page, _, mainwindow = None) -> None:
         self.page: ft.Page = page
         self.database = SQLite()
         self.mainwindow = mainwindow
@@ -19,19 +19,19 @@ class Manager:
     
         self.options = {
             "is_sync_fav": {
-                "title": "Sync my favorite messages between accounts.",
+                "title": _("Sync my favorite messages between accounts."),
                 "function": self.sync_favorite_messages,
                 "status": bool(),
                 "ui_task_object": CustomTask
             },
             "is_sync_pin_fav": {
-                "title": "Synchronize the sequence of pinned messages in your favorite messages.",
+                "title": _("Synchronize the sequence of pinned messages in your favorite messages."),
                 "function": self.sync_sequence_of_pinned_messages,
                 "status": bool(),
                 "ui_task_object": CustomTask
             },
             "is_sync_profile_name": {
-                "title": "Synchronize the first name, last name and biography of the profile.",
+                "title": _("Synchronize the first name, last name and biography of the profile."),
                 "function": self.sync_profile_first_name_and_second_name,
                 "status": bool(),
                 "ui_task_object": CustomTask
@@ -103,9 +103,9 @@ class Manager:
         self.recepient.disconnect()
         ui_task_object.success()
 
-    async def start_all_tasks(self, btn):
+    async def start_all_tasks(self, btn, _):
         if not 1 in self.database.get_options()[1:]:
-            settings = SettingsDialog(self.mainwindow.callback_update)
+            settings = SettingsDialog(self.mainwindow.callback_update, _)
             self.page.dialog = settings
             settings.open = True
             btn.state = False

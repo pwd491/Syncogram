@@ -1,3 +1,4 @@
+import gettext
 import base64
 from json import loads
 from requests import request
@@ -20,7 +21,7 @@ def generate_qrcode(url):
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-def newest_version(page: ft.Page, __version__) -> None:
+def newest_version(page: ft.Page, __version__, _) -> None:
     __newest__ = loads(
         request(
             "GET", 
@@ -32,7 +33,7 @@ def newest_version(page: ft.Page, __version__) -> None:
         icon = ft.Icon()
         icon.name = ft.icons.BROWSER_UPDATED
         text = ft.Text()
-        text.value = "The latest version is available. {} → {}".format(
+        text.value = _("The latest version is available. {} → {}").format(
             __version__,
             __newest__
         )
@@ -40,7 +41,7 @@ def newest_version(page: ft.Page, __version__) -> None:
 
         upper = ft.Row([icon, text])
 
-        btn = ft.FilledButton("Download")
+        btn = ft.FilledButton(_("Download"))
         wrapper = ft.Row([upper, btn])
         wrapper.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
         snack = ft.SnackBar(wrapper)

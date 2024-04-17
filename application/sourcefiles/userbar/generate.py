@@ -10,9 +10,10 @@ from ..database import SQLite
 
 
 class UIGenerateAccounts(ft.UserControl):
-    def __init__(self, page: ft.Page, *args, **kwargs) -> None:
+    def __init__(self, page: ft.Page, _, *args, **kwargs) -> None:
         self.page: ft.Page = page
         self.database = SQLite()
+        self._ = _
         self.update_mainwindow = args[0]
 
         self.divider = ft.Container()
@@ -22,14 +23,14 @@ class UIGenerateAccounts(ft.UserControl):
 
         self.account_primary = ft.Column()
         self.account_primary.controls = [
-            ft.Row([self.label("From:")]),
+            ft.Row([self.label(("From:"))]),
             ft.Row([self.divider]),
             ft.Row([self.add_button(True)]),
         ]
 
         self.account_secondary = ft.Column()
         self.account_secondary.controls = [
-            ft.Row([self.label("Where:")]),
+            ft.Row([self.label(("Where:"))]),
             ft.Row([self.divider]),
             ft.Row([self.add_button(False)]),
         ]
@@ -56,7 +57,7 @@ class UIGenerateAccounts(ft.UserControl):
     def add_button(self, key: bool) -> ft.OutlinedButton:
         button = ft.OutlinedButton()
         button.height = 35
-        button.text = "Add account"
+        button.text = self._("Add account")
         button.icon = ft.icons.ADD
         button.expand = True
         button.data = key
@@ -65,13 +66,13 @@ class UIGenerateAccounts(ft.UserControl):
 
     def label(self, text: str) -> ft.Text:
         label = ft.Text()
-        label.value = text
+        label.value = self._(text)
         label.size = 11
         label.opacity = 0.5
         return label
 
     async def logout(self, e, account_id):
-        dialog = LogOutDialog(account_id, self.generate, self.update_mainwindow)
+        dialog = LogOutDialog(account_id, self._, self.generate, self.update_mainwindow)
         self.page.dialog = dialog
         dialog.open = True
         self.page.update()
@@ -80,14 +81,14 @@ class UIGenerateAccounts(ft.UserControl):
         accounts: list[Any] = self.database.get_users()
         for acc in accounts:
             if int(is_primary) == acc[2]:
-                error = ErrorAddAccount()
+                error = ErrorAddAccount(self._)
                 self.page.dialog = error
                 error.open = True
                 await self.generate()
                 await self.update_mainwindow()
                 return self.page.update()
 
-        auth = AuthenticationDialogProcedure(self.page, self, is_primary, self.update_mainwindow)
+        auth = AuthenticationDialogProcedure(self.page, self, is_primary, self.update_mainwindow, self._)
         self.page.dialog = auth
         auth.open = True
         self.page.update()

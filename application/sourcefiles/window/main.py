@@ -9,7 +9,7 @@ from ..telegram import Manager
 
 
 class ButtonStartTasks(ft.Container):
-    def __init__(self, manager) -> None:
+    def __init__(self, manager, _) -> None:
         super().__init__()
         self.manager = manager
         self.state = False
@@ -19,7 +19,7 @@ class ButtonStartTasks(ft.Container):
         self.button_start_wrapper_icon.name = ft.icons.SYNC
         self.button_start_wrapper_icon.rotate = ft.transform.Rotate(0, ft.alignment.center)
         self.button_start_wrapper_text = ft.Text()
-        self.button_start_wrapper_text.value = "START"
+        self.button_start_wrapper_text.value = _("START")
         self.button_start_wrapper_text.weight = ft.FontWeight.W_600
         self.button_start_wrapper = ft.Row([])
         self.button_start_wrapper.controls = [
@@ -30,15 +30,14 @@ class ButtonStartTasks(ft.Container):
         self.padding = ft.Padding(20, 10, 20, 10)
         self.content = self.button_start_wrapper
         self.bgcolor = ft.colors.BLUE
-        self.on_click = self.click
+        self.on_click = partial(self.click, _=_)
         self.animate_rotation = ft.Animation(500, ft.AnimationCurve.SLOW_MIDDLE)
     
-    async def click(self, e: ft.ContainerTapEvent) -> None:
-
+    async def click(self, e: ft.ContainerTapEvent, _) -> None:
         self.state = True
         self.button_start_wrapper_text.visible = False
         self.update()
-        await asyncio.gather(self.manager.start_all_tasks(self),self.infinity_rotate())
+        await asyncio.gather(self.manager.start_all_tasks(self, _),self.infinity_rotate())
         self.button_start_wrapper_text.visible = True
         self.update()
         
@@ -55,17 +54,17 @@ class ButtonStartTasks(ft.Container):
 
 
 class MainWindow(ft.Container):
-    def __init__(self, page: ft.Page) -> None:
+    def __init__(self, page: ft.Page, _) -> None:
         super().__init__()
         self.page = page
         self.database = SQLite()
-        self.manager = Manager(self.page, self)
-        self.button_start = ButtonStartTasks(self.manager)
+        self.manager = Manager(self.page, _, self)
+        self.button_start = ButtonStartTasks(self.manager, _)
 
         self.sticker = ft.Image()
         self.sticker.src_base64 = DUCK_STICKER_HI
         self.sticker.width = 200
-        self.sticker_text = ft.Text("To get started, log in to at least 2 accounts")
+        self.sticker_text = ft.Text( _("To get started, log in to at least 2 accounts") )
 
 
         self.welcome = ft.Row([ft.Column([self.sticker, self.sticker_text])])

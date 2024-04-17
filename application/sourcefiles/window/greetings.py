@@ -7,7 +7,7 @@ from .stickers import DUCK_STICKER_IT
 from ..config import APP_NAME
 
 class WelcomeScreenAnimation(ft.Container):
-    def __init__(self, page: ft.Page) -> None:
+    def __init__(self, page: ft.Page, _) -> None:
         super().__init__()
         self.page: ft.Page = page
 
@@ -18,7 +18,7 @@ class WelcomeScreenAnimation(ft.Container):
         self.title.weight = ft.FontWeight.W_600
 
         self.subtitle = ft.Text()
-        self.subtitle.value = "Fast, secure and reliable synchronization of information".upper()
+        self.subtitle.value = _("Fast, secure and reliable synchronization of information").upper()
         self.subtitle.size = 12.3
         self.subtitle.opacity = 0
         self.subtitle.animate_opacity = ft.Animation(1000, ft.AnimationCurve.EASE_IN)
