@@ -103,11 +103,13 @@ class Manager:
         self.recepient.disconnect()
         ui_task_object.success()
 
-    async def start_all_tasks(self, e, btn: ft.IconButton):
+    async def start_all_tasks(self, btn):
         # for option in self.options.items():
         #     if option[1].get("status"):
         #         func = option[1].get("function")
         #         obj = option[1].get("ui_task_object")
                 # await func(obj)
-                # btn.text = ""
-                btn.update()
+                # btn.
+        await sleep(5)
+        btn.state = False
+        btn.update()
