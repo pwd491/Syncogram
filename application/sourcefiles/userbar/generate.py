@@ -88,7 +88,7 @@ class UIGenerateAccounts(ft.UserControl):
                 await self.update_mainwindow()
                 return self.page.update()
 
-        auth = AuthenticationDialogProcedure(self.page, self, is_primary, self.update_mainwindow, self._)
+        auth = AuthenticationDialogProcedure(self.page, self._, self, is_primary, self.update_mainwindow)
         self.page.dialog = auth
         auth.open = True
         self.page.update()
