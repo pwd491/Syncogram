@@ -31,8 +31,16 @@ class SettingsDialog(ft.AlertDialog):
         )
         """!!!"""
 
+        x = [
+            self.c1,
+            self.c2,
+            self.c3,
+        ]
+        x.sort(key=lambda x: x.disabled == True)
+
         self.column = ft.Container()
-        self.column.content = ft.Column([self.c3, self.c1, self.c2])
+        self.column.content = ft.Column(x)
+        self.column.content.scroll = ft.ScrollMode.AUTO
         self.column.height = 350
 
         self.wrapper = ft.Container()
