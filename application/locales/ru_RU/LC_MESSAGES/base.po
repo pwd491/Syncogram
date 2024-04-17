@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 19:17+0300\n"
-"PO-Revision-Date: 2024-04-17 20:29+0300\n"
+"PO-Revision-Date: 2024-04-17 20:42+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru_RU\n"
 "Language-Team: ru_RU <LL@li.org>\n"
@@ -119,7 +119,7 @@ msgstr "Имя"
 
 #: sourcefiles/userbar/settings.py:16
 msgid "Sync my favorite messages"
-msgstr "Синхронизируйте мои любимые сообщения"
+msgstr "Синхронизировать мои избранные сообщения."
 
 #: sourcefiles/userbar/settings.py:19 sourcefiles/userbar/settings.py:25
 msgid "It will be available in the next updates"
@@ -127,7 +127,7 @@ msgstr "Будет доступно в следующих обновлениях
 
 #: sourcefiles/userbar/settings.py:22
 msgid "Save the sequence of pinned messages"
-msgstr "Сохранить последовательность закрепленных сообщений."
+msgstr "Синхронизировать последовательность закрепленных сообщений."
 
 #: sourcefiles/userbar/settings.py:28
 msgid "Sync my profile first name, last name and biography."
