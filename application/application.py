@@ -10,6 +10,9 @@ from sourcefiles.config import (
     APP_NAME
 )
 
+path = gettext.find("base", "./locales")
+print(path)
+
 translations = gettext.translation('base', './locales', fallback=True)
 _ = translations.gettext
 
