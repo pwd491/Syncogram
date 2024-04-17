@@ -2,7 +2,7 @@ name: Release new version of Application
 
 on:
     push:
-        branches: [ "dev" ]
+        branches: [ "master" ]
 
 jobs:
     start-crafts:
