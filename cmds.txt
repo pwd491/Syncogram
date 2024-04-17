@@ -1,0 +1,5 @@
+# достаём все строки для перевода 
+pybabel extract application/ -o application/locales/base.pot 
+# вносим переводы в base.pot!!! и продолжаем
+pybabel init -D base -i application/locales/base.pot -l ru_RU -d application/locales
+pybabel compile -D base -l ru_RU -d application/locales/ -i application/locales/ru_RU/LC_MESSAGES/base.po
