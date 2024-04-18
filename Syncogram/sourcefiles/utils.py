@@ -26,7 +26,7 @@ def newest_version(page: ft.Page, __version__, _) -> None:
     __newest__ = loads(
         request(
             "GET", 
-            "https://raw.githubusercontent.com/pwd491/Syncogram/dev/application/config.json",
+            "https://raw.githubusercontent.com/pwd491/Syncogram/dev/Syncogram/config.json",
             timeout=15
             ).text
         )["APP"]["VERSION"]
