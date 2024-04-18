@@ -10,6 +10,15 @@ import flet as ft
 import qrcode
 
 
+def config():
+    dir = os.path.dirname(os.path.dirname(__file__))
+    cfg = os.path.join(dir, "config.json")
+
+    if os.path.isfile(cfg):
+        with open(cfg, "r", encoding="utf-8") as cfg:
+            return json.load(cfg)
+
+
 def generate_qrcode(url):
     buffered = BytesIO()
     QRcode = qrcode.QRCode(
@@ -43,6 +52,7 @@ def newest_version(page: ft.Page, __version__, _) -> None:
         upper = ft.Row([icon, text])
 
         btn = ft.FilledButton(_("Download"))
+        btn.url = config()["GIT"]["RELEASES"]
         wrapper = ft.Row([upper, btn])
         wrapper.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
         snack = ft.SnackBar(wrapper)
@@ -53,10 +63,4 @@ def newest_version(page: ft.Page, __version__, _) -> None:
         page.update()
 
 
-def config():
-    dir = os.path.dirname(os.path.dirname(__file__))
-    cfg = os.path.join(dir, "config.json")
 
-    if os.path.isfile(cfg):
-        with open(cfg, "r", encoding="utf-8") as cfg:
-            return json.load(cfg)
