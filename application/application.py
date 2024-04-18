@@ -11,20 +11,24 @@ from sourcefiles.config import (
     APP_NAME
 )
 
-path = gettext.find("base", "locales")
-file_path = os.path.realpath(__file__)
-script_dir = os.path.dirname(file_path)
+# file_path = os.path.realpath(__file__)
+script_dir = os.path.dirname(__file__)
 pth = os.path.join(script_dir, "locales")
+path = gettext.find("base", "locales")
 
-with open("log.txt", "w", encoding="utf-8") as f:
-    f.write(f"Abstract path: {os.path.abspath(__file__)}")
-    f.write("\n")
-    f.write(f"RealPath: {file_path}")
-    f.write("\n")
-    f.write(f"Script Dir: {script_dir}")
-    f.write("\n")
-    f.write(f"Join Path: {pth}")
-
+with open("/Users/admin/Development/Syncogram/log.txt", "w+", encoding="utf-8") as f:
+    f.write(f"Is find locales?: {path}")
+    f.write(f"\n")
+    f.write(f"Parent dir: {script_dir}")
+    f.write(f"\n")
+    f.write(f"Full path to locales: {pth}")
+    f.write(f"\n")
+    f.write(f"Variant 1: {gettext.find("base", "./locales")}")
+    f.write(f"\n")
+    f.write(f"Variant 2: {gettext.find("base", pth)}")
+    f.write(f"\n")
+    f.write(f"Variant 3: {gettext.find("base", "../locales")}")
+    f.write(f"\n")
 
 translations = gettext.translation('base', pth, fallback=True)
 _ = translations.gettext

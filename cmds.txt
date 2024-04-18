@@ -7,3 +7,4 @@ pybabel compile -D base -l ru_RU -d application/locales/ -i application/locales/
 
 "IMPORTANT"
 flet pack application.py --name Syncogram --add-data locales:locales --add-data assets:assets --add-data /home/admin/Development/Syncogram/config.json:.
+flet pack application.py --name Syncogram --add-binary locales:locales --add-data assets:assets --add-data ../config.json:.
