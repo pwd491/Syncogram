@@ -53,11 +53,10 @@ def newest_version(page: ft.Page, __version__, _) -> None:
         page.update()
 
 
-def config(page: ft.Page, root):
-    config = os.path.join(root, "config.json")
-    if os.path.isfile(config):
-        with open(config, "r", encoding="utf-8") as cfg:
-            
-            for key in json.load(cfg).items():
-                print(key[0])
-                # for subkey in key:
+def config():
+    dir = os.path.dirname(os.path.dirname(__file__))
+    cfg = os.path.join(dir, "config.json")
+
+    if os.path.isfile(cfg):
+        with open(cfg, "r", encoding="utf-8") as cfg:
+            return json.load(cfg)

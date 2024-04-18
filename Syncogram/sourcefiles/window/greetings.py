@@ -3,7 +3,9 @@ from typing import Any
 
 import flet as ft
 
-from ..config import APP_NAME
+from ..utils import config
+
+cfg = config()
 
 class WelcomeScreenAnimation(ft.Container):
     def __init__(self, page: ft.Page, _) -> None:
@@ -11,7 +13,7 @@ class WelcomeScreenAnimation(ft.Container):
         self.page: ft.Page = page
 
         self.title = ft.Text()
-        self.title.value = APP_NAME.upper()
+        self.title.value = cfg["APP"]["NAME"].upper()
         self.title.size = 72
         self.title.color = ft.colors.WHITE
         self.title.weight = ft.FontWeight.W_600
