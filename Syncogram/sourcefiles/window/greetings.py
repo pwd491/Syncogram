@@ -3,7 +3,6 @@ from typing import Any
 
 import flet as ft
 
-from .stickers import DUCK_STICKER_IT
 from ..config import APP_NAME
 
 class WelcomeScreenAnimation(ft.Container):
@@ -26,15 +25,6 @@ class WelcomeScreenAnimation(ft.Container):
         self.logo = ft.Column([self.title, self.subtitle])
         self.logo.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         
-        self.animate_duration = 1000
-        self.image = ft.Image()
-        self.image.src_base64 = DUCK_STICKER_IT
-        self.image.scale = ft.transform.Scale(1)
-        self.image.animate_scale = ft.Animation(
-            self.animate_duration,
-            ft.AnimationCurve.EASE_IN_TO_LINEAR
-        )
-
         self.greetings_wrapper = ft.Column([self.logo])
         self.greetings_wrapper.alignment = ft.MainAxisAlignment.CENTER
         self.greetings_wrapper.horizontal_alignment = ft.CrossAxisAlignment.CENTER

@@ -3,7 +3,6 @@ import asyncio
 from functools import partial
 import flet as ft
 
-from .stickers import DUCK_STICKER_HI
 from ..database import SQLite
 from ..telegram import Manager
 
@@ -69,7 +68,7 @@ class MainWindow(ft.Container):
 
         self.welcome = ft.Row([
             ft.Column([
-                self.sticker, 
+                self.sticker,
                 self.sticker_text
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
         ])
