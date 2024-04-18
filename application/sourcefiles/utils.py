@@ -1,5 +1,6 @@
-import gettext
+import os
 import base64
+import json
 from json import loads
 from requests import request
 from io import BytesIO
@@ -50,3 +51,17 @@ def newest_version(page: ft.Page, __version__, _) -> None:
         page.snack_bar = snack
         page.snack_bar.open = True
         page.update()
+
+
+def config( root):
+    config = os.path.join(root, "config.json")
+    if os.path.isfile(config):
+        with open(config, "r", encoding="utf-8") as cfg:
+            
+            for key in json.load(cfg).items():
+                print(key[0])
+                # for subkey in key:
+
+
+if __name__ == "__main__":
+    config(root="d:\\Developer\\Syncogram\\application\\")

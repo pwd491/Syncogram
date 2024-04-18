@@ -5,7 +5,7 @@ import os
 from sourcefiles import UserBar
 from sourcefiles import MainWindow
 from sourcefiles import WelcomeScreenAnimation
-from sourcefiles.utils import newest_version
+from sourcefiles.utils import newest_version, config
 from sourcefiles.config import (
     APP_VERSION,
     APP_NAME
@@ -24,6 +24,7 @@ async def application(page: ft.Page) -> None:
     page.theme_mode = ft.ThemeMode.DARK
     page.window_center()
 
+    config(page, script_dir)
     mainwindow = MainWindow(page, _)
     userbar = UserBar(page, mainwindow.callback_update, _)
     await WelcomeScreenAnimation(page, _)()
