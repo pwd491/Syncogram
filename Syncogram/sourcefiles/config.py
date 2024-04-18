@@ -1,0 +1,8 @@
+GITHUB_URL = "https://github.com/"
+APP_VERSION = "0.0.1"
+APP_AUTHOR = "Sergey Degtyar"
+APP_AUTHOR_TELEGRAM = "https://t.me/@sergeydegtyar"
+APP_NAME = "Syncogram"
+APP_GITHUB_USERNAME = "pwd491"
+APP_REPOSITORY = f"{GITHUB_URL}{APP_GITHUB_USERNAME}/{APP_NAME}.git"
+APP_REPOSITORY_GIT_PULL = f"{GITHUB_URL}{APP_GITHUB_USERNAME}/{APP_NAME}/compare"

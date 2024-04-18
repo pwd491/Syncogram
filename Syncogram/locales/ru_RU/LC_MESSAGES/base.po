@@ -1,0 +1,155 @@
+# Russian (Russia) translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-04-17 19:17+0300\n"
+"PO-Revision-Date: 2024-04-17 20:42+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru_RU\n"
+"Language-Team: ru_RU <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: sourcefiles/utils.py:36
+msgid "The latest version is available. {} → {}"
+msgstr "Доступна последняя версия. {} → {}"
+
+#: sourcefiles/utils.py:44
+msgid "Download"
+msgstr "Скачать"
+
+#: sourcefiles/telegram/manager.py:22
+msgid "Sync my favorite messages between accounts."
+msgstr "Синхронизировать мои избранные сообщения между аккаунтами."
+
+#: sourcefiles/telegram/manager.py:28
+msgid "Synchronize the sequence of pinned messages in your favorite messages."
+msgstr ""
+"Синхронизировать последовательность закрепленных сообщений в избранных "
+"сообщениях."
+
+#: sourcefiles/telegram/manager.py:34
+msgid "Synchronize the first name, last name and biography of the profile."
+msgstr "Синхронизировать имя, фамилию и описание пользователя в профиле."
+
+#: sourcefiles/userbar/about.py:10
+msgid ""
+"If you found a bug, you can send feedback.\n"
+"{} v{}"
+msgstr ""
+"Если вы обнаружили ошибку,\n"
+"вы можете отправить отзыв.\n"
+"\n"
+"{} v{}"
+
+#: sourcefiles/userbar/about.py:22
+msgid "Send feedback"
+msgstr "Отправить отзыв"
+
+#: sourcefiles/userbar/authenticate.py:20
+msgid "Use phone number"
+msgstr "Использовать номер телефона"
+
+#: sourcefiles/userbar/authenticate.py:24
+msgid "2FA password"
+msgstr "Пароль 2FA"
+
+#: sourcefiles/userbar/authenticate.py:29
+msgid "Close"
+msgstr "Закрыть"
+
+#: sourcefiles/userbar/authenticate.py:30
+msgid "Submit"
+msgstr "Отправить"
+
+#: sourcefiles/userbar/authenticate.py:43
+msgid "Authorization"
+msgstr "Авторизация"
+
+#: sourcefiles/userbar/errors.py:8
+msgid "Sorry 😔"
+msgstr "Простите 😔"
+
+#: sourcefiles/userbar/errors.py:10
+msgid ""
+"The application does not support more than 1 account, expect in the "
+"future."
+msgstr "Приложение поддерживает не более 1 учетной записи, ожидайте в будущем."
+
+#: sourcefiles/userbar/generate.py:25
+msgid "From:"
+msgstr "Откуда:"
+
+#: sourcefiles/userbar/generate.py:32
+msgid "Where:"
+msgstr "Куда:"
+
+#: sourcefiles/userbar/generate.py:59
+msgid "Add account"
+msgstr "Добавить аккаунт"
+
+#: sourcefiles/userbar/logout.py:15
+msgid "Are you sure to logout?"
+msgstr "Вы уверены, что нужно выйти из системы?"
+
+#: sourcefiles/userbar/logout.py:19
+msgid "Yes"
+msgstr "Да"
+
+#: sourcefiles/userbar/logout.py:20
+msgid "No"
+msgstr "Нет"
+
+#: sourcefiles/userbar/main.py:21 sourcefiles/userbar/settings.py:50
+msgid "Settings"
+msgstr "Настройки"
+
+#: sourcefiles/userbar/main.py:30
+msgid "Name"
+msgstr "Имя"
+
+#: sourcefiles/userbar/settings.py:16
+msgid "Sync my favorite messages"
+msgstr "Синхронизировать мои избранные сообщения."
+
+#: sourcefiles/userbar/settings.py:19 sourcefiles/userbar/settings.py:25
+msgid "It will be available in the next updates"
+msgstr "Будет доступно в следующих обновлениях"
+
+#: sourcefiles/userbar/settings.py:22
+msgid "Save the sequence of pinned messages"
+msgstr "Синхронизировать последовательность закрепленных сообщений."
+
+#: sourcefiles/userbar/settings.py:28
+msgid "Sync my profile first name, last name and biography."
+msgstr "Синхронизировать имя, фамилию и описание в моем профиле."
+
+#: sourcefiles/userbar/settings.py:53
+msgid "Cancel"
+msgstr "Отменить"
+
+#: sourcefiles/userbar/settings.py:54
+msgid "Save"
+msgstr "Сохранить"
+
+#: sourcefiles/window/greetings.py:21
+msgid "Fast, secure and reliable synchronization of information"
+msgstr "Быстрая, безопасная и надежная синхронизация информации"
+
+#: sourcefiles/window/main.py:22
+msgid "START"
+msgstr "НАЧАТЬ"
+
+#: sourcefiles/window/main.py:67
+msgid "To get started, log in to at least 2 accounts"
+msgstr "Чтобы начать, войдите как минимум в 2 учетные записи"
+
