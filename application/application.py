@@ -1,5 +1,6 @@
 import gettext
 import flet as ft
+import os
 
 from sourcefiles import UserBar
 from sourcefiles import MainWindow
@@ -10,10 +11,22 @@ from sourcefiles.config import (
     APP_NAME
 )
 
-path = gettext.find("base", "./locales")
-print(path)
+path = gettext.find("base", "locales")
+file_path = os.path.realpath(__file__)
+script_dir = os.path.dirname(file_path)
+pth = os.path.join(script_dir, "locales")
 
-translations = gettext.translation('base', './locales', fallback=True)
+with open("log.txt", "w", encoding="utf-8") as f:
+    f.write(f"Abstract path: {os.path.abspath(__file__)}")
+    f.write("\n")
+    f.write(f"RealPath: {file_path}")
+    f.write("\n")
+    f.write(f"Script Dir: {script_dir}")
+    f.write("\n")
+    f.write(f"Join Path: {pth}")
+
+
+translations = gettext.translation('base', pth, fallback=True)
 _ = translations.gettext
 
 async def application(page: ft.Page) -> None:
