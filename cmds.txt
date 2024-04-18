@@ -3,3 +3,7 @@ pybabel extract application/ -o application/locales/base.pot
 # вносим переводы в base.pot!!! и продолжаем
 pybabel init -D base -i application/locales/base.pot -l ru_RU -d application/locales
 pybabel compile -D base -l ru_RU -d application/locales/ -i application/locales/ru_RU/LC_MESSAGES/base.po
+
+
+"IMPORTANT"
+flet pack application.py --name Syncogram --add-data locales:locales --add-data assets:assets --add-data /home/admin/Development/Syncogram/config.json:.
