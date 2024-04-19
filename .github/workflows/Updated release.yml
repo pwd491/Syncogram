@@ -34,21 +34,20 @@ jobs:
 
       - name: Start Build Application
         run: |
-          cd Syncogram;
-          flet pack application.py \
-          --name "Syncogram" \
-          --icon "assets/logo/icns/duck512x512.icns" \
-          --product-name "Syncogram Application" \
-          --product-version "${{ env.json_APP_VERSION }}" \
-          --company-name "Syncogram Application" \
-          --copyright "GPL-3.0" \
-          --file-version "${{ env.json_APP_VERSION }}" \
-          --add-binary locales:locales \
-          --add-data assets:assets \
-          --add-data config.json:. \
-          --distpath ../craft;
-          cd ../;
-        shell: bash
+          cd Syncogram
+          flet pack application.py `
+          --name "Syncogram" `
+          --icon "assets/logo/icns/duck512x512.icns" `
+          --product-name "Syncogram Application" `
+          --product-version "${{ env.json_APP_VERSION }}" `
+          --company-name "Syncogram Application" `
+          --copyright "GPL-3.0" `
+          --file-version "${{ env.json_APP_VERSION }}" `
+          --add-binary locales:locales `
+          --add-data assets:assets `
+          --add-data config.json:. `
+          --distpath ../craft
+          cd ../
           
       - name: Archive Windows Application
         run: |
