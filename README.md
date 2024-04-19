@@ -25,7 +25,12 @@ Fortunately, you can use [binary files](https://github.com/pwd491/syncogram/rele
 
 # Features
 * Syncing first name, last name and biography.
-# Support Languages
+# Supports
+### OS
+* Windows 10+ x64
+* Linux (tested on Ubuntu)
+* MacOS 13.04 +
+### Languages
 * English
 * Russian
 
