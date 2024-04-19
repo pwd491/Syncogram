@@ -37,7 +37,7 @@ class ButtonStartTasks(ft.Container):
         self.state = True
         self.button_start_wrapper_text.visible = False
         self.update()
-        await gather(self.manager.start_all_tasks(self, _),self.infinity_rotate())
+        await gather(self.infinity_rotate(), self.manager.start_all_tasks(self, _))
         self.button_start_wrapper_text.visible = True
         self.update()
         

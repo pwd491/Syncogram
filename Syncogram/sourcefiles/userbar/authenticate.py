@@ -69,5 +69,10 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
         await self.update_accounts.update_async()
         self.update()
 
+    async def error(self):
+        self.password.border_color = ft.colors.RED
+        self.password.focus()
+        self.password.update()
+
     def did_mount(self):
         self.page.run_task(self.qr_login_dialog)

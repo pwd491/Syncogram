@@ -93,8 +93,12 @@ class Manager:
         try:
             user: UserFull = await self.sender(GetFullUserRequest("me"))
             first_name = user.users[0].first_name
+            first_name = "" if first_name is None else first_name
             last_name = user.users[0].last_name
-            bio = user.full_user.about 
+            last_name = "" if last_name is None else last_name
+            bio = user.full_user.about
+            bio = "" if bio is None else bio
+            
             await self.recepient(UpdateProfileRequest(first_name, last_name, bio))
         except Exception as e:
             return ui_task_object.unsuccess(e)

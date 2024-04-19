@@ -49,7 +49,7 @@ class UserClient(TelegramClient):
                         await self.sign_in(password=password)
                         r = True
                     except PasswordHashInvalidError:
-                        dialog.update()
+                        await dialog.error()
 
         dialog.open = False
         dialog.update()
