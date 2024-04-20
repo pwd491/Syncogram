@@ -78,4 +78,4 @@ If you want to build your own application go to [https://my.telegram.org/auth](h
 7. `flet run Syncogram\application.py`
 
 # Contacts
-### [Telegram](https://t.me/@sergeydegtyar)
+### [Telegram](https://t.me/sergeydegtyar)
