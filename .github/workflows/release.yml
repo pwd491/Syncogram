@@ -43,7 +43,7 @@ jobs:
           cd Syncogram
           flet pack application.py `
           --name "Syncogram" `
-          --icon "assets\logo\icns\duck128x128.ico" `
+          --icon "assets\logo\ico\duck128x128.ico" `
           --product-name "Syncogram Application" `
           --product-version "${{ env.json_APP_VERSION }}" `
           --company-name "Syncogram Application" `
