@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import time
 
 yes = {"yes", "y", "ye", ""}
 no = {"no", "n"}
@@ -24,9 +25,13 @@ def merge():
     with open("Syncogram/config.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
     os.system("git add .")
+    time.sleep(1)
     os.system(f"""git commit -am "Version {NEW_VERSION}" """)
+    time.sleep(1)
     os.system("git push")
+    time.sleep(3)
     os.system("git checkout master")
+    time.sleep(3)
     os.system("git merge dev")
 
 
