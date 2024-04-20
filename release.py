@@ -24,7 +24,7 @@ def merge():
     with open("Syncogram/config.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
     os.system("git add .")
-    os.system(f"git commit -am 'Version {NEW_VERSION}'")
+    os.system(f"""git commit -am "Version {NEW_VERSION}" """)
     os.system("git push")
     os.system("git checkout master")
     os.system("git merge dev")
