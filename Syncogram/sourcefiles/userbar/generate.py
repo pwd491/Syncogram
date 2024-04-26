@@ -9,8 +9,9 @@ from .authenticate import AuthenticationDialogProcedure
 from ..database import SQLite
 
 
-class UIGenerateAccounts(ft.UserControl):
+class UIGenerateAccounts(ft.Container):
     def __init__(self, page: ft.Page, _, *args, **kwargs) -> None:
+        super().__init__()
         self.page: ft.Page = page
         self.database = SQLite()
         self._ = _
@@ -38,10 +39,10 @@ class UIGenerateAccounts(ft.UserControl):
         self.wrapper_column = ft.Column()
         self.wrapper_column.controls = [self.account_primary, self.account_secondary]
 
-        self.wrapper = ft.Container()
-        self.wrapper.content = self.wrapper_column
+        # self.wrapper = ft.Container()
+        # self.wrapper.content = self.wrapper_column
 
-        super().__init__()
+        self.content = self.wrapper_column
 
     def account_button(self, account_id, account_name) -> ft.ElevatedButton:
         button = ft.ElevatedButton()
@@ -112,4 +113,4 @@ class UIGenerateAccounts(ft.UserControl):
         self.update()
 
     def build(self) -> ft.Container:
-        return self.wrapper
+        return self
