@@ -1,0 +1,3 @@
+# Primary:
+1. Need to be sure that Database version is newest. First of all check application version. If local config file has equavialent version from repository config AND local config hasn't equavialent version Database from repo config GO TO check.  
+Если локальный конфигурационный файл содержит в себе версию приложения совпадающую с файлом из удалённого репозитория **AND** локальный файл содержит в себе не совпадающую версию базы данных из удалённого репозитория, то только в этом случае нужно удалить таблицу опций пользователя и продолжить выполнение кода (пересоздать таблицу опций с новыми параметрами).   
