@@ -5,11 +5,19 @@ from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.custom.qrlogin import QRLogin
 from telethon.tl.types import InputPeerUser, User
-from telethon.errors import SessionPasswordNeededError, PasswordHashInvalidError
+from telethon.errors import (
+    SessionPasswordNeededError, 
+    PasswordHashInvalidError,
+    UsernameNotModifiedError,
+    UsernameInvalidError,
+    UsernameOccupiedError
+    )
+from telethon import functions
 
 from ..database import SQLite
 from ..utils import config
 from ..utils import generate_qrcode
+from ..utils import generate_username
 from .environments import API_ID, API_HASH
 
 cfg = config()
@@ -54,13 +62,47 @@ class UserClient(TelegramClient):
         dialog.open = False
         dialog.update()
         user: User | InputPeerUser = await self.get_me()
-        self.database.add_user(
-            user.id,  # type: ignore
-            user.first_name,  # type: ignore
+        if user.username is None:
+            while True:
+                try:
+                    username = generate_username()
+                    await self(functions.account.UpdateUsernameRequest(
+                        username
+                    ))
+                    user.username = username
+                    break
+                except (
+                    UsernameNotModifiedError,
+                    UsernameInvalidError,
+                    UsernameOccupiedError
+                ):
+                    continue
+
+        response = self.database.add_user(
+            user.id,
             is_primary,
-            self.session.save(),  # type: ignore
+            user.username,
+            user.phone,
+            user.first_name,
+            user.last_name,
+            int(user.restricted),
+            str(user.restriction_reason),
+            int(user.stories_hidden),
+            int(user.stories_unavailable),
+            int(user.contact_require_premium),
+            int(user.scam),
+            int(user.fake),
+            int(user.premium),
+            user.photo.photo_id if user.photo is not None else None,
+            str(user.emoji_status),
+            str(user.usernames),
+            user.color,
+            str(user.profile_color),
+            self.session.save(),
+            user.access_hash
         )
         self.disconnect()
+        return response
 
     async def logout(self):
         if not self.is_connected():

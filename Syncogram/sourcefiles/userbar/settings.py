@@ -15,18 +15,12 @@ class SettingsDialog(ft.AlertDialog):
         self.c1 = ft.Checkbox(
             label=_("Sync my favorite messages"),
             value=bool(self.options[0]),
-            disabled=True,
+            disabled=False,
             tooltip=_("It will be available in the next updates")
         )
         self.c2 = ft.Checkbox(
-            label=_("Save the sequence of pinned messages"),
-            value=bool(self.options[1]),
-            disabled=True,
-            tooltip=_("It will be available in the next updates")
-        )
-        self.c3 = ft.Checkbox(
             label=_("Sync my profile first name, last name and biography."),
-            value=bool(self.options[2]),
+            value=bool(self.options[1]),
             disabled=False
         )
         """!!!"""
@@ -34,7 +28,6 @@ class SettingsDialog(ft.AlertDialog):
         x = [
             self.c1,
             self.c2,
-            self.c3,
         ]
         x.sort(key=lambda x: x.disabled == True)
 
@@ -63,7 +56,6 @@ class SettingsDialog(ft.AlertDialog):
         self.database.set_options(
             int(self.c1.value), # type: ignore
             int(self.c2.value), # type: ignore
-            int(self.c3.value) # type: ignore
         )
         await self.update_mainwin()
         self.open = False

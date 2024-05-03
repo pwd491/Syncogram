@@ -1,16 +1,20 @@
 {
     "APP": {
         "NAME": "Syncogram",
-        "VERSION": "2024.20.04",
+        "VERSION": "2024.03.05",
         "VERSION_IS_ALPHA": "True",
         "VERSION_IS_BETA": "False"
+    },
+    "DATABASE": {
+        "VERSION": "0.0.1"
     },
     "GIT": {
         "REPO_LINK": "https://github.com/pwd491/syncogram.git",
         "REPO_ISSUES": "https://github.com/pwd491/syncogram/issues",
         "RELEASES": "https://github.com/pwd491/Syncogram/releases",
         "BRANCH_MAIN": "master",
-        "BRANCH_SECOND": "dev"
+        "BRANCH_SECOND": "dev",
+        "REMOTE_CONFIG_URL": "https://raw.githubusercontent.com/pwd491/Syncogram/master/Syncogram/config.json"
     },
     "AUTHOR": {
         "NAME": "Sergey Degtyar",

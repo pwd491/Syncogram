@@ -37,7 +37,7 @@ async def application(page: ft.Page) -> None:
             expand=True,
         )
     )
-    newest_version(page, cfg["APP"]["VERSION"], _)
+    newest_version(page, _)
 
 if __name__ == "__main__":
     ft.app(target=application, assets_dir="assets")

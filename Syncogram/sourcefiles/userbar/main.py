@@ -22,7 +22,6 @@ class UserBar(ft.Container):
         self.settings_btn.text = _("Settings")
         self.settings_btn.icon = ft.icons.SETTINGS
         self.settings_btn.expand = True
-        # self.settings_btn.width = 200
         self.settings_btn.height = 45
         self.settings_btn.on_click = self.settings
 
@@ -64,7 +63,7 @@ class UserBar(ft.Container):
         settings = SettingsDialog(self.update_mainwin, self._)
         self.page.dialog = settings
         settings.open = True
-        await self.page.update_async()
+        self.page.update()
 
     async def generate_accounts_callback(self):
         await self.generate_accounts.generate()
