@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import time
+import datetime
 
 yes = {"yes", "y", "ye", ""}
 no = {"no", "n"}
@@ -14,14 +15,18 @@ with open("Syncogram/config.json", "r", encoding="utf-8") as f:
     CURRENT_APP_VERSION = data["APP"]["VERSION"]
     CURRENT_DB_VERSION = data["DATABASE"]["VERSION"]
 
-NEW_APP_VERSION = str(input(f"What is new application version ({CURRENT_APP_VERSION}): "))
+now = datetime.datetime.strftime(datetime.datetime.now(), "%Y.%d.%m")
+NEW_APP_VERSION = str(input(f"What is new application version ({CURRENT_APP_VERSION}) -> ({now}): "))
+
+if NEW_APP_VERSION == "":
+    NEW_APP_VERSION = now
 print("---------------------")
 print(f"New application version: {NEW_APP_VERSION}")
 
 NEW_DB_VERSION = str(input(f"What is new Database version ({CURRENT_DB_VERSION}): ")) 
 if NEW_DB_VERSION == "":
     NEW_DB_VERSION = CURRENT_DB_VERSION
-    print(f"Stay on: {NEW_APP_VERSION}")
+    print(f"Stay on: {NEW_DB_VERSION}")
 else:
     print(f"New database version: {NEW_DB_VERSION}")
 
