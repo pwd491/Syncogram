@@ -23,7 +23,7 @@ class LogOutDialog(ft.AlertDialog):
 
     async def submit(self, e) -> None:
         session = self.database.get_session_by_id(self.account_id)
-        client = UserClient(*session)
+        client = UserClient(session)
         if await client.logout():
             self.database.delete_user_by_id(self.account_id)
 
