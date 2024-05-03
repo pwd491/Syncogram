@@ -56,11 +56,14 @@ def merge():
     os.system("git pull")
     time.sleep(3)
     print("---Делаю merge [dev -> master]---")
-    os.system("git merge dev -m 'Version {NEW_APP_VERSION}'")
+    os.system("git merge -m 'Version {NEW_APP_VERSION}' dev")
     time.sleep(3)
     print("---Пушим в мастер ветку---")
     os.system("git push origin master")
-
+    time.sleep(3)
+    print("---Переключаемся на dev ветку---")
+    os.system("git push origin master")
+    print("---Конец публикации новой ветке!---")
 
 if choice in yes:
     merge()
