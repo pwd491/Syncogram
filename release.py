@@ -15,7 +15,7 @@ with open("Syncogram/config.json", "r", encoding="utf-8") as f:
     CURRENT_APP_VERSION = data["APP"]["VERSION"]
     CURRENT_DB_VERSION = data["DATABASE"]["VERSION"]
 
-now = datetime.datetime.strftime(datetime.datetime.now(), "%Y.%d.%m")
+now = datetime.datetime.strftime(datetime.datetime.now(), "%Y.%m.%d")
 NEW_APP_VERSION = str(input(f"What is new application version ({CURRENT_APP_VERSION}) -> ({now}): "))
 
 if NEW_APP_VERSION == "":
