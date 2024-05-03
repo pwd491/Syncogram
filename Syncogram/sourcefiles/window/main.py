@@ -58,6 +58,7 @@ class MainWindow(ft.Container):
         super().__init__()
         self.page = page
         self.database = SQLite()
+        self.database.check_update()
         self.manager = Manager(self.page, _, self)
         self.button_start = ButtonStartTasks(self.manager, _)
 
@@ -103,7 +104,7 @@ class MainWindow(ft.Container):
         self.border_radius = ft.BorderRadius(10, 10, 10, 10)
         self.padding = 20
 
-    
+
     async def callback_update(self) -> None:
         users = self.database.get_users()
         self.wrapper.controls.clear()

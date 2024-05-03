@@ -102,13 +102,13 @@ class UIGenerateAccounts(ft.Container):
         while len(self.account_secondary.controls) > 3:
             self.account_secondary.controls.pop(-2)
         for account in accounts:
-            if bool(account[2]):
+            if bool(account[1]):
                 self.account_primary.controls.insert(
-                    -1, self.account_button(account[0], account[1])
+                    -1, self.account_button(account[0], account[4][0:16])
                 )
             else:
                 self.account_secondary.controls.insert(
-                    -1, self.account_button(account[0], account[1])
+                    -1, self.account_button(account[0], account[4][0:16])
                 )
         self.update()
 

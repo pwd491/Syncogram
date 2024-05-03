@@ -12,6 +12,16 @@ class CustomTask(ft.Container):
         self.progress = ft.ProgressBar()
         self.progress.value = 0
 
+        self.value = ft.Text()
+        self.value.value = 0
+        self.total = ft.Text()
+        self.total.value = 0
+
+        self.progress_counters = ft.Row()
+        self.progress_counters.controls = [self.value, self.total]
+        self.progress_counters.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        self.progress_counters.visible = False
+
         self.header = ft.Row()
         self.header.controls = [self.title, ft.Icon(ft.icons.UPDATE, color=ft.colors.ORANGE_500)]
         self.header.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
@@ -20,6 +30,7 @@ class CustomTask(ft.Container):
         self.wrapper = ft.Column([
             self.header,
             ft.Divider(opacity=0),
+            self.progress_counters,
             self.progress
         ])
 

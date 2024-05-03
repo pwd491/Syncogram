@@ -13,7 +13,8 @@
         "REPO_ISSUES": "https://github.com/pwd491/syncogram/issues",
         "RELEASES": "https://github.com/pwd491/Syncogram/releases",
         "BRANCH_MAIN": "master",
-        "BRANCH_SECOND": "dev"
+        "BRANCH_SECOND": "dev",
+        "REMOTE_CONFIG_URL": "https://raw.githubusercontent.com/pwd491/Syncogram/master/Syncogram/config.json"
     },
     "AUTHOR": {
         "NAME": "Sergey Degtyar",

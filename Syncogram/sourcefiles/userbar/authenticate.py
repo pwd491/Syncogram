@@ -79,6 +79,7 @@ class AuthenticationDialogProcedure(ft.AlertDialog):
 
     async def qr_login_dialog(self):
         await self.client.login_by_qrcode(dialog=self, is_primary=self.is_primary)
+        # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
         await self.update_mainwindow()
         await self.update_accounts.generate()
         await self.update_accounts.update_async()

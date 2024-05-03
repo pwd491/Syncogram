@@ -43,11 +43,7 @@ jobs:
           cd Syncogram
           flet pack application.py `
           --name "Syncogram" `
-<<<<<<< HEAD
           --icon "assets/logo/icns/duck512x512.icns" `
-=======
-          --icon "assets\logo\ico\duck128x128.ico" `
->>>>>>> dev
           --product-name "Syncogram Application" `
           --product-version "${{ env.json_APP_VERSION }}" `
           --company-name "Syncogram Application" `
@@ -57,11 +53,7 @@ jobs:
           --add-data assets:assets `
           --add-data config.json:. `
           --distpath ../craft
-<<<<<<< HEAD
           cd ../
-=======
-          cd ..\
->>>>>>> dev
           
       - name: Archive Windows Application
         run: |
