@@ -9,9 +9,9 @@ charset-normalizer==3.3.2
 click==8.1.7
 cookiecutter==2.6.0
 fastapi==0.110.2
-flet==0.22.0
-flet-core==0.22.0
-flet-runtime==0.22.0
+flet==0.22.1
+flet-core==0.22.1
+flet-runtime==0.22.1
 h11==0.14.0
 httpcore==1.0.5
 httptools==0.6.1
