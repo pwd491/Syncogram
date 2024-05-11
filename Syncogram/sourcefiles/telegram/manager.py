@@ -130,10 +130,10 @@ class Manager:
 
         try:
             ui_task_object.progress_counters.visible = True
-            ui_task_object.total.value = source_messages.total
             i = 0
             async for message in source_messages:
                 i += 1
+                ui_task_object.total.value = source_messages.total
                 ui_task_object.progress.value = i / source_messages.total
                 ui_task_object.value.value = i
                 ui_task_object.update()
