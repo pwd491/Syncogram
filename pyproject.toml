@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "syncogram"
+version = "0.1.0"
+description = "The application allows you to quickly transfer your channels, saved messages to another account."
+authors = ["Sergey Degtyar <sergeydegtyar@internet.ru>"]
+license = "GPL-v3"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+flet = "^0.22.1"
+Telethon = "^1.35.0"
+pyinstaller = "^6.6.0"
+qrcode = "^7.4.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.2.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

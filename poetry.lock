@@ -1,0 +1,940 @@
+[[package]]
+name = "altgraph"
+version = "0.17.4"
+description = "Python graph (network) package"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "annotated-types"
+version = "0.6.0"
+description = "Reusable constraint types to use with typing.Annotated"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
+name = "anyio"
+version = "4.3.0"
+description = "High level compatibility layer for multiple asynchronous event loop implementations"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+exceptiongroup = {version = ">=1.0.2", markers = "python_version < \"3.11\""}
+idna = ">=2.8"
+sniffio = ">=1.1"
+typing-extensions = {version = ">=4.1", markers = "python_version < \"3.11\""}
+
+[package.extras]
+doc = ["packaging", "Sphinx (>=7)", "sphinx-rtd-theme", "sphinx-autodoc-typehints (>=1.2.0)"]
+test = ["anyio", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypothesis (>=4.0)", "psutil (>=5.9)", "pytest (>=7.0)", "pytest-mock (>=3.6.1)", "trustme", "uvloop (>=0.17)"]
+trio = ["trio (>=0.23)"]
+
+[[package]]
+name = "arrow"
+version = "1.3.0"
+description = "Better dates & times for Python"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+python-dateutil = ">=2.7.0"
+types-python-dateutil = ">=2.8.10"
+
+[package.extras]
+doc = ["doc8", "sphinx (>=7.0.0)", "sphinx-autobuild", "sphinx-autodoc-typehints", "sphinx_rtd_theme (>=1.3.0)"]
+test = ["dateparser (>=1.0.0,<2.0.0)", "pre-commit", "pytest", "pytest-cov", "pytest-mock", "pytz (==2021.1)", "simplejson (>=3.0.0,<4.0.0)"]
+
+[[package]]
+name = "binaryornot"
+version = "0.4.4"
+description = "Ultra-lightweight pure Python package to check if a file is binary or text."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+chardet = ">=3.0.2"
+
+[[package]]
+name = "certifi"
+version = "2024.2.2"
+description = "Python package for providing Mozilla's CA Bundle."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
+name = "chardet"
+version = "5.2.0"
+description = "Universal encoding detector for Python 3"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "charset-normalizer"
+version = "3.3.2"
+description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
+category = "main"
+optional = false
+python-versions = ">=3.7.0"
+
+[[package]]
+name = "click"
+version = "8.1.7"
+description = "Composable command line interface toolkit"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[[package]]
+name = "colorama"
+version = "0.4.6"
+description = "Cross-platform colored terminal text."
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
+
+[[package]]
+name = "cookiecutter"
+version = "2.6.0"
+description = "A command-line utility that creates projects from project templates, e.g. creating a Python package project from a Python package project template."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+arrow = "*"
+binaryornot = ">=0.4.4"
+click = ">=7.0,<9.0.0"
+Jinja2 = ">=2.7,<4.0.0"
+python-slugify = ">=4.0.0"
+pyyaml = ">=5.3.1"
+requests = ">=2.23.0"
+rich = "*"
+
+[[package]]
+name = "dnspython"
+version = "2.6.1"
+description = "DNS toolkit"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+dev = ["black (>=23.1.0)", "coverage (>=7.0)", "flake8 (>=7)", "mypy (>=1.8)", "pylint (>=3)", "pytest-cov (>=4.1.0)", "pytest (>=7.4)", "sphinx (>=7.2.0)", "twine (>=4.0.0)", "wheel (>=0.42.0)"]
+dnssec = ["cryptography (>=41)"]
+doh = ["h2 (>=4.1.0)", "httpcore (>=1.0.0)", "httpx (>=0.26.0)"]
+doq = ["aioquic (>=0.9.25)"]
+idna = ["idna (>=3.6)"]
+trio = ["trio (>=0.23)"]
+wmi = ["wmi (>=1.5.1)"]
+
+[[package]]
+name = "email-validator"
+version = "2.1.1"
+description = "A robust email address syntax and deliverability validation library."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+dnspython = ">=2.0.0"
+idna = ">=2.0.0"
+
+[[package]]
+name = "exceptiongroup"
+version = "1.2.1"
+description = "Backport of PEP 654 (exception groups)"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+test = ["pytest (>=6)"]
+
+[[package]]
+name = "fastapi"
+version = "0.111.0"
+description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+email_validator = ">=2.0.0"
+fastapi-cli = ">=0.0.2"
+httpx = ">=0.23.0"
+jinja2 = ">=2.11.2"
+orjson = ">=3.2.1"
+pydantic = ">=1.7.4,<1.8 || >1.8,<1.8.1 || >1.8.1,<2.0.0 || >2.0.0,<2.0.1 || >2.0.1,<2.1.0 || >2.1.0,<3.0.0"
+python-multipart = ">=0.0.7"
+starlette = ">=0.37.2,<0.38.0"
+typing-extensions = ">=4.8.0"
+ujson = ">=4.0.1,<4.0.2 || >4.0.2,<4.1.0 || >4.1.0,<4.2.0 || >4.2.0,<4.3.0 || >4.3.0,<5.0.0 || >5.0.0,<5.1.0 || >5.1.0"
+uvicorn = {version = ">=0.12.0", extras = ["standard"]}
+
+[package.extras]
+all = ["httpx (>=0.23.0)", "jinja2 (>=2.11.2)", "python-multipart (>=0.0.7)", "itsdangerous (>=1.1.0)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "orjson (>=3.2.1)", "email_validator (>=2.0.0)", "uvicorn[standard] (>=0.12.0)", "pydantic-settings (>=2.0.0)", "pydantic-extra-types (>=2.0.0)"]
+
+[[package]]
+name = "fastapi-cli"
+version = "0.0.3"
+description = "Run and manage FastAPI apps from the command line with FastAPI CLI. 🚀"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+fastapi = "*"
+typer = ">=0.12.3"
+uvicorn = {version = ">=0.15.0", extras = ["standard"]}
+
+[[package]]
+name = "flet"
+version = "0.22.1"
+description = "Flet for Python - easily build interactive multi-platform apps in Python"
+category = "main"
+optional = false
+python-versions = "<4.0,>=3.8"
+
+[package.dependencies]
+cookiecutter = ">=2.6.0,<3.0.0"
+fastapi = ">=0,<1"
+flet-runtime = "0.22.1"
+packaging = ">=23.1,<24.0"
+qrcode = ">=7.4.2,<8.0.0"
+uvicorn = {version = ">=0,<1", extras = ["standard"]}
+watchdog = ">=4.0.0,<5.0.0"
+
+[[package]]
+name = "flet-core"
+version = "0.22.1"
+description = "Flet core library"
+category = "main"
+optional = false
+python-versions = "<4.0,>=3.8"
+
+[package.dependencies]
+repath = ">=0.9.0,<0.10.0"
+
+[[package]]
+name = "flet-runtime"
+version = "0.22.1"
+description = "Flet Runtime - a base package for Flet desktop and Flet mobile."
+category = "main"
+optional = false
+python-versions = "<4.0,>=3.8"
+
+[package.dependencies]
+flet-core = "0.22.1"
+httpx = ">=0,<1"
+oauthlib = ">=3.2.2,<4.0.0"
+
+[[package]]
+name = "h11"
+version = "0.14.0"
+description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "httpcore"
+version = "1.0.5"
+description = "A minimal low-level HTTP client."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+certifi = "*"
+h11 = ">=0.13,<0.15"
+
+[package.extras]
+asyncio = ["anyio (>=4.0,<5.0)"]
+http2 = ["h2 (>=3,<5)"]
+socks = ["socksio (>=1.0.0,<2.0.0)"]
+trio = ["trio (>=0.22.0,<0.26.0)"]
+
+[[package]]
+name = "httptools"
+version = "0.6.1"
+description = "A collection of framework independent HTTP protocol utils."
+category = "main"
+optional = false
+python-versions = ">=3.8.0"
+
+[package.extras]
+test = ["Cython (>=0.29.24,<0.30.0)"]
+
+[[package]]
+name = "httpx"
+version = "0.27.0"
+description = "The next generation HTTP client."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+anyio = "*"
+certifi = "*"
+httpcore = ">=1.0.0,<2.0.0"
+idna = "*"
+sniffio = "*"
+
+[package.extras]
+brotli = ["brotli", "brotlicffi"]
+cli = ["click (>=8.0.0,<9.0.0)", "pygments (>=2.0.0,<3.0.0)", "rich (>=10,<14)"]
+http2 = ["h2 (>=3,<5)"]
+socks = ["socksio (>=1.0.0,<2.0.0)"]
+
+[[package]]
+name = "idna"
+version = "3.7"
+description = "Internationalized Domain Names in Applications (IDNA)"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
+name = "iniconfig"
+version = "2.0.0"
+description = "brain-dead simple config-ini parsing"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "jinja2"
+version = "3.1.4"
+description = "A very fast and expressive template engine."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+MarkupSafe = ">=2.0"
+
+[package.extras]
+i18n = ["Babel (>=2.7)"]
+
+[[package]]
+name = "macholib"
+version = "1.16.3"
+description = "Mach-O header analysis and editing"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+altgraph = ">=0.17"
+
+[[package]]
+name = "markdown-it-py"
+version = "3.0.0"
+description = "Python port of markdown-it. Markdown parsing, done right!"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+mdurl = ">=0.1,<1.0"
+
+[package.extras]
+benchmarking = ["psutil", "pytest", "pytest-benchmark"]
+code_style = ["pre-commit (>=3.0,<4.0)"]
+compare = ["commonmark (>=0.9,<1.0)", "markdown (>=3.4,<4.0)", "mistletoe (>=1.0,<2.0)", "mistune (>=2.0,<3.0)", "panflute (>=2.3,<3.0)"]
+linkify = ["linkify-it-py (>=1,<3)"]
+plugins = ["mdit-py-plugins"]
+profiling = ["gprof2dot"]
+rtd = ["mdit-py-plugins", "myst-parser", "pyyaml", "sphinx", "sphinx-copybutton", "sphinx-design", "sphinx-book-theme", "jupyter-sphinx"]
+testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
+
+[[package]]
+name = "markupsafe"
+version = "2.1.5"
+description = "Safely add untrusted strings to HTML/XML markup."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "mdurl"
+version = "0.1.2"
+description = "Markdown URL utilities"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "oauthlib"
+version = "3.2.2"
+description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+rsa = ["cryptography (>=3.0.0)"]
+signals = ["blinker (>=1.4.0)"]
+signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
+
+[[package]]
+name = "orjson"
+version = "3.10.3"
+description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
+name = "packaging"
+version = "23.2"
+description = "Core utilities for Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "pefile"
+version = "2023.2.7"
+description = "Python PE parsing module"
+category = "main"
+optional = false
+python-versions = ">=3.6.0"
+
+[[package]]
+name = "pluggy"
+version = "1.5.0"
+description = "plugin and hook calling mechanisms for python"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+dev = ["pre-commit", "tox"]
+testing = ["pytest", "pytest-benchmark"]
+
+[[package]]
+name = "pyaes"
+version = "1.6.1"
+description = "Pure-Python Implementation of the AES block-cipher and common modes of operation"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "pyasn1"
+version = "0.6.0"
+description = "Pure-Python implementation of ASN.1 types and DER/BER/CER codecs (X.208)"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
+name = "pydantic"
+version = "2.7.1"
+description = "Data validation using Python type hints"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+annotated-types = ">=0.4.0"
+pydantic-core = "2.18.2"
+typing-extensions = ">=4.6.1"
+
+[package.extras]
+email = ["email-validator (>=2.0.0)"]
+
+[[package]]
+name = "pydantic-core"
+version = "2.18.2"
+description = "Core functionality for Pydantic validation and serialization"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
+
+[[package]]
+name = "pygments"
+version = "2.18.0"
+description = "Pygments is a syntax highlighting package written in Python."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+windows-terminal = ["colorama (>=0.4.6)"]
+
+[[package]]
+name = "pyinstaller"
+version = "6.6.0"
+description = "PyInstaller bundles a Python application and all its dependencies into a single package."
+category = "main"
+optional = false
+python-versions = "<3.13,>=3.8"
+
+[package.dependencies]
+altgraph = "*"
+macholib = {version = ">=1.8", markers = "sys_platform == \"darwin\""}
+packaging = ">=22.0"
+pefile = {version = ">=2022.5.30", markers = "sys_platform == \"win32\""}
+pyinstaller-hooks-contrib = ">=2024.3"
+pywin32-ctypes = {version = ">=0.2.1", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+completion = ["argcomplete"]
+hook-testing = ["pytest (>=2.7.3)", "execnet (>=1.5.0)", "psutil"]
+
+[[package]]
+name = "pyinstaller-hooks-contrib"
+version = "2024.6"
+description = "Community maintained hooks for PyInstaller"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+packaging = ">=22.0"
+
+[[package]]
+name = "pypng"
+version = "0.20220715.0"
+description = "Pure Python library for saving and loading PNG images"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "pytest"
+version = "8.2.0"
+description = "pytest: simple powerful testing with Python"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
+iniconfig = "*"
+packaging = "*"
+pluggy = ">=1.5,<2.0"
+tomli = {version = ">=1", markers = "python_version < \"3.11\""}
+
+[package.extras]
+dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
+
+[[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+description = "Extensions to the standard Python datetime module"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
+name = "python-dotenv"
+version = "1.0.1"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+cli = ["click (>=5.0)"]
+
+[[package]]
+name = "python-multipart"
+version = "0.0.9"
+description = "A streaming multipart parser for Python"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+dev = ["atomicwrites (==1.4.1)", "attrs (==23.2.0)", "coverage (==7.4.1)", "hatch", "invoke (==2.2.0)", "more-itertools (==10.2.0)", "pbr (==6.0.0)", "pluggy (==1.4.0)", "py (==1.11.0)", "pytest-cov (==4.1.0)", "pytest-timeout (==2.2.0)", "pytest (==8.0.0)", "pyyaml (==6.0.1)", "ruff (==0.2.1)"]
+
+[[package]]
+name = "python-slugify"
+version = "8.0.4"
+description = "A Python slugify application that also handles Unicode"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+text-unidecode = ">=1.3"
+
+[package.extras]
+unidecode = ["Unidecode (>=1.1.1)"]
+
+[[package]]
+name = "pywin32-ctypes"
+version = "0.2.2"
+description = "A (partial) reimplementation of pywin32 using ctypes/cffi"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
+name = "pyyaml"
+version = "6.0.1"
+description = "YAML parser and emitter for Python"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
+name = "qrcode"
+version = "7.4.2"
+description = "QR Code image generator"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+pypng = "*"
+typing-extensions = "*"
+
+[package.extras]
+all = ["zest.releaser", "tox", "pytest", "pytest-cov", "pillow (>=9.1.0)"]
+dev = ["tox", "pytest", "pytest-cov"]
+maintainer = ["zest.releaser"]
+pil = ["pillow (>=9.1.0)"]
+test = ["coverage", "pytest"]
+
+[[package]]
+name = "repath"
+version = "0.9.0"
+description = "Generate regular expressions form ExpressJS path patterns"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = ">=1.9.0"
+
+[[package]]
+name = "requests"
+version = "2.31.0"
+description = "Python HTTP for Humans."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+certifi = ">=2017.4.17"
+charset-normalizer = ">=2,<4"
+idna = ">=2.5,<4"
+urllib3 = ">=1.21.1,<3"
+
+[package.extras]
+socks = ["PySocks (>=1.5.6,!=1.5.7)"]
+use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+
+[[package]]
+name = "rich"
+version = "13.7.1"
+description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
+category = "main"
+optional = false
+python-versions = ">=3.7.0"
+
+[package.dependencies]
+markdown-it-py = ">=2.2.0"
+pygments = ">=2.13.0,<3.0.0"
+
+[package.extras]
+jupyter = ["ipywidgets (>=7.5.1,<9)"]
+
+[[package]]
+name = "rsa"
+version = "4.9"
+description = "Pure-Python RSA implementation"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4"
+
+[package.dependencies]
+pyasn1 = ">=0.1.3"
+
+[[package]]
+name = "shellingham"
+version = "1.5.4"
+description = "Tool to Detect Surrounding Shell"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "six"
+version = "1.16.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
+name = "sniffio"
+version = "1.3.1"
+description = "Sniff out which async library your code is running under"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "starlette"
+version = "0.37.2"
+description = "The little ASGI library that shines."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+anyio = ">=3.4.0,<5"
+
+[package.extras]
+full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7)", "pyyaml"]
+
+[[package]]
+name = "telethon"
+version = "1.35.0"
+description = "Full-featured Telegram client library for Python 3"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+pyaes = "*"
+rsa = "*"
+
+[package.extras]
+cryptg = ["cryptg"]
+
+[[package]]
+name = "text-unidecode"
+version = "1.3"
+description = "The most basic Text::Unidecode port"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "tomli"
+version = "2.0.1"
+description = "A lil' TOML parser"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "typer"
+version = "0.12.3"
+description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+click = ">=8.0.0"
+rich = ">=10.11.0"
+shellingham = ">=1.3.0"
+typing-extensions = ">=3.7.4.3"
+
+[[package]]
+name = "types-python-dateutil"
+version = "2.9.0.20240316"
+description = "Typing stubs for python-dateutil"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
+name = "typing-extensions"
+version = "4.11.0"
+description = "Backported and Experimental Type Hints for Python 3.8+"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
+name = "ujson"
+version = "5.9.0"
+description = "Ultra fast JSON encoder and decoder for Python"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[[package]]
+name = "urllib3"
+version = "2.2.1"
+description = "HTTP library with thread-safe connection pooling, file post, and more."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
+h2 = ["h2 (>=4,<5)"]
+socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
+zstd = ["zstandard (>=0.18.0)"]
+
+[[package]]
+name = "uvicorn"
+version = "0.29.0"
+description = "The lightning-fast ASGI server."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+click = ">=7.0"
+colorama = {version = ">=0.4", optional = true, markers = "sys_platform == \"win32\" and extra == \"standard\""}
+h11 = ">=0.8"
+httptools = {version = ">=0.5.0", optional = true, markers = "extra == \"standard\""}
+python-dotenv = {version = ">=0.13", optional = true, markers = "extra == \"standard\""}
+pyyaml = {version = ">=5.1", optional = true, markers = "extra == \"standard\""}
+typing-extensions = {version = ">=4.0", markers = "python_version < \"3.11\""}
+uvloop = {version = ">=0.14.0,<0.15.0 || >0.15.0,<0.15.1 || >0.15.1", optional = true, markers = "sys_platform != \"win32\" and sys_platform != \"cygwin\" and platform_python_implementation != \"PyPy\" and extra == \"standard\""}
+watchfiles = {version = ">=0.13", optional = true, markers = "extra == \"standard\""}
+websockets = {version = ">=10.4", optional = true, markers = "extra == \"standard\""}
+
+[package.extras]
+standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "watchfiles (>=0.13)", "websockets (>=10.4)"]
+
+[[package]]
+name = "uvloop"
+version = "0.19.0"
+description = "Fast implementation of asyncio event loop on top of libuv"
+category = "main"
+optional = false
+python-versions = ">=3.8.0"
+
+[package.extras]
+docs = ["Sphinx (>=4.1.2,<4.2.0)", "sphinxcontrib-asyncio (>=0.3.0,<0.4.0)", "sphinx-rtd-theme (>=0.5.2,<0.6.0)"]
+test = ["flake8 (>=5.0,<6.0)", "psutil", "pycodestyle (>=2.9.0,<2.10.0)", "pyOpenSSL (>=23.0.0,<23.1.0)", "mypy (>=0.800)", "Cython (>=0.29.36,<0.30.0)", "aiohttp (>=3.8.1)", "aiohttp (==3.9.0b0)"]
+
+[[package]]
+name = "watchdog"
+version = "4.0.0"
+description = "Filesystem events monitoring"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+watchmedo = ["PyYAML (>=3.10)"]
+
+[[package]]
+name = "watchfiles"
+version = "0.21.0"
+description = "Simple, modern and high performance file watching and code reload in python."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+anyio = ">=3.0.0"
+
+[[package]]
+name = "websockets"
+version = "12.0"
+description = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[metadata]
+lock-version = "1.1"
+python-versions = ">=3.10,<3.13"
+content-hash = "37bded285ce8057ffdd725230e0957659846af599d4d59fab2e86d4df40001de"
+
+[metadata.files]
+altgraph = []
+annotated-types = []
+anyio = []
+arrow = []
+binaryornot = []
+certifi = []
+chardet = []
+charset-normalizer = []
+click = []
+colorama = []
+cookiecutter = []
+dnspython = []
+email-validator = []
+exceptiongroup = []
+fastapi = []
+fastapi-cli = []
+flet = []
+flet-core = []
+flet-runtime = []
+h11 = []
+httpcore = []
+httptools = []
+httpx = []
+idna = []
+iniconfig = []
+jinja2 = []
+macholib = []
+markdown-it-py = []
+markupsafe = []
+mdurl = []
+oauthlib = []
+orjson = []
+packaging = []
+pefile = []
+pluggy = []
+pyaes = []
+pyasn1 = []
+pydantic = []
+pydantic-core = []
+pygments = []
+pyinstaller = []
+pyinstaller-hooks-contrib = []
+pypng = []
+pytest = []
+python-dateutil = []
+python-dotenv = []
+python-multipart = []
+python-slugify = []
+pywin32-ctypes = []
+pyyaml = []
+qrcode = []
+repath = []
+requests = []
+rich = []
+rsa = []
+shellingham = []
+six = []
+sniffio = []
+starlette = []
+telethon = []
+text-unidecode = []
+tomli = []
+typer = []
+types-python-dateutil = []
+typing-extensions = []
+ujson = []
+urllib3 = []
+uvicorn = []
+uvloop = []
+watchdog = []
+watchfiles = []
+websockets = []
