@@ -10,7 +10,7 @@ class ErrorAddAccount(ft.AlertDialog):
             _("The application does not support more than 1 account, expect in the future.")
         )
         self.actions = [
-            ft.TextButton("Okay", on_click=self.close)
+            ft.TextButton(_("Okay"), on_click=self.close)
         ]
         self.actions_alignment = ft.MainAxisAlignment.END
 

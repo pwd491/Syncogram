@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS options
 (
     user_id INTEGER PREFERENCE UNIQUE,
     is_sync_fav INTEGER DEFAULT 0,
-    is_sync_profile_name INTEGER DEFAULT 0
+    is_sync_profile_name INTEGER DEFAULT 0,
+    is_sync_profile_media INTEGER DEFAULT 0
 )
 """
 
@@ -41,7 +42,8 @@ SQL_UPDATE_OPTIONS = \
 UPDATE `options`
 SET 
 is_sync_fav = (?),
-is_sync_profile_name = (?)
+is_sync_profile_name = (?),
+is_sync_profile_media = (?)
 FROM 
 (
     SELECT user_id FROM users WHERE is_primary = 1
@@ -59,6 +61,7 @@ VALUES
 (
 (SELECT user_id FROM users WHERE is_primary = 1),
 (?), 
+(?),
 (?)
 )
 """
@@ -69,21 +72,21 @@ SQL_TABLE_DB_DATA = \
 CREATE TABLE IF NOT EXISTS db_data (version VARCHAR)
 """
 
-SQL_TRIGGER_DEFAULT_OPTIONS = \
-"""
-CREATE TRIGGER IF NOT EXISTS defaults_options_on_insert
-AFTER INSERT ON users 
-BEGIN 
-    INSERT INTO options 
-                VALUES 
-                (
-                    NEW.user_id,
-                    0,
-                    0,
-                    0
-                );
-    END;
-"""
+# SQL_TRIGGER_DEFAULT_OPTIONS = \
+# """
+# CREATE TRIGGER IF NOT EXISTS defaults_options_on_insert
+# AFTER INSERT ON users 
+# BEGIN 
+#     INSERT INTO options 
+#                 VALUES 
+#                 (
+#                     NEW.user_id,
+#                     0,
+#                     0,
+#                     0
+#                 );
+#     END;
+# """
 
 SQL_TRIGGER_DROP_OPTIONS = \
 """

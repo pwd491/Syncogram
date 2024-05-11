@@ -1,3 +1,4 @@
+"""The main file to run application."""
 import os
 import gettext
 import flet as ft
@@ -18,6 +19,7 @@ translations = gettext.translation('base', pth, fallback=True)
 _ = translations.gettext
 
 async def application(page: ft.Page) -> None:
+    """Entry point of application"""
     page.title = cfg["APP"]["NAME"]
     page.window_width = page.window_min_width = 960
     page.window_height = page.window_min_height = 680

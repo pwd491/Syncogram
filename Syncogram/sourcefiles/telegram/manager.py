@@ -1,10 +1,14 @@
+"""The manager controls tasks for synchronization tg-accs."""
+
 import asyncio
+from datetime import datetime
 
 import flet as ft
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.patched import MessageService
-from telethon.tl.types import UserFull, PeerUser, Message
+from telethon.tl.types import UserFull, Message, Photo
+from telethon.tl.functions.photos import (UploadProfilePhotoRequest)
 
 from .client import UserClient
 from .task import CustomTask
@@ -34,6 +38,14 @@ class Manager:
                 "status": bool(),
                 "ui_task_object": CustomTask,
             },
+            "is_sync_profile_media": {
+                "title": _(
+                    "Synchronize account photos and videos."
+                ),
+                "function": self.sync_profile_media,
+                "status": bool(),
+                "ui_task_object": CustomTask,
+            }
         }
 
     async def build(self):
@@ -118,10 +130,10 @@ class Manager:
 
         try:
             ui_task_object.progress_counters.visible = True
+            ui_task_object.total.value = source_messages.total
             i = 0
             async for message in source_messages:
                 i += 1
-                ui_task_object.total.value = source_messages.total
                 ui_task_object.progress.value = i / source_messages.total
                 ui_task_object.value.value = i
                 ui_task_object.update()
@@ -211,9 +223,57 @@ class Manager:
             await recepient(UpdateProfileRequest(first_name, last_name, bio))
         except Exception as e:
             return ui_task_object.unsuccess(e)
+        finally:
+            sender.disconnect()
+            recepient.disconnect()
 
-        sender.disconnect()
-        recepient.disconnect()
+        ui_task_object.success()
+
+
+    async def sync_profile_media(self, ui_task_object: CustomTask):
+        sender = self.client(self.database.get_session_by_status(1))
+        recepient = self.client(self.database.get_session_by_status(0))
+
+        if not (sender.is_connected() and recepient.is_connected()):
+            await sender.connect()
+            await recepient.connect()
+
+        image_extension = ".jpeg"
+        video_extension = ".mp4"
+        photo: Photo
+        try:
+            i = 0
+            photos = await sender.get_profile_photos("me")
+            ui_task_object.progress_counters.visible = True
+            ui_task_object.total.value = photos.total
+            for photo in reversed(photos):
+                i += 1
+                ui_task_object.progress.value = i / photos.total
+                ui_task_object.value.value = i
+                ui_task_object.update()
+                await asyncio.sleep(3)
+                blob = await sender.download_media(photo, bytes)
+                name = "Syncogram_" + datetime.strftime(
+                    photo.date, "%Y_%m_%d_%H_%M_%S"
+                )
+                if not photo.video_sizes:
+                    file = await recepient.upload_file(
+                        blob,
+                        file_name=name + image_extension
+                    )
+                    await recepient(UploadProfilePhotoRequest(file=file))
+                    continue
+                file = await recepient.upload_file(
+                    blob,
+                    file_name=name + video_extension
+                )
+                await recepient(UploadProfilePhotoRequest(video=file))
+        except Exception as e:
+            return ui_task_object.unsuccess(e)
+        finally:
+            sender.disconnect()
+            recepient.disconnect()
+
         ui_task_object.success()
 
     async def start_all_tasks(self, btn, _):
@@ -223,11 +283,12 @@ class Manager:
             settings.open = True
             btn.state = False
             return self.page.update()
-
+        lst = []
         for option in self.options.items():
             if option[1].get("status"):
                 func = option[1].get("function")
                 obj = option[1].get("ui_task_object")
-                await func(obj)
+                lst.append(func(obj))
+        await asyncio.gather(*lst)
         btn.state = False
         btn.update()

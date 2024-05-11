@@ -81,7 +81,7 @@ class UIGenerateAccounts(ft.Container):
     async def add_account(self, e, is_primary: bool):
         accounts: list[Any] = self.database.get_users()
         for acc in accounts:
-            if int(is_primary) == acc[2]:
+            if int(is_primary) == acc[1]:
                 error = ErrorAddAccount(self._)
                 self.page.dialog = error
                 error.open = True

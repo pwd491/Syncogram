@@ -23,11 +23,17 @@ class SettingsDialog(ft.AlertDialog):
             value=bool(self.options[1]),
             disabled=False
         )
+        self.c3 = ft.Checkbox(
+            label=_("Sync profile photos and videos."),
+            value=bool(self.options[2]),
+            disabled=False
+        )
         """!!!"""
 
         x = [
             self.c1,
             self.c2,
+            self.c3,
         ]
         x.sort(key=lambda x: x.disabled == True)
 
@@ -56,6 +62,7 @@ class SettingsDialog(ft.AlertDialog):
         self.database.set_options(
             int(self.c1.value), # type: ignore
             int(self.c2.value), # type: ignore
+            int(self.c3.value)
         )
         await self.update_mainwin()
         self.open = False
