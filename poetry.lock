@@ -50,6 +50,17 @@ doc = ["doc8", "sphinx (>=7.0.0)", "sphinx-autobuild", "sphinx-autodoc-typehints
 test = ["dateparser (>=1.0.0,<2.0.0)", "pre-commit", "pytest", "pytest-cov", "pytest-mock", "pytz (==2021.1)", "simplejson (>=3.0.0,<4.0.0)"]
 
 [[package]]
+name = "babel"
+version = "2.15.0"
+description = "Internationalization utilities"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+dev = ["pytest (>=6.0)", "pytest-cov", "freezegun (>=1.0,<2.0)"]
+
+[[package]]
 name = "binaryornot"
 version = "0.4.4"
 description = "Ultra-lightweight pure Python package to check if a file is binary or text."
@@ -863,13 +874,14 @@ python-versions = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "37bded285ce8057ffdd725230e0957659846af599d4d59fab2e86d4df40001de"
+content-hash = "f77e95dc40477d82c0f7e6b2de933b984c8596dd3a23c229acf2eeb1ca28fb84"
 
 [metadata.files]
 altgraph = []
 annotated-types = []
 anyio = []
 arrow = []
+babel = []
 binaryornot = []
 certifi = []
 chardet = []
