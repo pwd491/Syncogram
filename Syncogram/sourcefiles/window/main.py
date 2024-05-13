@@ -18,6 +18,7 @@ class ButtonStartTasks(ft.Container):
         self.button_start_wrapper_icon.color = ft.colors.WHITE
         self.button_start_wrapper_icon.name = ft.icons.SYNC
         self.button_start_wrapper_icon.rotate = ft.transform.Rotate(0, ft.alignment.center)
+        self.button_start_wrapper_icon.animate_rotation = ft.animation.Animation(300, ft.AnimationCurve.BOUNCE_OUT)
         self.button_start_wrapper_text = ft.Text()
         self.button_start_wrapper_text.value = _("START")
         self.button_start_wrapper_text.weight = ft.FontWeight.W_600
@@ -44,8 +45,8 @@ class ButtonStartTasks(ft.Container):
 
     async def infinity_rotate(self):
         while self.state:
-            await sleep(0.01)
-            self.button_start_wrapper_icon.rotate.angle -= 0.1
+            await sleep(0.1)
+            self.button_start_wrapper_icon.rotate.angle += 1
             self.button_start_wrapper_icon.update()
 
 
