@@ -53,9 +53,9 @@ jobs:
           --company-name "Syncogram Application" `
           --copyright "GPL-3.0" `
           --file-version "${{ env.json_APP_VERSION }}" `
-          --add-binary locales:locales `
-          --add-data assets:assets `
-          --add-data config.json:. `
+          --add-binary "locales;locales" `
+          --add-data "assets;assets" `
+          --add-data "config.json;." `
           --distpath ../craft
           cd ../
           
