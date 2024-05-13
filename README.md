@@ -3,10 +3,10 @@ The application allows you to quickly transfer your channels, saved messages to 
 
 <sub>All data associated with the account is stored only on your local computer. We do not transfer or store anything.</sub>
 
-![GitHub License](https://img.shields.io/github/license/pwd491/syncogram)
-![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/pwd491/syncogram/latest/total?style=social&label=Download&link=https%3A%2F%2Fgithub.com%2Fpwd491%2FSyncogram%2Freleases)
+[![GitHub License](https://img.shields.io/github/license/pwd491/syncogram)](LICENSE)
+[![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/pwd491/syncogram/latest/total?style=social&label=Download)](https://github.com/pwd491/Syncogram/releases)
 ![GitHub Release](https://img.shields.io/github/v/release/pwd491/Syncogram?display_name=release&label=latest-release)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/pwd491/syncogram/.github%2Fworkflows%2Frelease.yml)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/pwd491/syncogram/.github%2Fworkflows%2Frelease.yml)](https://github.com/pwd491/Syncogram/actions)
 
 
 ![Preview of Telegram Desktop][preview_image]
