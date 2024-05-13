@@ -4,6 +4,7 @@ The application allows you to quickly transfer your channels, saved messages to 
 <sub>All data associated with the account is stored only on your local computer. We do not transfer or store anything.</sub>
 
 ![GitHub License](https://img.shields.io/github/license/pwd491/syncogram)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/pwd491/syncogram/latest/total?style=social&label=Download&link=https%3A%2F%2Fgithub.com%2Fpwd491%2FSyncogram%2Freleases)
 ![GitHub Release](https://img.shields.io/github/v/release/pwd491/Syncogram?display_name=release&label=latest-release)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/pwd491/syncogram/.github%2Fworkflows%2Frelease.yml)
 
@@ -14,10 +15,10 @@ The application allows you to quickly transfer your channels, saved messages to 
 
 # Features
 * Syncing first name, last name and biography.
-* Syncing personal photos with right sequence. (_soon_)
-* Syncing favorite messages with right sequence. (_soon_)
-* Backup personals chats with all media and pins. (_soon_)
-* Syncing all settings. (_soon_)
+* Syncing personal photos with right sequence.
+* Syncing favorite messages with right sequence. _(An inefficient algorithm is used)_
+* Backup personals chats with all media and pins. _(soon)_
+* Syncing all settings. _(soon)_
 
 # Supports
 ### Operation Systems
@@ -31,7 +32,7 @@ The application allows you to quickly transfer your channels, saved messages to 
 * MacOS: Python 3.9+
 ### Languages
 * English
-* Russian _(soon)_ **now available only Linux**
+* Russian
 
 # Installation Guide
 Fortunately, you can use [binary files](https://github.com/pwd491/syncogram/releases). If you don't want using binaries, you can build or execute your own application.
