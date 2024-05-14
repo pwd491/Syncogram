@@ -87,9 +87,10 @@ class SQLite:
         """Get user by id"""
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
-                return cursor.execute(
+                request = cursor.execute(
                     SQL_GET_USER_ID_BY_STATUS, (status,)
-                ).fetchone()[0]
+                ).fetchone()
+                return request[0] if request is not None else request
 
     def get_session_by_status(self, is_primary: int) -> list[str]:
         """Get user by status (sender or recepient)."""
