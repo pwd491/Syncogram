@@ -9,24 +9,11 @@ from sourcefiles import UserBar
 from sourcefiles import MainWindow
 from sourcefiles import WelcomeScreenAnimation
 from sourcefiles.utils import config
+from sourcefiles.utils import get_locale
 from sourcefiles.utils import newest_version
 
-
 cfg = config()
-
-path_to_locales = os.path.abspath(os.path.join(os.path.dirname(__file__), "locales"))
-
-DOMAIN = "base"
-
-ru = gettext.translation(DOMAIN, path_to_locales, ["ru"], fallback=True)
-en = gettext.translation(DOMAIN, path_to_locales, ["en"], fallback=True)
-
-if getlocale()[0] in ["Russian_Russia","ru_RU"]:
-    ru.install()
-    _ = ru.gettext
-else:
-    en.install()
-    _ = en.gettext
+_ = get_locale(__file__)
 
 async def application(page: ft.Page) -> None:
     """Entry point of application"""

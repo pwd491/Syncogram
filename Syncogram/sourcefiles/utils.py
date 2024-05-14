@@ -1,13 +1,15 @@
 import os
-import base64
+import sys
 import json
 import random
 import string
+import base64
+import gettext
+from locale import getlocale
 from json import loads
-from requests import request
 from io import BytesIO
-from typing import Literal
 
+from requests import request
 import flet as ft
 import qrcode
 
@@ -105,3 +107,27 @@ def newest_version(page: ft.Page, _) -> None:
         page.snack_bar = snack
         page.snack_bar.open = True
         page.update()
+
+def get_locale(__file__):
+    """Getting system locale. (Bad way to get for darwin)"""
+    domain = "base"
+    path_to_locales = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "locales")
+    )
+    ru = gettext.translation(domain, path_to_locales, ["ru"], fallback=True)
+    en = gettext.translation(domain, path_to_locales, ["en"], fallback=True)
+
+    match sys.platform:
+        case "darwin":
+            if os.popen("defaults read -g AppleLanguages")\
+                .read().strip().split('"')[1] in ["ru-RU"]:
+                ru.install()
+                _ = ru.gettext
+        case _:
+            if getlocale()[0] in ["Russian_Russia","ru_RU"]:
+                ru.install()
+                _ = ru.gettext
+            else:
+                en.install()
+                _ = en.gettext
+    return _
