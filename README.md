@@ -1,7 +1,8 @@
 # Syncogram
 The application allows you to quickly transfer your channels, saved messages to another telegram account.
 
-<sub>All data associated with the account is stored only on your local computer. We do not transfer or store anything.</sub>
+> [!IMPORTANT]
+> <sub>All data associated with the account is stored only on your local computer. We do not transfer or store anything.</sub>
 
 [![GitHub License](https://img.shields.io/github/license/pwd491/syncogram)](LICENSE)
 [![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/pwd491/syncogram/latest/total?style=social&label=Download)](https://github.com/pwd491/Syncogram/releases)
@@ -37,6 +38,26 @@ The application allows you to quickly transfer your channels, saved messages to 
 # Installation Guide
 Fortunately, you can use [binary files](https://github.com/pwd491/syncogram/releases). If you don't want using binaries, you can build or execute your own application.
 
+If you want to build your own application go to [https://my.telegram.org/auth](https://my.telegram.org/auth) and get **API** data.  
+> [!WARNING]
+> Be careful and do not transfer this data to strangers, telegram does not allow you to reset this data.
+
+# Build Windows | Linux | MacOS
+_It is strongly recommended to use [Python version 3.12](https://www.python.org/downloads/release/python-3123/) and the [Poetry](https://python-poetry.org/docs/#installation) package manager._  
+_If you don't want to use Poetry, use the pip file **requirements.txt** to install dependencies._
+1. `git clone https://github.com/pwd491/Syncogram.git && cd Syncogram` 
+2. `poetry env use python3.12 || poetry env use python3 || poetry env use python`
+3. `poetry shell && poetry install`
+4. _Do next steps:_ 
+- Create **environments.py** file into **Syncogram/sourcefiles/telegram**
+- Paste your **API** data like: API_ID=*** API_HASH=***
+5. `source ./scripts/build.sh || .\scripts\build.bat`
+6. Open craft folder and enjoy.
+
+
+# Execute source code
+1. Repeat the previous steps 1, 2, 3, 4.
+7. ` flet run ./Syncogram/application.py || flet run Syncogram\application.py`
 
 # MacOS trouble
 If you're execute binary files on your mac machine, you can have this problem.
@@ -47,36 +68,5 @@ To fix it go to **Settings** → **Privacy & Security** and submit **Open Anyway
 
 ![MacOS Error](./docs/assets//macos_error2.jpg)
 
-If you want to build your own application go to [https://my.telegram.org/auth](https://my.telegram.org/auth) and get **API** data. Be careful and do not transfer this data to strangers, telegram does not allow you to reset this data.
-
-# Build MacOS & Linux
-1. `git clone https://github.com/pwd491/Syncogram.git`
-2. `cd Syncogram`
-3. `python -m venv venv`
-4. `source venv\bin\activate`
-5. `pip install -r requirements.txt`
-6. Create **environments.py** file into `./Syncogram/sourcefiles/telegram/` and paste your **API** data like `API_ID=***` `API_HASH=***`.
-7. `source scripts\build.sh`
-8. `open craft\Syncogram.app`
-
-# Build Windows
-1. `git clone https://github.com/pwd491/Syncogram.git`
-2. `cd Syncogram`
-3. `python -m venv venv`
-4. `venv/Scripts/activate`
-5. `pip install -r requirements.txt`
-6. Create **environments.py** file into `./Syncogram/sourcefiles/telegram/` and paste your **API** data like `API_ID=***` `API_HASH=***`.
-8. `.\craft\Syncogram.exe`
-
-
-# Execute source code
-1. `git clone https://github.com/pwd491/Syncogram.git`
-2. `cd Syncogram`
-3. `python -m venv venv`
-4. `venv/Scripts/activate`
-5. `pip install -r requirements.txt`
-6. Create **environments.py** file into `./Syncogram/sourcefiles/telegram/` and paste your **API** data like `API_ID=***` `API_HASH=***`.
-7. `flet run Syncogram\application.py`
-
 # Contacts
-### [Telegram](https://t.me/sergeydegtyar)
+> [Telegram](https://t.me/sergeydegtyar) | [Issues](https://github.com/pwd491/syncogram/issues)
