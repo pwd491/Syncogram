@@ -1,15 +1,13 @@
 # Syncogram
-
-[![GitHub License](https://img.shields.io/github/license/pwd491/syncogram)](LICENSE)
-[![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/pwd491/syncogram/latest/total?style=social&label=Download)](https://github.com/pwd491/Syncogram/releases)
-![GitHub Release](https://img.shields.io/github/v/release/pwd491/Syncogram?display_name=release&label=latest-release)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/pwd491/syncogram/.github%2Fworkflows%2Frelease.yml)](https://github.com/pwd491/Syncogram/actions)  
 The application allows you to quickly transfer your channels, saved messages to another telegram account.
 
 > [!IMPORTANT]
 > <sub>All data associated with the account is stored only on your local computer. We do not transfer or store anything.</sub>
 
-
+[![GitHub License](https://img.shields.io/github/license/pwd491/syncogram)](LICENSE)
+[![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/pwd491/syncogram/latest/total?style=social&label=Download)](https://github.com/pwd491/Syncogram/releases)
+![GitHub Release](https://img.shields.io/github/v/release/pwd491/Syncogram?display_name=release&label=latest-release)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/pwd491/syncogram/.github%2Fworkflows%2Frelease.yml)](https://github.com/pwd491/Syncogram/actions)  
 
 ![Preview of Telegram Desktop][preview_image]
 
@@ -54,7 +52,6 @@ _If you don't want to use Poetry, use the pip file **requirements.txt** to insta
 - Paste your **API** data like: API_ID=*** API_HASH=***
 5. `source ./scripts/build.sh || .\scripts\build.bat`
 6. Open craft folder and enjoy.
-
 
 # Execute source code
 1. Repeat the previous steps 1, 2, 3, 4.
