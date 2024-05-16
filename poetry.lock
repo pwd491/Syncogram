@@ -424,6 +424,22 @@ optional = false
 python-versions = ">=3.6.0"
 
 [[package]]
+name = "pillow"
+version = "10.3.0"
+description = "Python Imaging Library (Fork)"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+docs = ["furo", "olefile", "sphinx (>=2.4)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinx-removed-in", "sphinxext-opengraph"]
+fpx = ["olefile"]
+mic = ["olefile"]
+tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
+typing = ["typing-extensions"]
+xmp = ["defusedxml"]
+
+[[package]]
 name = "pluggy"
 version = "1.5.0"
 description = "plugin and hook calling mechanisms for python"
@@ -786,7 +802,7 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "ujson"
-version = "5.9.0"
+version = "5.10.0"
 description = "Ultra fast JSON encoder and decoder for Python"
 category = "main"
 optional = false
@@ -874,7 +890,7 @@ python-versions = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "f77e95dc40477d82c0f7e6b2de933b984c8596dd3a23c229acf2eeb1ca28fb84"
+content-hash = "427b3724d6157fd360dc86fcce34a7ca5355e646aa906e04df2e4986c171b137"
 
 [metadata.files]
 altgraph = []
@@ -912,6 +928,7 @@ oauthlib = []
 orjson = []
 packaging = []
 pefile = []
+pillow = []
 pluggy = []
 pyaes = []
 pyasn1 = []
