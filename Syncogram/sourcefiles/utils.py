@@ -10,41 +10,38 @@ from json import loads
 from io import BytesIO
 
 from requests import request
-import flet as ft
-import qrcode
+from qrcode.main import QRCode
+from qrcode.constants import ERROR_CORRECT_H
 
 def generate_qrcode(url):
+    """Generate QRCode by Telegram URL."""
     buffered = BytesIO()
-    QRcode = qrcode.QRCode(
-        error_correction=qrcode.constants.ERROR_CORRECT_H,
-    )
-    QRcode.clear()
-    QRcode.add_data(url)
-    QRcode.make()
-    img = QRcode.make_image(back_color=(40,47,54), fill_color=(255,255,255))
-    img.save(buffered, format="PNG")
+    qrcode = QRCode(error_correction=ERROR_CORRECT_H)
+    qrcode.clear()
+    qrcode.add_data(url)
+    qrcode.make()
+    img = qrcode.make_image(back_color=(40,47,54), fill_color=(255,255,255))
+    img.save(buffered, format="png")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
-
 
 def generate_username():
     """Generate random username."""
     letters = string.ascii_letters + string.digits
     return \
         ''.join(random.choice(letters) for _ in range(random.randint(5, 32)))
-    
-
-if __name__ == '__main__':
-    generate_username()
 
 def config():
-    dir = os.path.dirname(os.path.dirname(__file__))
-    cfg = os.path.join(dir, "config.json")
+    """Search and open config.json file into reposotiry."""
+    folder = os.path.dirname(os.path.dirname(__file__))
+    cfg = os.path.join(folder, "config.json")
 
     if os.path.isfile(cfg):
         with open(cfg, "r", encoding="utf-8") as cfg:
             return json.load(cfg)
-        
+    return None
+
 def get_remote_application_version():
+    """Send GET request to remote config file."""
     return \
     loads(
         request(
@@ -55,12 +52,15 @@ def get_remote_application_version():
     )["APP"]["VERSION"]
 
 def get_local_appication_version():
+    """Get local application version."""
     return config()["APP"]["VERSION"]
 
 def get_local_database_version():
+    """Get local database version."""
     return config()["DATABASE"]["VERSION"]
 
 def get_remote_database_version():
+    """Send GET request to remote config file."""
     return \
     loads(
         request(
@@ -72,6 +72,7 @@ def get_remote_database_version():
 
 
 def check_db_version(__version__) -> tuple | None:
+    """Determines whether the application needs to be updated."""
     remote_app_version = get_remote_application_version()
     local_app_version = get_local_appication_version()
     remote_db_version = get_remote_database_version()
@@ -80,33 +81,7 @@ def check_db_version(__version__) -> tuple | None:
     if local_db_version != remote_db_version and \
           local_app_version == remote_app_version:
         return (True, remote_db_version)
-
-
-def newest_version(page: ft.Page, _) -> None:
-    __version__ = get_local_appication_version()
-    __newest__ = get_remote_application_version()
-    if __version__ != __newest__:
-        icon = ft.Icon()
-        icon.name = ft.icons.BROWSER_UPDATED
-        text = ft.Text()
-        text.value = _("The latest version is available. {} → {}").format(
-            __version__,
-            __newest__
-        )
-        text.color = ft.colors.WHITE
-
-        upper = ft.Row([icon, text])
-
-        btn = ft.FilledButton(_("Download"))
-        btn.url = config()["GIT"]["RELEASES"]
-        wrapper = ft.Row([upper, btn])
-        wrapper.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
-        snack = ft.SnackBar(wrapper)
-        snack.duration = 10000
-        snack.bgcolor = ft.colors.BLACK87
-        page.snack_bar = snack
-        page.snack_bar.open = True
-        page.update()
+    return None
 
 def get_locale(__file__):
     """Getting system locale. (Bad way to get for darwin)"""

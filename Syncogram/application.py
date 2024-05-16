@@ -1,16 +1,12 @@
 """The main file to run application."""
-import os
-import gettext
 import flet as ft
-
-from locale import getlocale
 
 from sourcefiles import UserBar
 from sourcefiles import MainWindow
 from sourcefiles import WelcomeScreenAnimation
+from sourcefiles import UpdateApplicationAlert
 from sourcefiles.utils import config
 from sourcefiles.utils import get_locale
-from sourcefiles.utils import newest_version
 
 cfg = config()
 _ = get_locale(__file__)
@@ -36,7 +32,7 @@ async def application(page: ft.Page) -> None:
             expand=True,
         )
     )
-    newest_version(page, _)
+    UpdateApplicationAlert(page, _)
 
 if __name__ == "__main__":
     ft.app(target=application, assets_dir="assets")
