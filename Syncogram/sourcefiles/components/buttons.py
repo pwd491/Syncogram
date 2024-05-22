@@ -1,5 +1,5 @@
 import asyncio
-from math import pi
+from typing import Callable
 
 import flet as ft
 
@@ -30,16 +30,16 @@ class SettingsButton(ft.ElevatedButton):
 class StartAllTasksButton(ft.Container):
     """Class of Button to executes all set tasks in application."""
 
-    def __init__(self, page: ft.Page, _) -> None:
+    def __init__(self, page: ft.Page, coroutines: Callable, _) -> None:
         super().__init__()
         self.page = page
         self._ = _
         self.state = False
         self.event = asyncio.Event()
-        # self.manager = manager
+        self.coroutines: Callable = coroutines
         self.cancel = CancelAllTasksDialog(self.page, self.event, self._)
-        self.width = 140
 
+        self.width = 140
         self.icon = ft.Icon()
         self.icon.color = ft.colors.WHITE
         self.icon.name = ft.icons.SYNC
@@ -102,29 +102,51 @@ class StartAllTasksButton(ft.Container):
             self.opacity = 1
             self.update()
 
-    async def __click(self, e):
-        if not self.state:
-            self.state = True
+    async def __animate(self):
+        if self.state:
             self.text.offset.x += 5.0
             self.text.update()
             await asyncio.sleep(0.3)
             self.text.value = self.label_cancel
             self.text.offset.x -= 5.0
             self.text.update()
-            await self.infinity_rotate()
         else:
-            self.page.dialog = self.cancel
-            self.page.dialog.open = True
-            self.page.update()
-            await self.cancel()
-            self.state = False
             self.text.offset.x += 5.0
             self.text.update()
             await asyncio.sleep(0.3)
             self.text.value = self.label_start
             self.text.offset.x -= 5.0
             self.text.update()
-            self.update()
+
+    async def __click(self, e):
+        if not self.state:
+            tasks = self.coroutines()
+            if len(tasks) == 0:
+                self.open_settings_dialog()
+                return
+            self.state = True
+            await asyncio.gather(
+                self.start_executes_tasks(),
+                self.infinity_rotate(),
+                self.__animate()
+            )
+        else:
+            self.page.dialog = self.cancel
+            self.page.dialog.open = True
+            self.page.update()
+            await self.cancel()
+            self.state = False
+            await self.__animate()
+
+    def open_settings_dialog(self):
+        """Open settings dialog if list of tasks is null."""
+        settings: Settings = Settings(self.page, self._)
+        self.page.dialog = settings
+        settings.open = True
+        self.page.update()
+
+    async def start_executes_tasks(self):
+        pass
 
     async def infinity_rotate(self):
         """Animation of the progress icon."""

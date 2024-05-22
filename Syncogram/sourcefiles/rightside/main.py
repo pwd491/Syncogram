@@ -2,7 +2,6 @@ import flet as ft
 
 from ..components import MinimumAccountsRequired
 from ..components import StartAllTasksButton
-from ..components import CustomTask
 from ..components import Settings
 from ..database import SQLite
 from .manager import Manager
@@ -18,7 +17,11 @@ class Taskbar(ft.Container):
         self._ = _
 
         self.manager = Manager(self.page, _)
-        self.start_button = StartAllTasksButton(self.page, self._)
+        self.start_button = StartAllTasksButton(
+            self.page,
+            self.manager.get_tasks_coroutines,
+            self._
+        )
 
         self.settings = Settings(self.page, self._)
         self.required = MinimumAccountsRequired(self._)

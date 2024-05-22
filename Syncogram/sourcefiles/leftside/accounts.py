@@ -38,6 +38,7 @@ class Authorization(ft.AlertDialog):
         self.password = ft.TextField()
         self.password.label = _("2FA password")
         self.password.visible = False
+        self.password.password = True
         self.password.autofocus = True
         self.password.on_submit = self.__submit
 

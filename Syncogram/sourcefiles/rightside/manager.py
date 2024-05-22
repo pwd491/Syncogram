@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+from typing import Coroutine
 
 import flet as ft
 from telethon.tl.functions.account import UpdateProfileRequest
@@ -68,6 +69,14 @@ class Manager:
                 lst.append(option[1].get("ui"))
         return lst
 
+    def get_tasks_coroutines(self) -> list[Coroutine]:
+        """Return coroutines objects."""
+        self.update_options_dict()
+        lst = []
+        for option in self.options.items():
+            if option[1].get("status"):
+                lst.append(option[1].get("function"))
+        return lst
 
     async def sync_favorite_messages(self, ui_task_object: CustomTask):
         sender = self.client(self.database.get_session_by_status(1))
