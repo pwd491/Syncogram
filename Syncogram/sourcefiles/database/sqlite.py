@@ -116,13 +116,16 @@ class SQLite:
                     SQL_DELETE_USER_BY_ID, (account_id,)
                 )
 
-    def get_options(self) -> list[int]:
+    def get_options(self) -> list[int] | None:
         """Get options values only for primary account (sender)."""
         with self.database as connect:
             with closing(connect.cursor()) as cursor:
-                return cursor.execute(
+                request = cursor.execute(
                     SQL_GET_OPTIONS
                 ).fetchone()
+                if bool(request):
+                    return request
+                return None
 
     def set_options(self, *args) -> bool:
         """Set options values only for primary account (sender)."""

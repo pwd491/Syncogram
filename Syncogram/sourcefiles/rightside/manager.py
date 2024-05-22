@@ -1,5 +1,3 @@
-"""The manager controls tasks for synchronization tg-accs."""
-
 import asyncio
 from datetime import datetime
 
@@ -10,17 +8,14 @@ from telethon.tl.patched import MessageService
 from telethon.tl.types import UserFull, Message, Photo
 from telethon.tl.functions.photos import (UploadProfilePhotoRequest)
 
-from .client import UserClient
-from .task import CustomTask
+from ..telegram import UserClient
 from ..database import SQLite
-from ..userbar.settings import SettingsDialog
-
+from ..components import CustomTask
 
 class Manager:
-    def __init__(self, page: ft.Page, _, mainwindow=None) -> None:
+    def __init__(self, page: ft.Page, _) -> None:
         self.page: ft.Page = page
         self.database = SQLite()
-        self.mainwindow = mainwindow
         self.client = UserClient
 
         self.options = {
@@ -28,7 +23,7 @@ class Manager:
                 "title": _("Sync my favorite messages between accounts."),
                 "function": self.sync_favorite_messages,
                 "status": bool(),
-                "ui_task_object": CustomTask,
+                "ui": CustomTask,
             },
             "is_sync_profile_name": {
                 "title": _(
@@ -36,7 +31,7 @@ class Manager:
                 ),
                 "function": self.sync_profile_first_name_and_second_name,
                 "status": bool(),
-                "ui_task_object": CustomTask,
+                "ui": CustomTask,
             },
             "is_sync_profile_media": {
                 "title": _(
@@ -44,12 +39,13 @@ class Manager:
                 ),
                 "function": self.sync_profile_media,
                 "status": bool(),
-                "ui_task_object": CustomTask,
+                "ui": CustomTask,
             }
         }
+        self.update_options_dict()
 
-    async def build(self):
-
+    def update_options_dict(self):
+        """Get options list and update dict variable."""
         list_of_options = self.database.get_options()
         if list_of_options is None:
             return
@@ -61,15 +57,19 @@ class Manager:
         for option in self.options.items():
             if option[1].get("status"):
                 title = option[1].get("title")
-                task = CustomTask(title)
-                option[1].update({"ui_task_object": task})
-                self.mainwindow.wrapper_side_column.controls.append(task)
-        self.mainwindow.update()
+                option[1].update({"ui": CustomTask(title)})
+
+    def get_ui_tasks(self) -> list[CustomTask]:
+        """Return UI list of will be execute tasks."""
+        self.update_options_dict()
+        lst = []
+        for option in self.options.items():
+            if option[1].get("status"):
+                lst.append(option[1].get("ui"))
+        return lst
+
 
     async def sync_favorite_messages(self, ui_task_object: CustomTask):
-        # ui_task_object.progress.value = None
-        # ui_task_object.progress.update()
-
         sender = self.client(self.database.get_session_by_status(1))
         recepient = self.client(self.database.get_session_by_status(0))
 

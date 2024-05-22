@@ -6,7 +6,7 @@ from telethon.sessions import StringSession
 from telethon.tl.custom.qrlogin import QRLogin
 from telethon.tl.types import InputPeerUser, User
 from telethon.errors import (
-    SessionPasswordNeededError, 
+    SessionPasswordNeededError,
     PasswordHashInvalidError,
     UsernameNotModifiedError,
     UsernameInvalidError,
@@ -23,6 +23,7 @@ from .environments import API_ID, API_HASH
 cfg = config()
 
 class UserClient(TelegramClient):
+    """Custom wraps of Telegram client."""
     def __init__(self, session: str = str()) -> None:
         self.database = SQLite()
         self.api_id: int = int(API_ID)
@@ -35,7 +36,57 @@ class UserClient(TelegramClient):
             app_version=cfg["APP"]["VERSION"],
         )
 
+    async def set_random_username(self, user: User | InputPeerUser) -> User | InputPeerUser:
+        """If username is None, generate and set username to account."""
+        while True:
+            try:
+                username = generate_username()
+                await self(functions.account.UpdateUsernameRequest(
+                    username
+                ))
+                user.username = username
+                break
+            except (
+                UsernameNotModifiedError,
+                UsernameInvalidError,
+                UsernameOccupiedError
+            ):
+                continue
+        return user
+
+    async def save_user_data(self, is_primary):
+        """Save user data to database"""
+        user: User | InputPeerUser = await self.get_me()
+        if user.username is None:
+            user = await self.set_random_username(user)
+
+        return self.database.add_user(
+            user.id,
+            is_primary,
+            user.username,
+            user.phone,
+            user.first_name,
+            user.last_name,
+            int(user.restricted),
+            str(user.restriction_reason),
+            int(user.stories_hidden),
+            int(user.stories_unavailable),
+            int(user.contact_require_premium),
+            int(user.scam),
+            int(user.fake),
+            int(user.premium),
+            user.photo.photo_id if user.photo is not None else None,
+            str(user.emoji_status),
+            str(user.usernames),
+            user.color,
+            str(user.profile_color),
+            self.session.save(),
+            user.access_hash
+        )
+
+
     async def login_by_qrcode(self, dialog, is_primary):
+        """Create QR image and await for login by url."""
         if not self.is_connected():
             await self.connect()
 
@@ -61,50 +112,18 @@ class UserClient(TelegramClient):
 
         dialog.open = False
         dialog.update()
-        user: User | InputPeerUser = await self.get_me()
-        if user.username is None:
-            while True:
-                try:
-                    username = generate_username()
-                    await self(functions.account.UpdateUsernameRequest(
-                        username
-                    ))
-                    user.username = username
-                    break
-                except (
-                    UsernameNotModifiedError,
-                    UsernameInvalidError,
-                    UsernameOccupiedError
-                ):
-                    continue
-
-        response = self.database.add_user(
-            user.id,
-            is_primary,
-            user.username,
-            user.phone,
-            user.first_name,
-            user.last_name,
-            int(user.restricted),
-            str(user.restriction_reason),
-            int(user.stories_hidden),
-            int(user.stories_unavailable),
-            int(user.contact_require_premium),
-            int(user.scam),
-            int(user.fake),
-            int(user.premium),
-            user.photo.photo_id if user.photo is not None else None,
-            str(user.emoji_status),
-            str(user.usernames),
-            user.color,
-            str(user.profile_color),
-            self.session.save(),
-            user.access_hash
-        )
+        response = await self.save_user_data(is_primary)
         self.disconnect()
         return response
 
-    async def logout(self):
+    async def logout(self) -> bool:
+        """Logout from account."""
         if not self.is_connected():
             await self.connect()
         return await self.log_out()
+
+    async def is_user_valid(self) -> bool:
+        """Check is user valid."""
+        if not self.is_connected():
+            await self.connect()
+        return await self.is_user_authorized()
