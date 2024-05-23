@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from typing import Coroutine
+from typing import Callable, Coroutine
 
 import flet as ft
 from telethon.tl.functions.account import UpdateProfileRequest
@@ -13,7 +13,9 @@ from ..telegram import UserClient
 from ..database import SQLite
 from ..components import CustomTask
 
+
 class Manager:
+    """Manager"""
     def __init__(self, page: ft.Page, _) -> None:
         self.page: ft.Page = page
         self.database = SQLite()
@@ -22,28 +24,31 @@ class Manager:
         self.options = {
             "is_sync_fav": {
                 "title": _("Sync my favorite messages between accounts."),
+                "description": _("Sync messages in your favorite chat with the correct sequence, re-replies to messages and pinned messages. The program can synchronize up to 100 messages per clock cycle."),
                 "function": self.sync_favorite_messages,
-                "status": bool(),
+                "status": bool,
                 "ui": CustomTask,
             },
             "is_sync_profile_name": {
                 "title": _(
                     "Synchronize the first name, last name and biography of the profile."
                 ),
+                "description": _("Synchronization of the first name, last name and profile description. If you do not specify the data, it will be overwritten as empty fields."),
                 "function": self.sync_profile_first_name_and_second_name,
-                "status": bool(),
+                "status": bool,
                 "ui": CustomTask,
             },
             "is_sync_profile_media": {
                 "title": _(
-                    "Synchronize account photos and videos."
+                    "Synchronize account photos and videos avatars."
                 ),
+                "description": _("Sync photo and video avatars in the correct sequence. If there are a lot of media files, the program sets an average limit between requests to the servers in order to circumvent the restrictions."),
                 "function": self.sync_profile_media,
-                "status": bool(),
+                "status": bool,
                 "ui": CustomTask,
-            }
+            },
         }
-        self.update_options_dict()
+        self.callback()
 
     def update_options_dict(self):
         """Get options list and update dict variable."""
@@ -58,11 +63,11 @@ class Manager:
         for option in self.options.items():
             if option[1].get("status"):
                 title = option[1].get("title")
-                option[1].update({"ui": CustomTask(title)})
+                desc = option[1].get("description")
+                option[1].update({"ui": CustomTask(title, desc)})
 
     def get_ui_tasks(self) -> list[CustomTask]:
         """Return UI list of will be execute tasks."""
-        self.update_options_dict()
         lst = []
         for option in self.options.items():
             if option[1].get("status"):
@@ -71,14 +76,31 @@ class Manager:
 
     def get_tasks_coroutines(self) -> list[Coroutine]:
         """Return coroutines objects."""
-        self.update_options_dict()
         lst = []
         for option in self.options.items():
             if option[1].get("status"):
                 lst.append(option[1].get("function"))
         return lst
+    
+    def get_coroutines_with_ui(self) -> list[Callable[[CustomTask], None]]:
+        """Return dict object."""
+        lst = []
+        for option in self.options.items():
+            if option[1].get("status"):
+                func = option[1].get("function")
+                ui = option[1].get("ui")
+                lst.append(func(ui))
+        return lst
+    
+    def callback(self):
+        """Callback"""
+        self.update_options_dict()
 
-    async def sync_favorite_messages(self, ui_task_object: CustomTask):
+    async def sync_favorite_messages(self, ui: CustomTask):
+        """
+        An algorithm for forwarding messages to the recipient entity is
+        implemented.
+        """
         sender = self.client(self.database.get_session_by_status(1))
         recepient = self.client(self.database.get_session_by_status(0))
 
@@ -138,15 +160,14 @@ class Manager:
             await recepient.delete_messages(sender_entity, messages)
 
         try:
-            ui_task_object.progress_counters.visible = True
+            ui.progress_counters.visible = True
             i = 0
             async for message in source_messages:
                 i += 1
-                ui_task_object.total.value = source_messages.total
-                ui_task_object.progress.value = i / source_messages.total
-                ui_task_object.value.value = i
-                ui_task_object.update()
-                # await asyncio.sleep(0.00001)
+                ui.total.value = source_messages.total
+                ui.progress.value = i / source_messages.total
+                ui.value.value = i
+                ui.update()
                 if not isinstance(message, MessageService):
                     if message.grouped_id is not None:
                         if message.pinned:
@@ -198,20 +219,20 @@ class Manager:
                 is_replied = False
                 group.clear()
         except Exception as e:
-            return ui_task_object.unsuccess(e)
+            return ui.unsuccess(e)
         finally:
             del msg_ids
             sender.disconnect()
             recepient.disconnect()
 
-        ui_task_object.success()
+        ui.success()
 
-    async def sync_profile_first_name_and_second_name(self, ui_task_object: CustomTask):
+    async def sync_profile_first_name_and_second_name(self, ui: CustomTask):
         """
         Connecting accounts, getting profile data and sets.
         """
-        ui_task_object.progress.value = None
-        ui_task_object.progress.update()
+        ui.progress.value = None
+        ui.progress.update()
 
         sender = self.client(self.database.get_session_by_status(1))
         recepient = self.client(self.database.get_session_by_status(0))
@@ -231,15 +252,19 @@ class Manager:
 
             await recepient(UpdateProfileRequest(first_name, last_name, bio))
         except Exception as e:
-            return ui_task_object.unsuccess(e)
+            return ui.unsuccess(e)
         finally:
             sender.disconnect()
             recepient.disconnect()
 
-        ui_task_object.success()
+        ui.success()
 
 
-    async def sync_profile_media(self, ui_task_object: CustomTask):
+    async def sync_profile_media(self, ui: CustomTask):
+        """
+        The algorithm for synchronizing profile photo and video avatars to 
+        the recipient's essence.
+        """
         sender = self.client(self.database.get_session_by_status(1))
         recepient = self.client(self.database.get_session_by_status(0))
 
@@ -253,13 +278,13 @@ class Manager:
         try:
             i = 0
             photos = await sender.get_profile_photos("me")
-            ui_task_object.progress_counters.visible = True
-            ui_task_object.total.value = photos.total
+            ui.progress_counters.visible = True
+            ui.total.value = photos.total
             for photo in reversed(photos):
                 i += 1
-                ui_task_object.progress.value = i / photos.total
-                ui_task_object.value.value = i
-                ui_task_object.update()
+                ui.progress.value = i / photos.total
+                ui.value.value = i
+                ui.update()
                 await asyncio.sleep(3)
                 blob = await sender.download_media(photo, bytes)
                 name = "Syncogram_" + datetime.strftime(
@@ -278,26 +303,9 @@ class Manager:
                 )
                 await recepient(UploadProfilePhotoRequest(video=file))
         except Exception as e:
-            return ui_task_object.unsuccess(e)
+            return ui.unsuccess(e)
         finally:
             sender.disconnect()
             recepient.disconnect()
 
-        ui_task_object.success()
-
-    async def start_all_tasks(self, btn, _):
-        if not 1 in self.database.get_options()[1:]:
-            settings = SettingsDialog(self.mainwindow.callback_update, _)
-            self.page.dialog = settings
-            settings.open = True
-            btn.state = False
-            return self.page.update()
-        lst = []
-        for option in self.options.items():
-            if option[1].get("status"):
-                func = option[1].get("function")
-                obj = option[1].get("ui_task_object")
-                lst.append(func(obj))
-        await asyncio.gather(*lst)
-        btn.state = False
-        btn.update()
+        ui.success()

@@ -1,5 +1,7 @@
 from asyncio import sleep
+
 import flet as ft
+
 
 class WelcomeScreenAnimation(ft.Container):
     """Greeting screen animations."""

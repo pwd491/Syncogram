@@ -28,7 +28,7 @@ class MinimumAccountsRequired(ft.Row):
         self.alignment = ft.MainAxisAlignment.CENTER
 
 
-class CancelAllTasksDialog(ft.AlertDialog):
+class CancelAllTasks(ft.AlertDialog):
     """Cancel dialog to abort all tasks."""
 
     def __init__(self, page: ft.Page, event, _) -> None:
@@ -70,7 +70,7 @@ class CancelAllTasksDialog(ft.AlertDialog):
         await self.event.wait()
 
 class UpdateApplicationAlert(ft.SnackBar):
-    """This Class is object of dropdown alert. Show new available version."""
+    """This Class is object of dropdown alert. Display new available version."""
 
     def __init__(self, page: ft.Page, _) -> None:
         self.__version__ = get_local_appication_version()

@@ -13,7 +13,7 @@ class Userbar(ft.Container):
         super().__init__()
         self.page = page
         self.database = SQLite()
-        self._ = _
+        self._: str = _
 
         self.feedback = ft.Row(
             [FeedBack(self._)], alignment=ft.MainAxisAlignment.CENTER
@@ -30,7 +30,12 @@ class Userbar(ft.Container):
 
         self.accounts = Accounts(self.page, self._)
 
-        self.bottom = ft.Column([self.feedback, self.about, self.settings])
+        self.bottom = ft.Column([
+            self.feedback,
+            self.about,
+            ft.Divider(),
+            self.settings
+        ])
         self.top = ft.Column([self.accounts])
 
         self.content = ft.Column([self.top, self.bottom])

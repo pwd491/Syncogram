@@ -5,7 +5,7 @@ from sourcefiles import UpdateApplicationAlert
 from sourcefiles import TheScreensController
 from sourcefiles import get_locale
 
-_ = get_locale(__file__)
+_: str = get_locale(__file__)
 
 async def main(page: ft.Page) -> None:
     """The entry point to start application."""

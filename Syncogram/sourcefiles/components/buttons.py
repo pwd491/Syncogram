@@ -1,10 +1,11 @@
 import asyncio
-from typing import Callable
+from typing import Callable, Coroutine
 
 import flet as ft
 
 from .settings import Settings
-from .warnings import CancelAllTasksDialog
+from .warnings import CancelAllTasks
+from .task import CustomTask
 
 class SettingsButton(ft.ElevatedButton):
     """Settings button open dialog."""
@@ -12,7 +13,6 @@ class SettingsButton(ft.ElevatedButton):
         super().__init__()
         self.page: ft.Page = page
         self._ = _
-        self.settings = Settings(self.page, self._)
 
         self.text = _("Settings")
         self.icon = ft.icons.SETTINGS
@@ -21,10 +21,10 @@ class SettingsButton(ft.ElevatedButton):
         self.on_click = self.__open
 
     async def __open(self, e):
-        self.page.dialog = self.settings
+        settings = Settings(self.page, self._)
+        self.page.dialog = settings
+        settings.open = True
         self.page.update()
-        self.settings.open = True
-        self.settings.update()
 
 
 class StartAllTasksButton(ft.Container):
@@ -37,7 +37,7 @@ class StartAllTasksButton(ft.Container):
         self.state = False
         self.event = asyncio.Event()
         self.coroutines: Callable = coroutines
-        self.cancel = CancelAllTasksDialog(self.page, self.event, self._)
+        self.cancel = CancelAllTasks(self.page, self.event, self._)
 
         self.width = 140
         self.icon = ft.Icon()
@@ -64,31 +64,20 @@ class StartAllTasksButton(ft.Container):
             self.text,
         ]
 
-        self.gradient = ft.LinearGradient(
-            begin=ft.alignment.top_left,
-            end=ft.alignment.bottom_right,
-            # colors=[
-            #     "0xff1f005c",
-            #     "0xff5b0060",
-            #     "0xff870160",
-            #     "0xffac255e",
-            #     "0xffca485c",
-            #     "0xffe16b5c",
-            #     "0xfff39060",
-            #     "0xffffb56b",
-            # ],
-            colors=[
-                "0xff2c3e52",
-                "0xfffd746a",
-            ],
-            tile_mode=ft.GradientTileMode.MIRROR,
-            # rotation=pi / 3
-        )
+        # self.gradient = ft.LinearGradient(
+        #     begin=ft.alignment.top_left,
+        #     end=ft.alignment.bottom_right,
+        #     colors=[
+        #         "0xff2c3e52",
+        #         "0xfffd746a",
+        #     ],
+        #     tile_mode=ft.GradientTileMode.MIRROR,
+        # )
 
         self.border_radius = ft.BorderRadius(50, 50, 50, 50)
         self.padding = ft.Padding(25, 10, 25, 10)
         self.content = self.button_start_wrapper
-        self.bgcolor = self.gradient
+        self.bgcolor = ft.colors.SECONDARY_CONTAINER
         self.on_click = self.__click
         self.on_hover = self.__hover
 
@@ -96,7 +85,6 @@ class StartAllTasksButton(ft.Container):
         if e.data == "true":
             if not self.state:
                 self.opacity = 0.9
-                self.icon.rotate.angle -= 3
                 self.update()
         else:
             self.opacity = 1
@@ -120,13 +108,13 @@ class StartAllTasksButton(ft.Container):
 
     async def __click(self, e):
         if not self.state:
-            tasks = self.coroutines()
-            if len(tasks) == 0:
-                self.open_settings_dialog()
+            tasks: list[Coroutine] = self.coroutines()
+            if len(tasks) <= 0:
+                await self.open_settings_dialog()
                 return
             self.state = True
             await asyncio.gather(
-                self.start_executes_tasks(),
+                self.start_executes_tasks(tasks),
                 self.infinity_rotate(),
                 self.__animate()
             )
@@ -138,15 +126,18 @@ class StartAllTasksButton(ft.Container):
             self.state = False
             await self.__animate()
 
-    def open_settings_dialog(self):
-        """Open settings dialog if list of tasks is null."""
+    async def open_settings_dialog(self):
+        """Open settings dialog if len of tasks list is null."""
         settings: Settings = Settings(self.page, self._)
         self.page.dialog = settings
         settings.open = True
         self.page.update()
 
-    async def start_executes_tasks(self):
-        pass
+    async def start_executes_tasks(self, tasks: list[Coroutine]):
+        """..."""
+        await asyncio.gather(*tasks)
+        self.state = False
+        await self.__animate()
 
     async def infinity_rotate(self):
         """Animation of the progress icon."""

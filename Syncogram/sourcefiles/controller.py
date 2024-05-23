@@ -8,11 +8,11 @@ class TheScreensController:
     """The controls to view windows screens in application."""
     def __init__(self, page: ft.Page, _) -> None:
         self.page: ft.Page = page
-        self._ = _
+        self._: str = _
 
         self.userbar: Userbar = Userbar(page, _)
         self.taskbar: Taskbar = Taskbar(page, _)
-        
+
         self.row: ft.Row = ft.Row([self.userbar, self.taskbar])
         self.row.expand = True
 

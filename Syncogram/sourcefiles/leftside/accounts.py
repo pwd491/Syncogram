@@ -120,19 +120,21 @@ class Accounts(ft.Container):
 
         self.divider = ft.Container()
         self.divider.width = 200
+        # self.expand = True
         self.divider.height = 0.5
+        self.divider.border_radius = ft.BorderRadius(5,5,5,5)
         self.divider.bgcolor = ft.colors.ON_SECONDARY_CONTAINER
 
         self.account_primary = ft.Column()
         self.account_primary.controls = [
-            ft.Row([self.label("From:")]),
+            ft.Row([self.label(self._("From:"))]),
             ft.Row([self.divider]),
             ft.Row([self.add_button(True)]),
         ]
 
         self.account_secondary = ft.Column()
         self.account_secondary.controls = [
-            ft.Row([self.label("Where:")]),
+            ft.Row([self.label(self._("Where:"))]),
             ft.Row([self.divider]),
             ft.Row([self.add_button(False)]),
         ]
@@ -172,9 +174,9 @@ class Accounts(ft.Container):
     def label(self, text: str) -> ft.Text:
         """Creating label."""
         label = ft.Text()
-        label.value = self._(text)
+        label.value = text
         label.size = 11
-        label.opacity = 0.5
+        label.opacity = .5
         return label
 
     async def logout(self, e, account_id):

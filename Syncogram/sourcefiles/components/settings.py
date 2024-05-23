@@ -2,6 +2,7 @@ import flet as ft
 
 from ..database import SQLite
 
+
 class Settings(ft.AlertDialog):
     """Class of settings."""
     def __init__(self, page: ft.Page, _) -> None:
@@ -17,7 +18,6 @@ class Settings(ft.AlertDialog):
             label=_("Sync my favorite messages"),
             value=bool(self.options[0]),
             disabled=False,
-            tooltip=_("It will be available in the next updates")
         )
         self.c2 = ft.Checkbox(
             label=_("Sync my profile first name, last name and biography."),
@@ -25,7 +25,7 @@ class Settings(ft.AlertDialog):
             disabled=False
         )
         self.c3 = ft.Checkbox(
-            label=_("Sync profile photos and videos."),
+            label=_("Sync profile photos and videos avatars."),
             value=bool(self.options[2]),
             disabled=False
         )

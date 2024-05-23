@@ -13,6 +13,7 @@ from requests import request
 from qrcode.main import QRCode
 from qrcode.constants import ERROR_CORRECT_H
 
+
 def generate_qrcode(url):
     """Generate QRCode by Telegram URL."""
     buffered = BytesIO()
@@ -83,7 +84,7 @@ def check_db_version(__version__) -> tuple | None:
         return (True, remote_db_version)
     return None
 
-def get_locale(__file__):
+def get_locale(__file__) -> gettext.gettext:
     """Getting system locale. (Bad way to get for darwin)"""
     domain = "base"
     path_to_locales = os.path.abspath(
@@ -99,7 +100,7 @@ def get_locale(__file__):
                 ru.install()
                 _ = ru.gettext
         case _:
-            if getlocale()[0] in ["Russian_Russia","ru_RU"]:
+            if getlocale()[0] in ["Russian_Russia", "ru_RU"]:
                 ru.install()
                 _ = ru.gettext
             else:

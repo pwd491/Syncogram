@@ -14,12 +14,12 @@ class Taskbar(ft.Container):
         self.page: ft.Page = page
         self.database: SQLite = SQLite()
         self.database.check_update()
-        self._ = _
+        self._: str = _
 
         self.manager = Manager(self.page, _)
         self.start_button = StartAllTasksButton(
             self.page,
-            self.manager.get_tasks_coroutines,
+            self.manager.get_coroutines_with_ui,
             self._
         )
 
@@ -67,5 +67,6 @@ class Taskbar(ft.Container):
 
     def callback(self) -> None:
         """Callback."""
+        self.manager.callback()
         self._update()
         self.update()
