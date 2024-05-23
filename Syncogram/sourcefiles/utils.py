@@ -99,6 +99,9 @@ def get_locale(__file__) -> gettext.gettext:
                 .read().strip().split('"')[1] in ["ru-RU"]:
                 ru.install()
                 _ = ru.gettext
+            else:
+                en.install()
+                _ = en.gettext
         case _:
             if getlocale()[0] in ["Russian_Russia", "ru_RU"]:
                 ru.install()
