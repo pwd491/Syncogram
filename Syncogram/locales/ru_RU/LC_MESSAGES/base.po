@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-05-23 23:36+0300\n"
-"PO-Revision-Date: 2024-05-23 23:53+0300\n"
+"POT-Creation-Date: 2024-05-24 01:28+0300\n"
+"PO-Revision-Date: 2024-05-24 01:36+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru_RU\n"
 "Language-Team: ru_RU <LL@li.org>\n"
@@ -19,20 +19,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.15.0\n"
 
-#: Syncogram/sourcefiles/leftside/accounts.py:130
-msgid "From:"
-msgstr "Откуда:"
-
-#: Syncogram/sourcefiles/leftside/accounts.py:137
-msgid "Where:"
-msgstr "Куда:"
-
 #: Syncogram/sourcefiles/components/about.py:11
 msgid ""
 "If you found a bug, you can send feedback.\n"
 "{} v{}"
 msgstr ""
-"Если вы обнаружили ошибку, пожалуйста сообщите нам.\n"
+"Если вы нашли ошибку, пожалуйста сообщите нам.\n"
 "{} v{}"
 
 #: Syncogram/sourcefiles/components/about.py:25
@@ -74,7 +66,7 @@ msgstr "Быстрая, безопасная и надежная синхрон�
 
 #: Syncogram/sourcefiles/components/logout.py:14
 msgid "Are you sure to logout?"
-msgstr "Вы уверены что хотите выйти?"
+msgstr "Вы уверены, что нужно выйти?"
 
 #: Syncogram/sourcefiles/components/logout.py:19
 #: Syncogram/sourcefiles/components/warnings.py:49
@@ -88,15 +80,15 @@ msgstr "Нет"
 
 #: Syncogram/sourcefiles/components/settings.py:18
 msgid "Sync my favorite messages"
-msgstr "Синхронизировать мои избранные сообщения между аккаунтами."
+msgstr "Синхронизировать мои избранные сообщения"
 
 #: Syncogram/sourcefiles/components/settings.py:23
 msgid "Sync my profile first name, last name and biography."
-msgstr "Синхронизировать имя, фамилию и биографию в моем профиле."
+msgstr "Синхронизировать мои имя, фамилию и описание."
 
 #: Syncogram/sourcefiles/components/settings.py:28
-msgid "Sync profile photos and videos."
-msgstr "Синхронизировать мои фото и видео аватары в профиле."
+msgid "Sync profile photos and videos avatars."
+msgstr "Синхронизировать мои фото и видео аватары."
 
 #: Syncogram/sourcefiles/components/settings.py:56
 msgid "Cancel"
@@ -124,7 +116,7 @@ msgstr ""
 
 #: Syncogram/sourcefiles/components/warnings.py:82
 msgid "The latest version is available. {} → {}"
-msgstr "Доступна новая версия. {} → {}"
+msgstr "Доступна последняя версия. {} → {}"
 
 #: Syncogram/sourcefiles/components/warnings.py:87
 msgid "Download"
@@ -136,11 +128,11 @@ msgstr "Использовать номер телефона"
 
 #: Syncogram/sourcefiles/leftside/accounts.py:30
 msgid "Use QR-code"
-msgstr "Использовать QR-code"
+msgstr "Использовать QR-код"
 
 #: Syncogram/sourcefiles/leftside/accounts.py:39
 msgid "2FA password"
-msgstr "Двухфакторный пароль"
+msgstr "Пароль 2FA"
 
 #: Syncogram/sourcefiles/leftside/accounts.py:45
 msgid "Close"
@@ -154,22 +146,55 @@ msgstr "Отправить"
 msgid "Authorization"
 msgstr "Авторизация"
 
+#: Syncogram/sourcefiles/leftside/accounts.py:130
+msgid "From:"
+msgstr "Откуда:"
+
+#: Syncogram/sourcefiles/leftside/accounts.py:137
+msgid "Where:"
+msgstr "Куда:"
+
 #: Syncogram/sourcefiles/leftside/accounts.py:167
 msgid "Add account"
 msgstr "Добавить аккаунт"
 
-#: Syncogram/sourcefiles/rightside/manager.py:25
-#: Syncogram/sourcefiles/rightside/tmp.py:9
+#: Syncogram/sourcefiles/rightside/manager.py:26
 msgid "Sync my favorite messages between accounts."
 msgstr "Синхронизировать мои избранные сообщения между аккаунтами."
 
-#: Syncogram/sourcefiles/rightside/manager.py:31
-#: Syncogram/sourcefiles/rightside/tmp.py:15
+#: Syncogram/sourcefiles/rightside/manager.py:27
+msgid ""
+"Sync messages in your favorite chat with the correct sequence, re-replies"
+" to messages and pinned messages. The program can synchronize up to 100 "
+"messages per clock cycle."
+msgstr ""
+"Синхронизируйте сообщения в вашем избранном чате в правильной "
+"последовательности, отвечайте повторно на сообщения и закрепляйте "
+"сообщения. Программа может синхронизировать до 100 сообщений за такт."
+
+#: Syncogram/sourcefiles/rightside/manager.py:33
 msgid "Synchronize the first name, last name and biography of the profile."
 msgstr "Синхронизировать имя, фамилию и биографию пользователя в профиле."
 
-#: Syncogram/sourcefiles/rightside/manager.py:39
-#: Syncogram/sourcefiles/rightside/tmp.py:23
-msgid "Synchronize account photos and videos."
+#: Syncogram/sourcefiles/rightside/manager.py:36
+msgid ""
+"Synchronization of the first name, last name and profile description. If "
+"you do not specify the data, it will be overwritten as empty fields."
+msgstr ""
+"Синхронизация имени, фамилии и описания профиля. Если вы не укажете "
+"данные, они будут перезаписаны как пустые поля."
+
+#: Syncogram/sourcefiles/rightside/manager.py:42
+msgid "Synchronize account photos and videos avatars."
 msgstr "Синхронизировать фото и видео аватары из профиля."
+
+#: Syncogram/sourcefiles/rightside/manager.py:45
+msgid ""
+"Sync photo and video avatars in the correct sequence. If there are a lot "
+"of media files, the program sets an average limit between requests to the"
+" servers in order to circumvent the restrictions."
+msgstr ""
+"Синхронизируйте фото и видео аватары в правильной последовательности. "
+"Если медиафайлов много, программа устанавливает среднее время между "
+"запросами к серверам, чтобы обойти ограничения."
 
