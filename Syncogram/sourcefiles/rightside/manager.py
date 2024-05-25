@@ -13,10 +13,9 @@ from ..telegram import UserClient
 from ..database import SQLite
 from ..components import Task
 
-from .asd import TEST
 
 class Manager:
-    """Manager"""
+    """The manager to control options UI and Coroutines."""
     def __init__(self, page: ft.Page, _) -> None:
         self.page: ft.Page = page
         self.database = SQLite()
