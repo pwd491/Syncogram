@@ -5,7 +5,7 @@ import flet as ft
 
 from .settings import Settings
 from .warnings import CancelAllTasks
-from .task import CustomTask
+from .task import Task
 
 class SettingsButton(ft.ElevatedButton):
     """Settings button open dialog."""
@@ -135,7 +135,7 @@ class StartAllTasksButton(ft.Container):
 
     async def start_executes_tasks(self, tasks: list[Coroutine]):
         """..."""
-        await asyncio.gather(*tasks)
+        a = await asyncio.gather(*tasks)
         self.state = False
         await self.__animate()
 

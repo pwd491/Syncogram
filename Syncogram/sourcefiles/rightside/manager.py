@@ -320,4 +320,12 @@ class Manager:
         ui.success()
 
     async def sync_public_channels(self, ui: Task):
-        pass
+        ui.default()
+        total = range(100)
+        ui.progress_counters.visible = True
+        ui.total = len(total) - 1
+
+        for i in total:
+            ui.value = i
+            await asyncio.sleep(0.1)
+        ui.success()

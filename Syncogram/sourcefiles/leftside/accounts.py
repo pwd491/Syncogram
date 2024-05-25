@@ -88,8 +88,7 @@ class Authorization(ft.AlertDialog):
         )
         # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
         self.page.pubsub.send_all("update")
-        self.update()
-
+        
     async def phone_login_dialog(self, e):
         """Authorization dialog by login."""
         self.client.disconnect()

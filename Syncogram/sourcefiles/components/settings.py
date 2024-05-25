@@ -12,7 +12,8 @@ class Settings(ft.AlertDialog):
 
         """!!!"""
         self.options: list[int] = self.database.get_options()
-        self.options: list[int] = self.options[1:] if self.options is not None else (0,0,0) # type: ignore
+        self.options = self.options[1:] if self.options is not None else \
+            [False for __ in range(20)]
 
         self.c1 = ft.Checkbox(
             label=_("Sync my favorite messages"),
@@ -25,8 +26,13 @@ class Settings(ft.AlertDialog):
             disabled=False
         )
         self.c3 = ft.Checkbox(
-            label=_("Sync profile photos and videos avatars."),
+            label=_("Sync my profile photos and videos avatars."),
             value=bool(self.options[2]),
+            disabled=False
+        )
+        self.c4 = ft.Checkbox(
+            label=_("Sync my public channels."),
+            value=bool(self.options[3]),
             disabled=False
         )
         """!!!"""
@@ -35,6 +41,7 @@ class Settings(ft.AlertDialog):
             self.c1,
             self.c2,
             self.c3,
+            self.c4,
         ]
         x.sort(key=lambda x: x.disabled is True)
 
@@ -67,9 +74,10 @@ class Settings(ft.AlertDialog):
     async def save(self, e) -> None:
         """Save options for primary user."""
         self.database.set_options(
-            int(self.c1.value), # type: ignore
-            int(self.c2.value), # type: ignore
-            int(self.c3.value)
+            int(self.c1.value),
+            int(self.c2.value),
+            int(self.c3.value),
+            int(self.c4.value),
         )
         self.page.pubsub.send_all("update")
         self.page.dialog.clean()

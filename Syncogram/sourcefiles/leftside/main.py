@@ -44,7 +44,7 @@ class Userbar(ft.Container):
         self.width = 250
         self.padding = 20
 
-    async def callback(self) -> None:
+    def callback(self) -> None:
         """Regenerate accounts side."""
         self.accounts.callback()
         self.accounts.update()

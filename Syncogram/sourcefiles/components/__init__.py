@@ -8,4 +8,4 @@ from .errors import ErrorAddAccount
 from .logout import Logout
 from .about import AboutApplication
 from .about import FeedBack
-from .task import CustomTask
+from .task import Task

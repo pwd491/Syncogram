@@ -150,7 +150,7 @@ class SQLite:
                 if bool(request):
                     return request[0]
                 return None
-    
+
     def set_version(self, version) -> None:
         """Set database version if not exists."""
         with self.database as connect:

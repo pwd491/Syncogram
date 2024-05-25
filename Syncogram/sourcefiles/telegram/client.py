@@ -110,8 +110,6 @@ class UserClient(TelegramClient):
                     except PasswordHashInvalidError:
                         await dialog.error()
 
-        dialog.open = False
-        dialog.update()
         response = await self.save_user_data(is_primary)
         self.disconnect()
         return response

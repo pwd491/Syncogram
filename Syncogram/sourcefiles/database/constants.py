@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS options
     user_id INTEGER PREFERENCE UNIQUE,
     is_sync_fav INTEGER DEFAULT 0,
     is_sync_profile_name INTEGER DEFAULT 0,
-    is_sync_profile_media INTEGER DEFAULT 0
+    is_sync_profile_media INTEGER DEFAULT 0,
+    is_sync_public_channels INTEGER DEFAULT 0
 )
 """
 
@@ -43,7 +44,8 @@ UPDATE `options`
 SET 
 is_sync_fav = (?),
 is_sync_profile_name = (?),
-is_sync_profile_media = (?)
+is_sync_profile_media = (?),
+is_sync_public_channels = (?)
 FROM 
 (
     SELECT user_id FROM users WHERE is_primary = 1
@@ -61,6 +63,7 @@ VALUES
 (
 (SELECT user_id FROM users WHERE is_primary = 1),
 (?), 
+(?),
 (?),
 (?)
 )

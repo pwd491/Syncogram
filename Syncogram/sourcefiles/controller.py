@@ -13,7 +13,8 @@ class TheScreensController:
         self.userbar: Userbar = Userbar(page, _)
         self.taskbar: Taskbar = Taskbar(page, _)
 
-        self.row: ft.Row = ft.Row([self.userbar, self.taskbar])
+        self.row: ft.Row = ft.Row()
+        self.row.controls = [self.userbar, self.taskbar]
         self.row.expand = True
 
         self.page.add(self.row)
