@@ -11,8 +11,9 @@ from telethon.tl.functions.photos import (UploadProfilePhotoRequest)
 
 from ..telegram import UserClient
 from ..database import SQLite
-from ..components import CustomTask
+from ..components import Task
 
+from .asd import TEST
 
 class Manager:
     """Manager"""
@@ -26,8 +27,8 @@ class Manager:
                 "title": _("Sync my favorite messages between accounts."),
                 "description": _("Sync messages in your favorite chat with the correct sequence, re-replies to messages and pinned messages. The program can synchronize up to 100 messages per clock cycle."),
                 "function": self.sync_favorite_messages,
-                "status": bool,
-                "ui": CustomTask,
+                "status": bool(False),
+                "ui": Task,
             },
             "is_sync_profile_name": {
                 "title": _(
@@ -35,8 +36,8 @@ class Manager:
                 ),
                 "description": _("Synchronization of the first name, last name and profile description. If you do not specify the data, it will be overwritten as empty fields."),
                 "function": self.sync_profile_first_name_and_second_name,
-                "status": bool,
-                "ui": CustomTask,
+                "status": bool(False),
+                "ui": Task,
             },
             "is_sync_profile_media": {
                 "title": _(
@@ -44,8 +45,17 @@ class Manager:
                 ),
                 "description": _("Sync photo and video avatars in the correct sequence. If there are a lot of media files, the program sets an average limit between requests to the servers in order to circumvent the restrictions."),
                 "function": self.sync_profile_media,
-                "status": bool,
-                "ui": CustomTask,
+                "status": bool(False),
+                "ui": Task,
+            },
+            "is_sync_public_channels": {
+                "title": _(
+                    "Sync public channels."
+                ),
+                "description": _("Synchronizes public channels. If the channel was archived or pinned, the program will save these parameters."),
+                "function": self.sync_public_channels,
+                "status": bool(False),
+                "ui": Task,
             },
         }
         self.callback()
@@ -64,9 +74,9 @@ class Manager:
             if option[1].get("status"):
                 title = option[1].get("title")
                 desc = option[1].get("description")
-                option[1].update({"ui": CustomTask(title, desc)})
+                option[1].update({"ui": Task(title, desc)})
 
-    def get_ui_tasks(self) -> list[CustomTask]:
+    def get_ui_tasks(self) -> list[Task]:
         """Return UI list of will be execute tasks."""
         lst = []
         for option in self.options.items():
@@ -82,7 +92,7 @@ class Manager:
                 lst.append(option[1].get("function"))
         return lst
     
-    def get_coroutines_with_ui(self) -> list[Callable[[CustomTask], None]]:
+    def get_coroutines_with_ui(self) -> list[Callable[[Task], None]]:
         """Return dict object."""
         lst = []
         for option in self.options.items():
@@ -96,7 +106,7 @@ class Manager:
         """Callback"""
         self.update_options_dict()
 
-    async def sync_favorite_messages(self, ui: CustomTask):
+    async def sync_favorite_messages(self, ui: Task):
         """
         An algorithm for forwarding messages to the recipient entity is
         implemented.
@@ -227,7 +237,7 @@ class Manager:
 
         ui.success()
 
-    async def sync_profile_first_name_and_second_name(self, ui: CustomTask):
+    async def sync_profile_first_name_and_second_name(self, ui: Task):
         """
         Connecting accounts, getting profile data and sets.
         """
@@ -260,7 +270,7 @@ class Manager:
         ui.success()
 
 
-    async def sync_profile_media(self, ui: CustomTask):
+    async def sync_profile_media(self, ui: Task):
         """
         The algorithm for synchronizing profile photo and video avatars to 
         the recipient's essence.
@@ -309,3 +319,6 @@ class Manager:
             recepient.disconnect()
 
         ui.success()
+
+    async def sync_public_channels(self, ui: Task):
+        pass
