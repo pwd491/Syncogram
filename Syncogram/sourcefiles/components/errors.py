@@ -15,6 +15,10 @@ class ErrorAddAccount(ft.AlertDialog):
         ]
         self.actions_alignment = ft.MainAxisAlignment.END
 
+        self.page.dialog = self
+        self.open = True
+        self.page.update()
+
     async def __close(self, e) -> None:
         self.open = False
         self.page.dialog.clean()

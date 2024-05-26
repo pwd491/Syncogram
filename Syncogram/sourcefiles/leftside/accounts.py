@@ -61,10 +61,12 @@ class Authorization(ft.AlertDialog):
         self.actions = [self.button_close, self.log_phone_number_button, self.log_qrcode_button]
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
-    async def __close(self, e):
+    async def __close(self, e: ft.TapEvent = None):
         """Close dialog."""
-        self.client.disconnect()
+        if self.client.is_connected():
+            await self.client.disconnect()
         self.open = False
+        self.page.dialog.clean()
         self.update()
 
     async def __submit(self, e):
@@ -86,6 +88,7 @@ class Authorization(ft.AlertDialog):
             dialog=self,
             is_primary=self.is_primary
         )
+        await self.__close()
         # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
         self.page.pubsub.send_all("update")
         
@@ -119,7 +122,6 @@ class Accounts(ft.Container):
 
         self.divider = ft.Container()
         self.divider.width = 200
-        # self.expand = True
         self.divider.height = 0.5
         self.divider.border_radius = ft.BorderRadius(5,5,5,5)
         self.divider.bgcolor = ft.colors.ON_SECONDARY_CONTAINER
@@ -190,12 +192,8 @@ class Accounts(ft.Container):
         accounts: list[Any] = self.database.get_users()
         for acc in accounts:
             if int(is_primary) == acc[1]:
-                error = ErrorAddAccount(self.page, self._)
-                self.page.dialog = error
-                error.open = True
-                self.page.pubsub.send_all("update")
-                return self.page.update()
-
+                ErrorAddAccount(self.page, self._)
+                return
         authorization = Authorization(self.page, is_primary, self._)
         self.page.dialog = authorization
         authorization.open = True
