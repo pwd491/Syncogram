@@ -77,7 +77,7 @@ class StartAllTasksButton(ft.Container):
         self.border_radius = ft.BorderRadius(50, 50, 50, 50)
         self.padding = ft.Padding(25, 10, 25, 10)
         self.content = self.button_start_wrapper
-        self.bgcolor = ft.colors.SECONDARY_CONTAINER
+        self.bgcolor = ft.colors.BLUE
         self.on_click = self.__click
         self.on_hover = self.__hover
 

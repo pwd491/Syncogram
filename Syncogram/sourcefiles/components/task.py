@@ -41,7 +41,7 @@ class Task(ft.Container):
         self.wrapper: ft.Column = ft.Column([
             self.header,
             self.description,
-            ft.Divider(opacity=0),
+            # ft.Divider(opacity=0),
             self.progress_counters,
             self.progress
         ])
@@ -74,6 +74,7 @@ class Task(ft.Container):
     def default(self):
         """Theme mode when task was init."""
         self.border = ft.border.all(.5, ft.colors.ORANGE)
+        self.icon.name = ft.icons.UPDATE
         self.icon.color = ft.colors.ORANGE_500
 
     @property

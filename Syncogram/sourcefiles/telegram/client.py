@@ -96,7 +96,7 @@ class UserClient(TelegramClient):
             dialog.qrcode_image.src_base64 = generate_qrcode(qr_login.url)
             dialog.qrcode_image.update()
             try:
-                r = await qr_login.wait(10)
+                r = await qr_login.wait(60)
             except asyncio.exceptions.TimeoutError:
                 try:
                     await qr_login.recreate()
