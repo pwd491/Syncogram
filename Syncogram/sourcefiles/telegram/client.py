@@ -10,7 +10,7 @@ from telethon.errors import (
     PasswordHashInvalidError,
     UsernameNotModifiedError,
     UsernameInvalidError,
-    UsernameOccupiedError
+    UsernameOccupiedError,
     )
 from telethon import functions
 
@@ -96,9 +96,12 @@ class UserClient(TelegramClient):
             dialog.qrcode_image.src_base64 = generate_qrcode(qr_login.url)
             dialog.qrcode_image.update()
             try:
-                r = await qr_login.wait(60)
+                r = await qr_login.wait(10)
             except asyncio.exceptions.TimeoutError:
-                await qr_login.recreate()
+                try:
+                    await qr_login.recreate()
+                except ConnectionError:
+                    return
             except SessionPasswordNeededError:
                 await dialog.input_2fa_password()
                 while not r:
@@ -109,9 +112,12 @@ class UserClient(TelegramClient):
                         r = True
                     except PasswordHashInvalidError:
                         await dialog.error()
-
+                    except ConnectionError:
+                        return
+            except ConnectionError:
+                return
         response = await self.save_user_data(is_primary)
-        self.disconnect()
+        await self.disconnect()
         return response
 
     async def logout(self) -> bool:
