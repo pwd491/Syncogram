@@ -32,15 +32,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-    
-      - name: Getting poetry packet manager
-        uses: abatilo/actions-poetry@v3.0.0
-    
+          
       - name: Install Dependencies
         run: |
-          poetry env use python3.12
-          poetry shell
-          poetry install && poetry update
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Start Build Application
         run: |
@@ -93,14 +89,8 @@ jobs:
         with:
           python-version: '3.12'
           
-      - name: Getting poetry packet manager
-        uses: abatilo/actions-poetry@v3.0.0
-      
       - name: Install Dependencies
-        run: |
-          poetry env use python3.12
-          poetry shell
-          poetry install && poetry update
+        run: pip install -r requirements.txt
 
       - name: Start Build Application
         run: |
@@ -153,14 +143,8 @@ jobs:
         with:
           python-version: '3.12'
           
-      - name: Getting poetry packet manager
-        uses: abatilo/actions-poetry@v3.0.0
-    
       - name: Install Dependencies
-        run: |
-          poetry env use python3.12
-          poetry shell
-          poetry install && poetry update
+        run: pip install -r requirements.txt
 
       - name: Start Build Application
         run: |
