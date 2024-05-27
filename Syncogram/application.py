@@ -15,7 +15,7 @@ async def main(page: ft.Page) -> None:
     page.theme_mode = ft.ThemeMode.DARK
     page.window_center()
 
-    # await WelcomeScreenAnimation(page, _)()
+    await WelcomeScreenAnimation(page, _)()
     TheScreensController(page, _)
     UpdateApplicationAlert(page, _)
 
