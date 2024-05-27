@@ -1,12 +1,12 @@
 {
     "APP": {
         "NAME": "Syncogram",
-        "VERSION": "2024.05.12",
+        "VERSION": "2024.05.27",
         "VERSION_IS_ALPHA": "True",
         "VERSION_IS_BETA": "False"
     },
     "DATABASE": {
-        "VERSION": "0.0.2"
+        "VERSION": "0.0.3"
     },
     "GIT": {
         "REPO_LINK": "https://github.com/pwd491/syncogram.git",
