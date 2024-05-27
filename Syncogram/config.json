@@ -6,7 +6,7 @@
         "VERSION_IS_BETA": "False"
     },
     "DATABASE": {
-        "VERSION": "0.0.4"
+        "VERSION": "0.0.5"
     },
     "GIT": {
         "REPO_LINK": "https://github.com/pwd491/syncogram.git",
