@@ -62,7 +62,7 @@ def merge():
     os.system("git push origin master")
     time.sleep(3)
     print("---Переключаемся на dev ветку---")
-    os.system("git push origin master")
+    os.system("git switch dev")
     print("---Конец публикации новой ветке!---")
 
 if choice in yes:
