@@ -1,4 +1,5 @@
 flet
 telethon
 pyinstaller
+Pillow
 qrcode
