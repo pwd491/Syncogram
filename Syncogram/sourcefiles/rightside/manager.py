@@ -360,4 +360,4 @@ class Manager:
         except Exception as e:
             ui.unsuccess(e)
             return
-        ui.success
+        ui.success()
