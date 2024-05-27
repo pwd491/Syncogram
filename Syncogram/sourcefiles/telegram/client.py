@@ -54,7 +54,7 @@ class UserClient(TelegramClient):
                 continue
         return user
 
-    async def save_user_data(self, is_primary):
+    async def save_user_data(self, is_primary: bool):
         """Save user data to database"""
         user: User | InputPeerUser = await self.get_me()
         if user.username is None:
@@ -85,7 +85,7 @@ class UserClient(TelegramClient):
         )
 
 
-    async def login_by_qrcode(self, dialog, is_primary):
+    async def login_by_qrcode(self, dialog, is_primary: bool):
         """Create QR image and await for login by url."""
         if not self.is_connected():
             await self.connect()
@@ -119,6 +119,9 @@ class UserClient(TelegramClient):
         response = await self.save_user_data(is_primary)
         await self.disconnect()
         return response
+    
+    async def login_by_phone_number(self, is_primary: bool):
+        pass
 
     async def logout(self) -> bool:
         """Logout from account."""

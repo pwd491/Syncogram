@@ -24,13 +24,15 @@ class Authorization(ft.AlertDialog):
         self.log_phone_number_button: ft.TextButton = ft.TextButton()
         self.log_phone_number_button.text = _("Use phone number")
         self.log_phone_number_button.on_click = self.phone_login_dialog
-        self.log_phone_number_button.disabled = True
+        self.log_phone_number_button.disabled = False
 
         self.log_qrcode_button: ft.TextButton = ft.TextButton()
         self.log_qrcode_button.text = _("Use QR-code")
-        self.log_qrcode_button.on_click = ...
+        self.log_qrcode_button.on_click = self.qr_login_dialog
         self.log_qrcode_button.visible = False
 
+        self.phone_text: ft.Text = ft.Text()
+        self.phone_text.value = "Введите номер телефона"
         self.phone_field: ft.TextField = ft.TextField()
         self.phone_field.keyboard_type = ft.KeyboardType.PHONE
         self.phone_field.visible = False
@@ -58,7 +60,11 @@ class Authorization(ft.AlertDialog):
         self.content.alignment = ft.MainAxisAlignment.CENTER
         self.content.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         self.title = ft.Text(_("Authorization"))
-        self.actions = [self.button_close, self.log_phone_number_button, self.log_qrcode_button]
+        self.actions = [
+            self.button_close,
+            self.log_phone_number_button,
+
+        ]
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
     async def __close(self, e: ft.TapEvent = None):
@@ -82,8 +88,15 @@ class Authorization(ft.AlertDialog):
         self.password.visible = True
         self.update()
 
-    async def qr_login_dialog(self):
+    async def qr_login_dialog(self, e: ft.TapEvent = None):
         """Call authorization dialog by QRCode."""
+        if self.log_qrcode_button in self.actions:
+            self.actions.pop(-1)
+        if self.log_phone_number_button not in self.actions:
+            self.actions.append(self.log_phone_number_button)   
+        self.phone_field.visible = False
+        self.qrcode_image.visible = True
+        self.update()
         await self.client.login_by_qrcode(
             dialog=self,
             is_primary=self.is_primary
@@ -91,24 +104,28 @@ class Authorization(ft.AlertDialog):
         await self.__close()
         # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
         self.page.pubsub.send_all("update")
-        
-    async def phone_login_dialog(self, e):
-        """Authorization dialog by login."""
-        self.client.disconnect()
-        self.qrcode_image.visible = False
-        self.log_qrcode_button.visible = True
-        self.log_phone_number_button.visible = False
-        self.phone_field.visible = True
-        self.update()
 
+    async def phone_login_dialog(self, e):
+        """Authorization dialog by phone number."""
+        self.qrcode_image.visible = False
+        self.phone_field.visible = True
+        if self.log_phone_number_button in self.actions:
+            self.actions.pop(-1) 
+        if self.log_qrcode_button not in self.actions:
+            self.actions.append(self.log_qrcode_button)
+        self.update()
+    
     async def error(self):
         """Error style for 2fa input field."""
         self.password.border_color = ft.colors.RED
         self.password.focus()
         self.password.update()
 
+    async def manager(self):
+        await self.qr_login_dialog()
+
     def did_mount(self):
-        self.page.run_task(self.qr_login_dialog)
+        self.page.run_task(self.manager)
 
 
 class Accounts(ft.Container):
@@ -161,14 +178,14 @@ class Accounts(ft.Container):
         button.on_click = partial(self.logout, account_id=button.key)
         return button
 
-    def add_button(self, key: bool) -> ft.OutlinedButton:
+    def add_button(self, is_primary: bool) -> ft.OutlinedButton:
         """Create button to add account."""
         button = ft.OutlinedButton()
         button.height = 35
         button.text = self._("Add account")
         button.icon = ft.icons.ADD
         button.expand = True
-        button.data = key
+        button.data = is_primary
         button.on_click = partial(self.add_account, is_primary=button.data)
         return button
 
