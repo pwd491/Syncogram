@@ -16,22 +16,22 @@ class Settings(ft.AlertDialog):
             [False for __ in range(20)]
 
         self.c1 = ft.Checkbox(
-            label=_("Sync my favorite messages"),
+            label=_("Synchronize my favorite messages"),
             value=bool(self.options[0]),
             disabled=False,
         )
         self.c2 = ft.Checkbox(
-            label=_("Sync my profile first name, last name and biography."),
+            label=_("Synchronize my profile first name, last name and biography."),
             value=bool(self.options[1]),
             disabled=False
         )
         self.c3 = ft.Checkbox(
-            label=_("Sync my profile photos and videos avatars."),
+            label=_("Synchronize my profile photos and videos avatars."),
             value=bool(self.options[2]),
             disabled=False
         )
         self.c4 = ft.Checkbox(
-            label=_("Sync my public channels."),
+            label=_("Synchronize my public channels and groups."),
             value=bool(self.options[3]),
             disabled=False
         )

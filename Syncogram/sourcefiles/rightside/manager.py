@@ -5,8 +5,11 @@ from typing import Callable, Coroutine
 import flet as ft
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.functions.messages import ToggleDialogPinRequest
+from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl.custom.dialog import Dialog
 from telethon.tl.patched import MessageService
-from telethon.tl.types import UserFull, Message, Photo
+from telethon.tl.types import UserFull, Message, Photo, Chat
 from telethon.tl.functions.photos import (UploadProfilePhotoRequest)
 
 from ..telegram import UserClient
@@ -23,8 +26,10 @@ class Manager:
 
         self.options = {
             "is_sync_fav": {
-                "title": _("Sync my favorite messages between accounts."),
-                "description": _("Sync messages in your favorite chat with the correct sequence, re-replies to messages and pinned messages. The program can synchronize up to 100 messages per clock cycle."),
+                "title": _("Synchronize my favorite messages between accounts."),
+                "description": _(
+                    "Sync messages in your favorite chat with the correct sequence, re-replies to messages and pinned messages. The program can synchronize up to 100 messages per clock cycle."
+                ),
                 "function": self.sync_favorite_messages,
                 "status": bool(False),
                 "ui": Task,
@@ -33,26 +38,28 @@ class Manager:
                 "title": _(
                     "Synchronize the first name, last name and biography of the profile."
                 ),
-                "description": _("Synchronization of the first name, last name and profile description. If you do not specify the data, it will be overwritten as empty fields."),
+                "description": _(
+                    "Synchronization of the first name, last name and profile description. If you do not specify the data, it will be overwritten as empty fields."
+                ),
                 "function": self.sync_profile_first_name_and_second_name,
                 "status": bool(False),
                 "ui": Task,
             },
             "is_sync_profile_media": {
-                "title": _(
-                    "Synchronize account photos and videos avatars."
+                "title": _("Synchronize account photos and videos avatars."),
+                "description": _(
+                    "Sync photo and video avatars in the correct sequence. If there are a lot of media files, the program sets an average limit between requests to the servers in order to circumvent the restrictions."
                 ),
-                "description": _("Sync photo and video avatars in the correct sequence. If there are a lot of media files, the program sets an average limit between requests to the servers in order to circumvent the restrictions."),
                 "function": self.sync_profile_media,
                 "status": bool(False),
                 "ui": Task,
             },
-            "is_sync_public_channels": {
-                "title": _(
-                    "Sync public channels."
+            "is_sync_public_channels_and_groups": {
+                "title": _("Synchronize public channels and groups."),
+                "description": _(
+                    "Synchronizes public channels ang groups. If the channel or groups was archived or pinned, the program will save these parameters."
                 ),
-                "description": _("Synchronizes public channels. If the channel was archived or pinned, the program will save these parameters."),
-                "function": self.sync_public_channels,
+                "function": self.sync_public_channels_and_groups,
                 "status": bool(False),
                 "ui": Task,
             },
@@ -90,7 +97,7 @@ class Manager:
             if option[1].get("status"):
                 lst.append(option[1].get("function"))
         return lst
-    
+
     def get_coroutines_with_ui(self) -> list[Callable[[Task], None]]:
         """Return dict object."""
         lst = []
@@ -100,7 +107,7 @@ class Manager:
                 ui = option[1].get("ui")
                 lst.append(func(ui))
         return lst
-    
+
     def callback(self):
         """Callback"""
         self.update_options_dict()
@@ -228,12 +235,8 @@ class Manager:
                 is_replied = False
                 group.clear()
         except Exception as e:
-            return ui.unsuccess(e)
-        finally:
-            del msg_ids
-            sender.disconnect()
-            recepient.disconnect()
-
+            ui.unsuccess(e)
+            return
         ui.success()
 
     async def sync_profile_first_name_and_second_name(self, ui: Task):
@@ -261,13 +264,9 @@ class Manager:
 
             await recepient(UpdateProfileRequest(first_name, last_name, bio))
         except Exception as e:
-            return ui.unsuccess(e)
-        finally:
-            sender.disconnect()
-            recepient.disconnect()
-
+            ui.unsuccess(e)
+            return
         ui.success()
-
 
     async def sync_profile_media(self, ui: Task):
         """
@@ -312,20 +311,53 @@ class Manager:
                 )
                 await recepient(UploadProfilePhotoRequest(video=file))
         except Exception as e:
-            return ui.unsuccess(e)
-        finally:
-            sender.disconnect()
-            recepient.disconnect()
-
+            ui.unsuccess(e)
+            return
         ui.success()
 
-    async def sync_public_channels(self, ui: Task):
+    async def sync_public_channels_and_groups(self, ui: Task):
+        """
+        The algorithm for synchronizing public channels, 
+        the status of pinning and archiving.
+        """
         ui.default()
-        total = range(100)
-        ui.progress_counters.visible = True
-        ui.total = len(total) - 1
 
-        for i in total:
-            ui.value = i
-            await asyncio.sleep(0.1)
-        ui.success()
+        sender = self.client(self.database.get_session_by_status(1))
+        recepient = self.client(self.database.get_session_by_status(0))
+
+        if not (sender.is_connected() and recepient.is_connected()):
+            await sender.connect()
+            await recepient.connect()
+
+        source = await sender.get_dialogs()
+        channels: list[Dialog] = []
+
+        dialog: Dialog
+        for dialog in source:
+            if not isinstance(dialog.entity, Chat) \
+                and not dialog.is_user \
+                    and dialog.entity.username:
+                channels.append(dialog)
+
+        ui.progress_counters.visible = True
+        ui.total = len(channels)
+
+        channel: Dialog
+        try:
+            for i, channel in enumerate(channels, 1):
+                await asyncio.sleep(12)
+                await recepient(JoinChannelRequest(channel.entity.username))
+                if channel.archived:
+                    await asyncio.sleep(2.5)
+                    await recepient.edit_folder(channel.entity.username, 1)
+                if channel.pinned:
+                    await asyncio.sleep(2.5)
+                    await recepient(ToggleDialogPinRequest(
+                        channel.entity.username,
+                        True
+                    ))
+                ui.value = i
+        except Exception as e:
+            ui.unsuccess(e)
+            return
+        ui.success
