@@ -11,7 +11,8 @@ class MinimumAccountsRequired(ft.Row):
     def __init__(self, _) -> None:
         super().__init__()
         self.sticker = ft.Lottie()
-        self.sticker.src = "stickers/sticker.json"
+        # self.sticker.src = "stickers/sticker.json"
+        self.sticker.src = "https://raw.githubusercontent.com/pwd491/Syncogram/dev/Syncogram/assets/stickers/sticker.json"
         self.sticker.repeat = True
         self.sticker.animate = True
         self.sticker.filter_quality = ft.FilterQuality.HIGH
