@@ -38,6 +38,7 @@ class StartAllTasksButton(ft.Container):
         self.event = asyncio.Event()
         self.coroutines: Callable = coroutines
         self.cancel = CancelAllTasks(self.page, self.event, self._)
+        self.tasks = None
 
         self.width = 140
         self.icon = ft.Icon()
@@ -112,9 +113,10 @@ class StartAllTasksButton(ft.Container):
             if len(tasks) <= 0:
                 await self.open_settings_dialog()
                 return
+            self.tasks = [asyncio.create_task(task) for task in tasks]
             self.state = True
             await asyncio.gather(
-                self.start_executes_tasks(tasks),
+                self.start_executes_tasks(self.tasks),
                 self.infinity_rotate(),
                 self.__animate()
             )
@@ -123,6 +125,8 @@ class StartAllTasksButton(ft.Container):
             self.page.dialog.open = True
             self.page.update()
             await self.cancel()
+            for task in self.tasks:
+                task.cancel()
             self.state = False
             await self.__animate()
 
@@ -135,7 +139,7 @@ class StartAllTasksButton(ft.Container):
 
     async def start_executes_tasks(self, tasks: list[Coroutine]):
         """..."""
-        a = await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
         self.state = False
         await self.__animate()
 
