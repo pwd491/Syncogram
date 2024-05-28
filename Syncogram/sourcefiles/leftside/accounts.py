@@ -17,6 +17,7 @@ class Authorization(ft.AlertDialog):
         self.page: ft.Page = page
         self.is_primary: bool = is_primary
         self.password_inputed_event: Event = Event()
+        self.code_inputed_event: Event = Event()
         self.client: UserClient = UserClient()
 
         self.qrcode_image: ft.Image = ft.Image("1")
@@ -24,36 +25,55 @@ class Authorization(ft.AlertDialog):
         self.log_phone_number_button: ft.TextButton = ft.TextButton()
         self.log_phone_number_button.text = _("Use phone number")
         self.log_phone_number_button.on_click = self.phone_login_dialog
-        self.log_phone_number_button.disabled = True
+        self.log_phone_number_button.disabled = False
         self.log_phone_number_button.tooltip = _("It will available in next updates")
 
         self.log_qrcode_button: ft.TextButton = ft.TextButton()
         self.log_qrcode_button.text = _("Use QR-code")
         self.log_qrcode_button.on_click = self.qr_login_dialog
-        self.log_qrcode_button.visible = False
+        self.log_qrcode_button.visible = True
 
-        self.phone_text: ft.Text = ft.Text()
-        self.phone_text.value = "Введите номер телефона"
         self.phone_field: ft.TextField = ft.TextField()
+        self.phone_field.label = _("Phone number")
+        self.phone_field.prefix_text = "+"
+        self.phone_field.max_length = 16
+        self.phone_field.text_size = 24
+        self.phone_field.input_filter = ft.InputFilter(
+            allow=True,
+            regex_string=r"[0-9]",
+            replacement_string="",
+        )
+        self.phone_field.on_submit = self.__call_phone_auth
         self.phone_field.keyboard_type = ft.KeyboardType.PHONE
         self.phone_field.visible = False
 
+        self.code_field: ft.TextField = ft.TextField()
+        self.code_field.label = _("SMS code")
+        self.code_field.text_size = 24
+        self.code_field.input_filter = ft.InputFilter(
+            allow=True,
+            regex_string=r"[0-9]",
+            replacement_string=""
+        )
+        self.code_field.on_submit = self.__submit
+        self.code_field.visible = True
+
         self.password = ft.TextField()
         self.password.label = _("2FA password")
-        self.password.visible = False
+        self.password.visible = True
         self.password.password = True
         self.password.autofocus = True
         self.password.on_submit = self.__submit
 
         self.button_close = ft.TextButton(_("Close"), on_click=self.__close)
         self.button_submit = ft.FilledButton(_("Submit"), on_click=self.__submit)
+        self.button_continue = ft.TextButton(_("Continue"), on_click=self.__call_phone_auth)
 
         self.modal = True
         self.content = ft.Column(
             [
                 self.phone_field,
                 self.qrcode_image,
-                self.password
             ]
         )
         self.content.width = 400
@@ -64,7 +84,6 @@ class Authorization(ft.AlertDialog):
         self.actions = [
             self.button_close,
             self.log_phone_number_button,
-
         ]
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
@@ -83,39 +102,74 @@ class Authorization(ft.AlertDialog):
 
     async def input_2fa_password(self):
         """Create input 2FA password and display."""
-        self.actions.append(self.button_submit)
+        if self.code_field in self.content.controls:
+            self.code_field.disabled = True
+        if self.button_submit not in self.actions:
+            self.actions.append(self.button_submit)
         self.log_phone_number_button.visible = False
         self.qrcode_image.visible = False
-        self.password.visible = True
+        if self.password not in self.content.controls:
+            self.content.controls.append(self.password)
         self.update()
+
+    async def input_code(self):
+        """"""
+        if self.button_continue in self.actions:
+            self.actions.remove(self.button_continue)
+        if self.button_submit not in self.actions:
+            self.actions.append(self.button_submit)
+        self.phone_field.disabled = True
+        self.content.controls.append(self.code_field)
+        self.update()
+
 
     async def qr_login_dialog(self, e: ft.TapEvent = None):
         """Call authorization dialog by QRCode."""
+        if self.code_field in self.content.controls:
+            self.content.controls.remove(self.code_field)
+        if self.password in self.content.controls:
+            self.content.controls.remove(self.password)
+        if self.button_continue in self.actions:
+            self.actions.remove(self.button_continue)
+        if self.button_submit in self.actions:
+            self.actions.remove(self.button_submit)
         if self.log_qrcode_button in self.actions:
-            self.actions.pop(-1)
+            self.actions.remove(self.log_qrcode_button)
         if self.log_phone_number_button not in self.actions:
-            self.actions.append(self.log_phone_number_button)   
+            self.actions.append(self.log_phone_number_button)
         self.phone_field.visible = False
         self.qrcode_image.visible = True
         self.update()
-        await self.client.login_by_qrcode(
+        result = await self.client.login_by_qrcode(
             dialog=self,
             is_primary=self.is_primary
+        )
+        if result is bool:
+            await self.__close()
+        # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
+        self.page.pubsub.send_all("update")
+
+    async def phone_login_dialog(self, e: ft.TapEvent = None):
+        """Authorization dialog by phone number."""
+        self.qrcode_image.visible = False
+        self.phone_field.visible = True
+        if self.log_phone_number_button in self.actions:
+            self.actions.remove(self.log_phone_number_button)
+        if self.log_qrcode_button not in self.actions:
+            self.actions.append(self.log_qrcode_button)
+        if self.button_continue not in self.actions:
+            self.actions.append(self.button_continue)
+        self.update()
+
+    async def __call_phone_auth(self, e: ft.TapEvent):
+        await self.client.login_by_phone_number(
+            self,
+            self.is_primary
         )
         await self.__close()
         # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
         self.page.pubsub.send_all("update")
 
-    async def phone_login_dialog(self, e):
-        """Authorization dialog by phone number."""
-        self.qrcode_image.visible = False
-        self.phone_field.visible = True
-        if self.log_phone_number_button in self.actions:
-            self.actions.pop(-1)
-        if self.log_qrcode_button not in self.actions:
-            self.actions.append(self.log_qrcode_button)
-        self.update()
-    
     async def error(self):
         """Error style for 2fa input field."""
         self.password.border_color = ft.colors.RED

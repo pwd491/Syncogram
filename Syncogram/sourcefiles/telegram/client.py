@@ -11,6 +11,7 @@ from telethon.errors import (
     UsernameNotModifiedError,
     UsernameInvalidError,
     UsernameOccupiedError,
+    PhoneNumberInvalidError
     )
 from telethon import functions
 
@@ -120,9 +121,37 @@ class UserClient(TelegramClient):
         await self.disconnect()
         return response
     
-    async def login_by_phone_number(self, is_primary: bool):
-        pass
+    async def login_by_phone_number(self, dialog, is_primary: bool):
+        """Login by phone number."""
+        if not self.is_connected():
+            await self.connect()
+        r = False
+        while not r:
+            try:
+                login_token = await self.send_code_request(dialog.phone_field.value)
+                await dialog.input_code()
+                await dialog.password_inputed_event.wait()
+                await self.sign_in(login_token, dialog.code_field.value)
+            except SessionPasswordNeededError:
+                await dialog.input_2fa_password()
+                r = False
+                while not r:
+                    await dialog.password_inputed_event.wait()
+                    password = dialog.password.value
+                    try:
+                        await self.sign_in(password=password)
+                        r = True
+                    except PasswordHashInvalidError:
+                        await dialog.error()
+                    except ConnectionError:
+                        return
+            except PhoneNumberInvalidError:
+                return
 
+        response = await self.save_user_data(is_primary)
+        await self.disconnect()
+        return response
+    
     async def logout(self) -> bool:
         """Logout from account."""
         if not self.is_connected():
