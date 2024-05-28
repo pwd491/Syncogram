@@ -103,7 +103,7 @@ class Authorization(ft.AlertDialog):
     async def input_2fa_password(self):
         """Create input 2FA password and display."""
         if self.code_field in self.content.controls:
-            self.code_field.disabled = True
+            self.code_field.read_only = True
         if self.button_submit not in self.actions:
             self.actions.append(self.button_submit)
         self.log_phone_number_button.visible = False
@@ -114,12 +114,15 @@ class Authorization(ft.AlertDialog):
 
     async def input_code(self):
         """"""
+        if self.log_qrcode_button in self.actions:
+            self.actions.remove(self.log_qrcode_button)
         if self.button_continue in self.actions:
             self.actions.remove(self.button_continue)
         if self.button_submit not in self.actions:
             self.actions.append(self.button_submit)
-        self.phone_field.disabled = True
-        self.content.controls.append(self.code_field)
+        self.phone_field.read_only = True
+        if self.code_field not in self.content.controls:
+            self.content.controls.append(self.code_field)
         self.update()
 
 
@@ -127,27 +130,34 @@ class Authorization(ft.AlertDialog):
         """Call authorization dialog by QRCode."""
         if self.code_field in self.content.controls:
             self.content.controls.remove(self.code_field)
+
         if self.password in self.content.controls:
             self.content.controls.remove(self.password)
+
         if self.button_continue in self.actions:
             self.actions.remove(self.button_continue)
+
         if self.button_submit in self.actions:
             self.actions.remove(self.button_submit)
+
         if self.log_qrcode_button in self.actions:
             self.actions.remove(self.log_qrcode_button)
+            
         if self.log_phone_number_button not in self.actions:
             self.actions.append(self.log_phone_number_button)
+
         self.phone_field.visible = False
         self.qrcode_image.visible = True
         self.update()
+
         result = await self.client.login_by_qrcode(
             dialog=self,
             is_primary=self.is_primary
         )
-        if result is bool:
+        if result is True:
             await self.__close()
-        # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
-        self.page.pubsub.send_all("update")
+            # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
+            self.page.pubsub.send_all("update")
 
     async def phone_login_dialog(self, e: ft.TapEvent = None):
         """Authorization dialog by phone number."""
@@ -162,19 +172,43 @@ class Authorization(ft.AlertDialog):
         self.update()
 
     async def __call_phone_auth(self, e: ft.TapEvent):
-        await self.client.login_by_phone_number(
+        result = await self.client.login_by_phone_number(
             self,
             self.is_primary
         )
-        await self.__close()
-        # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
-        self.page.pubsub.send_all("update")
 
-    async def error(self):
+        if result is True:
+            await self.__close()
+            # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
+            self.page.pubsub.send_all("update")
+
+    async def password_invalid(self):
         """Error style for 2fa input field."""
         self.password.border_color = ft.colors.RED
         self.password.focus()
         self.password.update()
+
+    async def password_valid(self):
+        self.password.border_color = ft.colors.GREEN
+        self.password.update()
+
+    async def phone_number_invalid(self):
+        self.phone_field.border_color = ft.colors.RED
+        self.phone_field.focus()
+        self.phone_field.update()
+    
+    async def phone_number_valid(self):
+        self.phone_field.border_color = ft.colors.GREEN
+        self.phone_field.update()
+
+    async def phone_code_invalid(self):
+        self.code_field.border_color = ft.colors.RED
+        self.code_field.focus()
+        self.code_field.update()
+
+    async def phone_code_valid(self):
+        self.code_field.border_color = ft.colors.GREEN
+        self.code_field.update()
 
     async def manager(self):
         await self.qr_login_dialog()

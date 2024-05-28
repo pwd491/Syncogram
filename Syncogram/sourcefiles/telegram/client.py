@@ -11,7 +11,8 @@ from telethon.errors import (
     UsernameNotModifiedError,
     UsernameInvalidError,
     UsernameOccupiedError,
-    PhoneNumberInvalidError
+    PhoneNumberInvalidError,
+    PhoneCodeInvalidError
     )
 from telethon import functions
 
@@ -125,28 +126,41 @@ class UserClient(TelegramClient):
         """Login by phone number."""
         if not self.is_connected():
             await self.connect()
+       
+        try:
+            phone = dialog.phone_field.value
+            if len(phone) <= 0:
+                raise PhoneNumberInvalidError(None)
+            login_token = await self.send_code_request(phone=phone)
+            await dialog.phone_number_valid()
+        except PhoneNumberInvalidError:
+            await dialog.phone_number_invalid()
+            return PhoneNumberInvalidError
+
         r = False
         while not r:
             try:
-                login_token = await self.send_code_request(dialog.phone_field.value)
                 await dialog.input_code()
                 await dialog.password_inputed_event.wait()
                 await self.sign_in(login_token, dialog.code_field.value)
+                await dialog.phone_code_valid()
+                r = True
             except SessionPasswordNeededError:
+                await dialog.phone_code_valid()
                 await dialog.input_2fa_password()
-                r = False
                 while not r:
                     await dialog.password_inputed_event.wait()
                     password = dialog.password.value
                     try:
                         await self.sign_in(password=password)
+                        await dialog.password_valid()
                         r = True
                     except PasswordHashInvalidError:
-                        await dialog.error()
+                        await dialog.password_invalid()
                     except ConnectionError:
-                        return
-            except PhoneNumberInvalidError:
-                return
+                        return None
+            except PhoneCodeInvalidError:
+                await dialog.phone_code_invalid()
 
         response = await self.save_user_data(is_primary)
         await self.disconnect()
