@@ -117,6 +117,7 @@ class Manager:
         An algorithm for forwarding messages to the recipient entity is
         implemented.
         """
+        ui.default()
         sender = self.client(self.database.get_session_by_status(1))
         recepient = self.client(self.database.get_session_by_status(0))
 
@@ -131,7 +132,7 @@ class Manager:
         recepient_entity = await sender.get_input_entity(recepient_username)
 
         # Getting messages from sender source
-        source_messages = sender.iter_messages(
+        source_messages = await sender.get_messages(
             sender_entity, min_id=0, max_id=0, reverse=True
         )
 
@@ -177,13 +178,9 @@ class Manager:
 
         try:
             ui.progress_counters.visible = True
-            i = 0
-            async for message in source_messages:
-                i += 1
-                ui.total.value = source_messages.total
-                ui.progress.value = i / source_messages.total
-                ui.value.value = i
-                ui.update()
+            ui.total = source_messages.total
+            for i, message in enumerate(source_messages, 1):
+                ui.value = i
                 if not isinstance(message, MessageService):
                     if message.grouped_id is not None:
                         if message.pinned:
@@ -243,8 +240,7 @@ class Manager:
         """
         Connecting accounts, getting profile data and sets.
         """
-        ui.progress.value = None
-        ui.progress.update()
+        ui.default()
 
         sender = self.client(self.database.get_session_by_status(1))
         recepient = self.client(self.database.get_session_by_status(0))
@@ -253,15 +249,19 @@ class Manager:
             await sender.connect()
             await recepient.connect()
 
+        ui.progress_counters.visible = True
+        ui.total = 3
         try:
             user: UserFull = await sender(GetFullUserRequest("me"))
             first_name = user.users[0].first_name
             first_name = "" if first_name is None else first_name
+            ui.value = 1
             last_name = user.users[0].last_name
             last_name = "" if last_name is None else last_name
+            ui.value = 2
             bio = user.full_user.about
             bio = "" if bio is None else bio
-
+            ui.value = 3
             await recepient(UpdateProfileRequest(first_name, last_name, bio))
         except Exception as e:
             ui.unsuccess(e)
@@ -273,6 +273,7 @@ class Manager:
         The algorithm for synchronizing profile photo and video avatars to 
         the recipient's essence.
         """
+        ui.default()
         sender = self.client(self.database.get_session_by_status(1))
         recepient = self.client(self.database.get_session_by_status(0))
 
@@ -284,15 +285,11 @@ class Manager:
         video_extension = ".mp4"
         photo: Photo
         try:
-            i = 0
             photos = await sender.get_profile_photos("me")
             ui.progress_counters.visible = True
-            ui.total.value = photos.total
-            for photo in reversed(photos):
-                i += 1
-                ui.progress.value = i / photos.total
-                ui.value.value = i
-                ui.update()
+            ui.total = photos.total
+            for i, photo in enumerate(reversed(photos), 1):
+                ui.value = i
                 await asyncio.sleep(3)
                 blob = await sender.download_media(photo, bytes)
                 name = "Syncogram_" + datetime.strftime(
