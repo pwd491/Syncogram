@@ -275,23 +275,46 @@ class Manager:
             await recepient.connect()
 
         ui.progress_counters.visible = True
-        ui.total = 3
+        ui.total = 4
         try:
-            user: types.UserFull = await sender(
+            user = await sender(
                 users.GetFullUserRequest("me")
             )
+
+            ui.value += 1
+            await asyncio.sleep(1)
             first_name = user.users[0].first_name
-            first_name = "" if first_name is None else first_name
-            ui.value = 1
+            first_name = str() if first_name is None else first_name
+            await asyncio.sleep(1)
+
             last_name = user.users[0].last_name
-            last_name = "" if last_name is None else last_name
-            ui.value = 2
+            last_name = str() if last_name is None else last_name
+            ui.value += 1
+            await asyncio.sleep(1)
+
             bio = user.full_user.about
-            bio = "" if bio is None else bio
-            ui.value = 3
+            bio = str() if bio is None else bio
+            ui.value += 1
+            await asyncio.sleep(1)
+
             await recepient(
                 account.UpdateProfileRequest(first_name, last_name, bio)
             )
+            await asyncio.sleep(1)
+
+            if user.full_user.birthday is not None:
+                await recepient(
+                    account.UpdateBirthdayRequest(
+                        types.TypeBirthday(
+                            user.full_user.birthday.day,
+                            user.full_user.birthday.month,
+                            user.full_user.birthday.year
+                        )
+                    )
+                )
+            await asyncio.sleep(1)
+            ui.value += 1
+
         except Exception as e:
             ui.unsuccess(e)
             return
@@ -544,6 +567,7 @@ class Manager:
             )
             ui.value += 1
             await asyncio.sleep(0.5)
+
         except Exception as e:
             ui.unsuccess(e)
             return
