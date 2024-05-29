@@ -75,7 +75,7 @@ class Manager:
             "is_sync_secure": {
                 "title": _("Synchronize secure settings."),
                 "description": _(
-                    "Synchronizes the secure settings for the account."
+                    "Synchronizes the secure settings for the account. It includes synchronization of sensitive content, TTL messages and account."
                 ),
                 "function": self.sync_secure_settings,
                 "status": bool(False),
