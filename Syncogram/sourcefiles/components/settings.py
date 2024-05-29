@@ -35,6 +35,11 @@ class Settings(ft.AlertDialog):
             value=bool(self.options[3]),
             disabled=False
         )
+        self.c5 = ft.Checkbox(
+            label=_("Synchronize my privacy settings."),
+            value=bool(self.options[4]),
+            disabled=False
+        )
         """!!!"""
 
         x = [
@@ -42,6 +47,7 @@ class Settings(ft.AlertDialog):
             self.c2,
             self.c3,
             self.c4,
+            self.c5,
         ]
         x.sort(key=lambda x: x.disabled is True)
 
@@ -78,6 +84,7 @@ class Settings(ft.AlertDialog):
             int(self.c2.value),
             int(self.c3.value),
             int(self.c4.value),
+            int(self.c5.value),
         )
         self.page.pubsub.send_all("update")
         self.page.dialog.clean()

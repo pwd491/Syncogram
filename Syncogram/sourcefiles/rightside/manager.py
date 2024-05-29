@@ -3,14 +3,62 @@ from datetime import datetime
 from typing import Callable, Coroutine
 
 import flet as ft
-from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.functions.messages import ToggleDialogPinRequest
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.custom.dialog import Dialog
 from telethon.tl.patched import MessageService
 from telethon.tl.types import UserFull, Message, Photo, Chat
+from telethon.tl.types.account import PrivacyRules
 from telethon.tl.functions.photos import (UploadProfilePhotoRequest)
+from telethon.tl.functions.account import (
+    UpdateProfileRequest,
+    GetGlobalPrivacySettingsRequest,
+    SetGlobalPrivacySettingsRequest,
+    GetPrivacyRequest,
+    SetPrivacyRequest,
+)
+from telethon.tl.types import (
+    InputPrivacyKeyPhoneNumber,
+    InputPrivacyKeyAddedByPhone,
+    InputPrivacyKeyStatusTimestamp,
+    InputPrivacyKeyProfilePhoto,
+    InputPrivacyKeyAbout,
+    InputPrivacyKeyBirthday,
+    InputPrivacyKeyForwards,
+    InputPrivacyKeyPhoneCall,
+    InputPrivacyKeyPhoneP2P,
+    InputPrivacyKeyChatInvite,
+    InputPrivacyKeyVoiceMessages,
+
+    InputPrivacyValueAllowAll,
+    InputPrivacyValueAllowPremium,
+    InputPrivacyValueAllowContacts,
+    InputPrivacyValueAllowUsers,
+    InputPrivacyValueDisallowUsers,
+    InputPrivacyValueDisallowAll,
+    InputPrivacyValueAllowCloseFriends,
+    InputPrivacyValueDisallowContacts,
+    InputPrivacyValueAllowChatParticipants,
+    InputPrivacyValueDisallowChatParticipants,
+
+    PrivacyValueAllowAll,
+    PrivacyValueAllowUsers,
+    PrivacyValueAllowPremium,
+    PrivacyValueAllowContacts,
+    PrivacyValueDisallowUsers,
+    PrivacyValueDisallowAll,
+    PrivacyValueAllowCloseFriends,
+    PrivacyValueDisallowContacts,
+    PrivacyValueAllowChatParticipants,
+    PrivacyValueDisallowChatParticipants,
+
+    TypeInputPrivacyKey,
+    TypePrivacyRule,
+    TypeGlobalPrivacySettings
+)
+
+
 
 from ..telegram import UserClient
 from ..database import SQLite
@@ -60,6 +108,15 @@ class Manager:
                     "Synchronizes public channels ang groups. If the channel or groups was archived or pinned, the program will save these parameters."
                 ),
                 "function": self.sync_public_channels_and_groups,
+                "status": bool(False),
+                "ui": Task,
+            },
+            "is_sync_privacy": {
+                "title": _("Synchronize privacy settings."),
+                "description": _(
+                    "Synchronizes the privacy settings for the account. If the sync account does not have Telegram Premium, then the corresponding premium settings will not be synchronized."
+                ),
+                "function": self.sync_privacy_settings,
                 "status": bool(False),
                 "ui": Task,
             },
@@ -357,4 +414,110 @@ class Manager:
         except Exception as e:
             ui.unsuccess(e)
             return
+        ui.success()
+
+
+    async def sync_privacy_settings(self, ui: Task):
+        """The algorithm for synchronizing privacy settings."""
+        ui.default()
+
+        sender = self.client(self.database.get_session_by_status(1))
+        recepient = self.client(self.database.get_session_by_status(0))
+
+        if not sender.is_connected() or not recepient.is_connected():
+            await sender.connect()
+            await recepient.connect()
+
+        input_privacies: list[TypeInputPrivacyKey] = [
+            InputPrivacyKeyPhoneNumber(),
+            InputPrivacyKeyAddedByPhone(),
+            InputPrivacyKeyStatusTimestamp(),
+            InputPrivacyKeyProfilePhoto(),
+            InputPrivacyKeyAbout(),
+            InputPrivacyKeyBirthday(),
+            InputPrivacyKeyForwards(),
+            InputPrivacyKeyPhoneCall(),
+            InputPrivacyKeyPhoneP2P(),
+            InputPrivacyKeyChatInvite(),
+            InputPrivacyKeyVoiceMessages(),
+        ]
+
+        try:
+            ui.progress_counters.visible = True
+            ui.total = len(input_privacies) + 1
+            i: int
+            for i, privacy in enumerate(input_privacies, 1):
+                await asyncio.sleep(1)
+                rules: list[TypePrivacyRule] = []
+                request: PrivacyRules = await sender(
+                    GetPrivacyRequest(
+                        privacy
+                    )
+                )
+
+                for rule in request.rules:
+                    if isinstance(rule, PrivacyValueAllowAll):
+                        rules.append(InputPrivacyValueAllowAll())
+
+                    if isinstance(rule, PrivacyValueAllowUsers):
+                        rules.append(InputPrivacyValueAllowUsers([]))
+
+                    if isinstance(rule, PrivacyValueAllowPremium):
+                        rules.append(InputPrivacyValueAllowPremium())
+
+                    if isinstance(rule, PrivacyValueAllowContacts):
+                        rules.append(InputPrivacyValueAllowContacts())
+
+                    if isinstance(rule, PrivacyValueAllowCloseFriends):
+                        rules.append(InputPrivacyValueAllowCloseFriends())
+
+                    if isinstance(rule, PrivacyValueAllowChatParticipants):
+                        rules.append(InputPrivacyValueAllowChatParticipants([]))
+
+                    if isinstance(rule, PrivacyValueDisallowAll):
+                        r = True
+                        for k in rules:
+                            if isinstance(k, InputPrivacyValueAllowContacts):
+                                r = False
+                                break
+                        if r:
+                            rules.append(InputPrivacyValueDisallowAll())
+
+                    if isinstance(rule, PrivacyValueDisallowUsers):
+                        rules.append(InputPrivacyValueDisallowUsers([]))
+
+                    if isinstance(rule, PrivacyValueDisallowContacts):
+                        rules.append(InputPrivacyValueDisallowContacts())
+
+                    if isinstance(rule, PrivacyValueDisallowChatParticipants):
+                        rules.append(InputPrivacyValueDisallowChatParticipants([]))
+
+                await recepient(
+                    SetPrivacyRequest(
+                        key=privacy,
+                        rules=rules
+                    )
+                )
+                ui.value = i
+
+            data: TypeGlobalPrivacySettings = await sender(
+                GetGlobalPrivacySettingsRequest()
+            )
+
+            await recepient(
+                SetGlobalPrivacySettingsRequest(
+                    TypeGlobalPrivacySettings(
+                        data.archive_and_mute_new_noncontact_peers,
+                        data.keep_archived_unmuted,
+                        data.keep_archived_folders,
+                        data.hide_read_marks,
+                        data.new_noncontact_peers_require_premium
+                    )
+                )
+            )
+            ui.value = i + 1
+        except Exception as e:
+            ui.unsuccess(e)
+            return
+
         ui.success()
