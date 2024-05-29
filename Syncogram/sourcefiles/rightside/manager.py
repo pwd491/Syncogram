@@ -3,62 +3,14 @@ from datetime import datetime
 from typing import Callable, Coroutine
 
 import flet as ft
-from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.functions.messages import ToggleDialogPinRequest
-from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl import types
+from telethon.tl.functions import users
+from telethon.tl.functions import photos
+from telethon.tl.functions import account
+from telethon.tl.functions import channels
+from telethon.tl.functions import messages
 from telethon.tl.custom.dialog import Dialog
 from telethon.tl.patched import MessageService
-from telethon.tl.types import UserFull, Message, Photo, Chat
-from telethon.tl.types.account import PrivacyRules
-from telethon.tl.functions.photos import (UploadProfilePhotoRequest)
-from telethon.tl.functions.account import (
-    UpdateProfileRequest,
-    GetGlobalPrivacySettingsRequest,
-    SetGlobalPrivacySettingsRequest,
-    GetPrivacyRequest,
-    SetPrivacyRequest,
-)
-from telethon.tl.types import (
-    InputPrivacyKeyPhoneNumber,
-    InputPrivacyKeyAddedByPhone,
-    InputPrivacyKeyStatusTimestamp,
-    InputPrivacyKeyProfilePhoto,
-    InputPrivacyKeyAbout,
-    InputPrivacyKeyBirthday,
-    InputPrivacyKeyForwards,
-    InputPrivacyKeyPhoneCall,
-    InputPrivacyKeyPhoneP2P,
-    InputPrivacyKeyChatInvite,
-    InputPrivacyKeyVoiceMessages,
-
-    InputPrivacyValueAllowAll,
-    InputPrivacyValueAllowPremium,
-    InputPrivacyValueAllowContacts,
-    InputPrivacyValueAllowUsers,
-    InputPrivacyValueDisallowUsers,
-    InputPrivacyValueDisallowAll,
-    InputPrivacyValueAllowCloseFriends,
-    InputPrivacyValueDisallowContacts,
-    InputPrivacyValueAllowChatParticipants,
-    InputPrivacyValueDisallowChatParticipants,
-
-    PrivacyValueAllowAll,
-    PrivacyValueAllowUsers,
-    PrivacyValueAllowPremium,
-    PrivacyValueAllowContacts,
-    PrivacyValueDisallowUsers,
-    PrivacyValueDisallowAll,
-    PrivacyValueAllowCloseFriends,
-    PrivacyValueDisallowContacts,
-    PrivacyValueAllowChatParticipants,
-    PrivacyValueDisallowChatParticipants,
-
-    TypeInputPrivacyKey,
-    TypePrivacyRule,
-    TypeGlobalPrivacySettings
-)
-
-
 
 from ..telegram import UserClient
 from ..database import SQLite
@@ -117,6 +69,15 @@ class Manager:
                     "Synchronizes the privacy settings for the account. If the sync account does not have Telegram Premium, then the corresponding premium settings will not be synchronized."
                 ),
                 "function": self.sync_privacy_settings,
+                "status": bool(False),
+                "ui": Task,
+            },
+            "is_sync_secure": {
+                "title": _("Synchronize secure settings."),
+                "description": _(
+                    "Synchronizes the secure settings for the account."
+                ),
+                "function": self.sync_secure_settings,
                 "status": bool(False),
                 "ui": Task,
             },
@@ -200,10 +161,16 @@ class Manager:
         msg_ids = {}
 
         async def recepient_save_message(
-            message_id, message_length, is_pin: bool, is_reply: None | Message
+            message_id,
+            message_length,
+            is_pin: bool,
+            is_reply: None | types.Message
         ):
-            data = await recepient.get_messages(sender_entity, limit=message_length)
-            messages = [message for message in data]
+            data = await recepient.get_messages(
+                sender_entity,
+                limit=message_length
+            )
+            messages: list[types.Message] = list(data)
             if is_reply:
                 destination_message_id = msg_ids.get(is_reply.reply_to_msg_id)
                 if messages[0].media:
@@ -236,6 +203,7 @@ class Manager:
         try:
             ui.progress_counters.visible = True
             ui.total = source_messages.total
+            message: types.Message
             for i, message in enumerate(source_messages, 1):
                 ui.value = i
                 if not isinstance(message, MessageService):
@@ -309,7 +277,9 @@ class Manager:
         ui.progress_counters.visible = True
         ui.total = 3
         try:
-            user: UserFull = await sender(GetFullUserRequest("me"))
+            user: types.UserFull = await sender(
+                users.GetFullUserRequest("me")
+            )
             first_name = user.users[0].first_name
             first_name = "" if first_name is None else first_name
             ui.value = 1
@@ -319,7 +289,9 @@ class Manager:
             bio = user.full_user.about
             bio = "" if bio is None else bio
             ui.value = 3
-            await recepient(UpdateProfileRequest(first_name, last_name, bio))
+            await recepient(
+                account.UpdateProfileRequest(first_name, last_name, bio)
+            )
         except Exception as e:
             ui.unsuccess(e)
             return
@@ -340,12 +312,12 @@ class Manager:
 
         image_extension = ".jpeg"
         video_extension = ".mp4"
-        photo: Photo
+        photo: types.Photo
         try:
-            photos = await sender.get_profile_photos("me")
+            avatars = await sender.get_profile_photos("me")
             ui.progress_counters.visible = True
-            ui.total = photos.total
-            for i, photo in enumerate(reversed(photos), 1):
+            ui.total = avatars.total
+            for i, photo in enumerate(reversed(avatars), 1):
                 ui.value = i
                 await asyncio.sleep(3)
                 blob = await sender.download_media(photo, bytes)
@@ -357,13 +329,15 @@ class Manager:
                         blob,
                         file_name=name + image_extension
                     )
-                    await recepient(UploadProfilePhotoRequest(file=file))
+                    await recepient(
+                        photos.UploadProfilePhotoRequest(file=file)
+                    )
                     continue
                 file = await recepient.upload_file(
                     blob,
                     file_name=name + video_extension
                 )
-                await recepient(UploadProfilePhotoRequest(video=file))
+                await recepient(photos.UploadProfilePhotoRequest(video=file))
         except Exception as e:
             ui.unsuccess(e)
             return
@@ -384,29 +358,31 @@ class Manager:
             await recepient.connect()
 
         source = await sender.get_dialogs()
-        channels: list[Dialog] = []
+        channels_list: list[Dialog] = []
 
         dialog: Dialog
         for dialog in source:
-            if not isinstance(dialog.entity, Chat) \
+            if not isinstance(dialog.entity, types.Chat) \
                 and not dialog.is_user \
                     and dialog.entity.username:
-                channels.append(dialog)
+                channels_list.append(dialog)
 
         ui.progress_counters.visible = True
-        ui.total = len(channels)
+        ui.total = len(channels_list)
 
         channel: Dialog
         try:
-            for i, channel in enumerate(channels, 1):
+            for i, channel in enumerate(channels_list, 1):
                 await asyncio.sleep(12)
-                await recepient(JoinChannelRequest(channel.entity.username))
+                await recepient(
+                    channels.JoinChannelRequest(channel.entity.username)
+                )
                 if channel.archived:
                     await asyncio.sleep(2.5)
                     await recepient.edit_folder(channel.entity.username, 1)
                 if channel.pinned:
                     await asyncio.sleep(2.5)
-                    await recepient(ToggleDialogPinRequest(
+                    await recepient(messages.ToggleDialogPinRequest(
                         channel.entity.username,
                         True
                     ))
@@ -428,18 +404,18 @@ class Manager:
             await sender.connect()
             await recepient.connect()
 
-        input_privacies: list[TypeInputPrivacyKey] = [
-            InputPrivacyKeyPhoneNumber(),
-            InputPrivacyKeyAddedByPhone(),
-            InputPrivacyKeyStatusTimestamp(),
-            InputPrivacyKeyProfilePhoto(),
-            InputPrivacyKeyAbout(),
-            InputPrivacyKeyBirthday(),
-            InputPrivacyKeyForwards(),
-            InputPrivacyKeyPhoneCall(),
-            InputPrivacyKeyPhoneP2P(),
-            InputPrivacyKeyChatInvite(),
-            InputPrivacyKeyVoiceMessages(),
+        input_privacies: list[types.TypeInputPrivacyKey] = [
+            types.InputPrivacyKeyPhoneNumber(),
+            types.InputPrivacyKeyAddedByPhone(),
+            types.InputPrivacyKeyStatusTimestamp(),
+            types.InputPrivacyKeyProfilePhoto(),
+            types.InputPrivacyKeyAbout(),
+            types.InputPrivacyKeyBirthday(),
+            types.InputPrivacyKeyForwards(),
+            types.InputPrivacyKeyPhoneCall(),
+            types.InputPrivacyKeyPhoneP2P(),
+            types.InputPrivacyKeyChatInvite(),
+            types.InputPrivacyKeyVoiceMessages(),
         ]
 
         try:
@@ -448,65 +424,65 @@ class Manager:
             i: int
             for i, privacy in enumerate(input_privacies, 1):
                 await asyncio.sleep(1)
-                rules: list[TypePrivacyRule] = []
-                request: PrivacyRules = await sender(
-                    GetPrivacyRequest(
+                rules: list[types.TypePrivacyRule] = []
+                request: types.account.PrivacyRules = await sender(
+                    account.GetPrivacyRequest(
                         privacy
                     )
                 )
 
                 for rule in request.rules:
-                    if isinstance(rule, PrivacyValueAllowAll):
-                        rules.append(InputPrivacyValueAllowAll())
+                    if isinstance(rule, types.PrivacyValueAllowAll):
+                        rules.append(types.InputPrivacyValueAllowAll())
 
-                    if isinstance(rule, PrivacyValueAllowUsers):
-                        rules.append(InputPrivacyValueAllowUsers([]))
+                    if isinstance(rule, types.PrivacyValueAllowUsers):
+                        rules.append(types.InputPrivacyValueAllowUsers([]))
 
-                    if isinstance(rule, PrivacyValueAllowPremium):
-                        rules.append(InputPrivacyValueAllowPremium())
+                    if isinstance(rule, types.PrivacyValueAllowPremium):
+                        rules.append(types.InputPrivacyValueAllowPremium())
 
-                    if isinstance(rule, PrivacyValueAllowContacts):
-                        rules.append(InputPrivacyValueAllowContacts())
+                    if isinstance(rule, types.PrivacyValueAllowContacts):
+                        rules.append(types.InputPrivacyValueAllowContacts())
 
-                    if isinstance(rule, PrivacyValueAllowCloseFriends):
-                        rules.append(InputPrivacyValueAllowCloseFriends())
+                    if isinstance(rule, types.PrivacyValueAllowCloseFriends):
+                        rules.append(types.InputPrivacyValueAllowCloseFriends())
 
-                    if isinstance(rule, PrivacyValueAllowChatParticipants):
-                        rules.append(InputPrivacyValueAllowChatParticipants([]))
+                    if isinstance(rule, types.PrivacyValueAllowChatParticipants):
+                        rules.append(types.InputPrivacyValueAllowChatParticipants([]))
 
-                    if isinstance(rule, PrivacyValueDisallowAll):
+                    if isinstance(rule, types.PrivacyValueDisallowAll):
                         r = True
                         for k in rules:
-                            if isinstance(k, InputPrivacyValueAllowContacts):
+                            if isinstance(k, types.InputPrivacyValueAllowContacts):
                                 r = False
                                 break
                         if r:
-                            rules.append(InputPrivacyValueDisallowAll())
+                            rules.append(types.InputPrivacyValueDisallowAll())
 
-                    if isinstance(rule, PrivacyValueDisallowUsers):
-                        rules.append(InputPrivacyValueDisallowUsers([]))
+                    if isinstance(rule, types.PrivacyValueDisallowUsers):
+                        rules.append(types.InputPrivacyValueDisallowUsers([]))
 
-                    if isinstance(rule, PrivacyValueDisallowContacts):
-                        rules.append(InputPrivacyValueDisallowContacts())
+                    if isinstance(rule, types.PrivacyValueDisallowContacts):
+                        rules.append(types.InputPrivacyValueDisallowContacts())
 
-                    if isinstance(rule, PrivacyValueDisallowChatParticipants):
-                        rules.append(InputPrivacyValueDisallowChatParticipants([]))
+                    if isinstance(rule, types.PrivacyValueDisallowChatParticipants):
+                        rules.append(types.InputPrivacyValueDisallowChatParticipants([]))
 
                 await recepient(
-                    SetPrivacyRequest(
+                    account.SetPrivacyRequest(
                         key=privacy,
                         rules=rules
                     )
                 )
                 ui.value = i
 
-            data: TypeGlobalPrivacySettings = await sender(
-                GetGlobalPrivacySettingsRequest()
+            data: types.TypeGlobalPrivacySettings = await sender(
+                account.GetGlobalPrivacySettingsRequest()
             )
 
             await recepient(
-                SetGlobalPrivacySettingsRequest(
-                    TypeGlobalPrivacySettings(
+                account.SetGlobalPrivacySettingsRequest(
+                    types.TypeGlobalPrivacySettings(
                         data.archive_and_mute_new_noncontact_peers,
                         data.keep_archived_unmuted,
                         data.keep_archived_folders,
@@ -520,4 +496,55 @@ class Manager:
             ui.unsuccess(e)
             return
 
+        ui.success()
+
+    async def sync_secure_settings(self, ui: Task):
+        """The algorithm for synchronizing security settings."""
+        ui.default()
+
+        sender = self.client(self.database.get_session_by_status(1))
+        recepient = self.client(self.database.get_session_by_status(0))
+
+        if not sender.is_connected() or not recepient.is_connected():
+            await sender.connect()
+            await recepient.connect()
+
+        ui.progress_counters.visible = True
+        ui.total = 3
+        try:
+            request: types.account.ContentSettings = await sender(
+                account.GetContentSettingsRequest()
+            )
+            await asyncio.sleep(0.5)
+            if request.sensitive_can_change:
+                await recepient(
+                    account.SetContentSettingsRequest(request.sensitive_enabled)
+                )
+            ui.value += 1
+            await asyncio.sleep(0.5)
+
+            request: types.DefaultHistoryTTL = await sender(
+                messages.GetDefaultHistoryTTLRequest()
+            )
+            await asyncio.sleep(0.5)
+            await recepient(
+                messages.SetDefaultHistoryTTLRequest(request.period)
+            )
+            ui.value += 1
+            await asyncio.sleep(0.5)
+
+            request: types.AccountDaysTTL = await sender(
+                account.GetAccountTTLRequest()
+            )
+            await asyncio.sleep(0.5)
+            await recepient(
+                account.SetAccountTTLRequest(
+                    types.TypeAccountDaysTTL(request.days)
+                )
+            )
+            ui.value += 1
+            await asyncio.sleep(0.5)
+        except Exception as e:
+            ui.unsuccess(e)
+            return
         ui.success()

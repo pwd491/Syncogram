@@ -40,6 +40,11 @@ class Settings(ft.AlertDialog):
             value=bool(self.options[4]),
             disabled=False
         )
+        self.c6 = ft.Checkbox(
+            label=_("Synchronize my secure settings."),
+            value=bool(self.options[5]),
+            disabled=False
+        )
         """!!!"""
 
         x = [
@@ -48,6 +53,7 @@ class Settings(ft.AlertDialog):
             self.c3,
             self.c4,
             self.c5,
+            self.c6,
         ]
         x.sort(key=lambda x: x.disabled is True)
 
@@ -85,6 +91,7 @@ class Settings(ft.AlertDialog):
             int(self.c3.value),
             int(self.c4.value),
             int(self.c5.value),
+            int(self.c6.value)
         )
         self.page.pubsub.send_all("update")
         self.page.dialog.clean()
