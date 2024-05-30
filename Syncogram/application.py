@@ -7,7 +7,7 @@ from sourcefiles import get_locale
 
 _: str = get_locale(__file__)
 
-async def main(page: ft.Page) -> None:
+def main(page: ft.Page) -> None:
     """The entry point to start application."""
     page.title = "Syncogram"
     page.window_width = page.window_min_width = 960
@@ -15,7 +15,7 @@ async def main(page: ft.Page) -> None:
     page.theme_mode = ft.ThemeMode.DARK
     page.window_center()
 
-    await WelcomeScreenAnimation(page, _)()
+    WelcomeScreenAnimation(page, _)
     TheScreensController(page, _)
     UpdateApplicationAlert(page, _)
 

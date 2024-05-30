@@ -1,4 +1,5 @@
-from asyncio import sleep
+import asyncio
+import time
 
 import flet as ft
 
@@ -36,11 +37,16 @@ class WelcomeScreenAnimation(ft.Container):
 
         self.content = self.wrapper
         self.expand = True
+        self.callback()
 
-    async def __call__(self):
+    async def display(self):
         self.page.add(self)
-        await sleep(0.5)
+        await asyncio.sleep(0.5)
         self.subtitle.opacity = 1
         self.subtitle.update()
-        await sleep(2)
+        await asyncio.sleep(2)
         self.page.remove(self)
+
+    def callback(self):
+        self.page.run_task(self.display)
+        time.sleep(2)
