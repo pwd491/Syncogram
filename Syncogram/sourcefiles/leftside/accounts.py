@@ -49,6 +49,7 @@ class Authorization(ft.AlertDialog):
 
         self.code_field: ft.TextField = ft.TextField()
         self.code_field.label = _("SMS code")
+        self.code_field.max_length = 5
         self.code_field.text_size = 24
         self.code_field.input_filter = ft.InputFilter(
             allow=True,
@@ -60,6 +61,7 @@ class Authorization(ft.AlertDialog):
 
         self.password = ft.TextField()
         self.password.label = _("2FA password")
+        self.password.text_size = 24
         self.password.visible = True
         self.password.password = True
         self.password.autofocus = True
@@ -142,7 +144,7 @@ class Authorization(ft.AlertDialog):
 
         if self.log_qrcode_button in self.actions:
             self.actions.remove(self.log_qrcode_button)
-            
+
         if self.log_phone_number_button not in self.actions:
             self.actions.append(self.log_phone_number_button)
 
@@ -223,7 +225,6 @@ class Accounts(ft.Container):
         super().__init__()
         self.page: ft.Page = page
         self.database: SQLite = SQLite()
-        self.client: UserClient = UserClient()
         self._ = _
 
         self.divider = ft.Container()
@@ -305,7 +306,7 @@ class Accounts(ft.Container):
         authorization.open = True
         self.page.update()
 
-    def callback(self) -> None:
+    async def generate(self) -> None:
         """Regenerate accounts and build container."""
         accounts: list[Any] = self.database.get_users()
         while len(self.account_primary.controls) > 3:
@@ -313,11 +314,20 @@ class Accounts(ft.Container):
         while len(self.account_secondary.controls) > 3:
             self.account_secondary.controls.pop(-2)
         for account in accounts:
-            if bool(account[1]):
-                self.account_primary.controls.insert(
-                    -1, self.account_button(account[0], account[4][0:16])
-                )
+            client = UserClient(account[19])
+            if await client.is_user_valid():
+                if bool(account[1]):
+                    self.account_primary.controls.insert(
+                        -1, self.account_button(account[0], account[4][0:16])
+                    )
+                else:
+                    self.account_secondary.controls.insert(
+                        -1, self.account_button(account[0], account[4][0:16])
+                    )
             else:
-                self.account_secondary.controls.insert(
-                    -1, self.account_button(account[0], account[4][0:16])
-                )
+                self.database.delete_user_by_id(account[0])
+        self.update()
+
+    def callback(self) -> None:
+        """Callback query for re-generate accounts container."""
+        self.page.run_task(self.generate)
