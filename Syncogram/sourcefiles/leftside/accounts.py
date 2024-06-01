@@ -6,6 +6,7 @@ import flet as ft
 
 from ..database import SQLite
 from ..components import Logout
+from ..components import AccountExists
 from ..components import ErrorAddAccount
 from ..telegram import UserClient
 
@@ -14,6 +15,7 @@ class Authorization(ft.AlertDialog):
     """The class of the account telegram authorization dialog box."""
     def __init__(self, page: ft.Page, is_primary: bool, _) -> None:
         super().__init__()
+        self._ = _
         self.page: ft.Page = page
         self.is_primary: bool = is_primary
         self.password_inputed_event: Event = Event()
@@ -156,9 +158,13 @@ class Authorization(ft.AlertDialog):
             dialog=self,
             is_primary=self.is_primary
         )
+        if result == 1555:
+            await self.__close()
+            self.page.pubsub.send_all("update")
+            AccountExists(self.page, self._)
+
         if result is True:
             await self.__close()
-            # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
             self.page.pubsub.send_all("update")
 
     async def phone_login_dialog(self, e: ft.TapEvent = None):
@@ -178,10 +184,13 @@ class Authorization(ft.AlertDialog):
             self,
             self.is_primary
         )
+        if result == 1555:
+            await self.__close()
+            self.page.pubsub.send_all("update")
+            AccountExists(self.page, self._)
 
         if result is True:
             await self.__close()
-            # Need to except 1555 error UNIQUE ID PRIMARY KEY (user exists.)
             self.page.pubsub.send_all("update")
 
     async def password_invalid(self):

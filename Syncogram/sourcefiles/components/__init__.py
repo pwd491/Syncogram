@@ -5,6 +5,7 @@ from .settings import Settings
 from .buttons import SettingsButton
 from .buttons import StartAllTasksButton
 from .errors import ErrorAddAccount
+from .errors import AccountExists
 from .logout import Logout
 from .about import AboutApplication
 from .about import FeedBack

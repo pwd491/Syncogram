@@ -119,14 +119,17 @@ class UserClient(TelegramClient):
             except ConnectionError:
                 return
         response = await self.save_user_data(is_primary)
+        if response == 1555:
+            await self.log_out()
+
         await self.disconnect()
         return response
-    
+
     async def login_by_phone_number(self, dialog, is_primary: bool):
         """Login by phone number."""
         if not self.is_connected():
             await self.connect()
-       
+
         try:
             phone = dialog.phone_field.value
             if len(phone) <= 0:
@@ -163,6 +166,9 @@ class UserClient(TelegramClient):
                 await dialog.phone_code_invalid()
 
         response = await self.save_user_data(is_primary)
+        if response == 1555:
+            await self.log_out()
+
         await self.disconnect()
         return response
     

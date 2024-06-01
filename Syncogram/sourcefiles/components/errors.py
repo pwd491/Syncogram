@@ -23,3 +23,20 @@ class ErrorAddAccount(ft.AlertDialog):
         self.open = False
         self.page.dialog.clean()
         self.update()
+
+
+class AccountExists(ft.SnackBar):
+    """Displaying notify account has been added early."""
+
+    def __init__(self, page: ft.Page, _) -> None:
+        self.text = ft.Text()
+        self.text.value = _("This account has already been logged into the application.")
+        self.text.color = ft.colors.WHITE
+        self.content = self.text
+        self.content.text_align = ft.TextAlign.CENTER
+        super().__init__(self.content)
+        self.duration = 10000
+        self.bgcolor = ft.colors.BLACK87
+        page.snack_bar = self
+        page.snack_bar.open = True
+        page.update()
