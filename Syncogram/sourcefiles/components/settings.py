@@ -45,6 +45,11 @@ class Settings(ft.AlertDialog):
             value=bool(self.options[5]),
             disabled=False
         )
+        self.c7 = ft.Checkbox(
+            label=_("Synchronize my stickers, emojis and gifs."),
+            value=bool(self.options[6]),
+            disabled=False
+        )
         """!!!"""
 
         x = [
@@ -54,6 +59,7 @@ class Settings(ft.AlertDialog):
             self.c4,
             self.c5,
             self.c6,
+            self.c7,
         ]
         x.sort(key=lambda x: x.disabled is True)
 
@@ -91,7 +97,8 @@ class Settings(ft.AlertDialog):
             int(self.c3.value),
             int(self.c4.value),
             int(self.c5.value),
-            int(self.c6.value)
+            int(self.c6.value),
+            int(self.c7.value),
         )
         self.page.pubsub.send_all("update")
         self.page.dialog.clean()

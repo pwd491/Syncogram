@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS options
     is_sync_profile_media INTEGER DEFAULT 0,
     is_sync_public_channels_and_groups INTEGER DEFAULT 0,
     is_sync_privacy INTEGER DEFAULT 0,
-    is_sync_secure INTEGER DEFAULT 0
+    is_sync_secure INTEGER DEFAULT 0,
+    is_sync_stickers_emojis_gifs INTEGER DEFAULT 0
 )
 """
 
@@ -49,7 +50,8 @@ is_sync_profile_name = (?),
 is_sync_profile_media = (?),
 is_sync_public_channels_and_groups = (?),
 is_sync_privacy = (?),
-is_sync_secure = (?)
+is_sync_secure = (?),
+is_sync_stickers_emojis_gifs = (?)
 FROM 
 (
     SELECT user_id FROM users WHERE is_primary = 1
@@ -67,6 +69,7 @@ VALUES
 (
 (SELECT user_id FROM users WHERE is_primary = 1),
 (?), 
+(?),
 (?),
 (?),
 (?),
