@@ -14,7 +14,7 @@ The application allows you to quickly transfer your channels, saved messages to 
 [preview_image]: ./docs/assets/preview.jpg "Preview of Syncogram Application"
 
 # Features
-* Syncing first name, last name and biography.
+* Syncing first name, last name, biography and birthday.
 * Syncing personal avatar photos and videos with right sequence.
 * Syncing favorite messages with right sequence. _(An inefficient algorithm is used)_
 * Syncing stickers, emojis and saved gifs.
@@ -30,7 +30,7 @@ The application allows you to quickly transfer your channels, saved messages to 
 # Supports
 ### Operation Systems
 * Windows 10+ x64
-* Linux (tested on Ubuntu)
+* Linux (tested on Ubuntu 22.04)
 * MacOS 13.04 +
 
 ### Pythons
