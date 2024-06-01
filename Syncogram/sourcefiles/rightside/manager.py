@@ -92,6 +92,15 @@ class Manager:
                 "status": bool(False),
                 "ui": Task,
             },
+            "is_sync_bots": {
+                "title": _("Synchronize bots."),
+                "description": _(
+                    "Synchronizes bots."
+                ),
+                "function": self.sync_bots,
+                "status": bool(False),
+                "ui": Task,
+            },
         }
         self.callback()
 
@@ -763,6 +772,38 @@ class Manager:
             try:
                 await sender.delete_messages(r_entity.username, will_delete)
             except errors.MessageDeleteForbiddenError:
+                pass
+
+        ui.success()
+
+
+    async def sync_bots(self, ui: Task):
+        ui.default()
+
+        sender = self.client(self.database.get_session_by_status(1))
+        recepient = self.client(self.database.get_session_by_status(0))
+
+        if not sender.is_connected() or not recepient.is_connected():
+            await sender.connect()
+            await recepient.connect()
+
+        dialogs: list[Dialog] = await sender.get_dialogs()
+
+        bots: list[types.User] = []
+        dialog: Dialog
+        for dialog in dialogs:
+            if isinstance(dialog.entity, types.User):
+                if dialog.entity.bot:
+                    bots.append(dialog.entity)
+
+        ui.progress_counters.visible = True
+        ui.total = len(bots) - 1
+        for bot in bots:
+            await asyncio.sleep(5)
+            try:
+                await recepient.send_message(bot.username, "/start")
+                ui.value += 1
+            except (errors.YouBlockedUserError, errors.UserIsBlockedError):
                 pass
 
         ui.success()

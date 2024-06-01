@@ -50,6 +50,11 @@ class Settings(ft.AlertDialog):
             value=bool(self.options[6]),
             disabled=False
         )
+        self.c8 = ft.Checkbox(
+            label=_("Synchronize my bots."),
+            value=bool(self.options[7]),
+            disabled=False
+        )
         """!!!"""
 
         x = [
@@ -60,6 +65,7 @@ class Settings(ft.AlertDialog):
             self.c5,
             self.c6,
             self.c7,
+            self.c8
         ]
         x.sort(key=lambda x: x.disabled is True)
 
@@ -99,6 +105,7 @@ class Settings(ft.AlertDialog):
             int(self.c5.value),
             int(self.c6.value),
             int(self.c7.value),
+            int(self.c8.value),
         )
         self.page.pubsub.send_all("update")
         self.page.dialog.clean()
