@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS options
     user_id INTEGER PREFERENCE UNIQUE,
     is_sync_fav INTEGER DEFAULT 0,
     is_sync_profile_name INTEGER DEFAULT 0,
-    is_sync_profile_media INTEGER DEFAULT 0,
+    is_sync_profile_avatars INTEGER DEFAULT 0,
     is_sync_public_channels_and_groups INTEGER DEFAULT 0,
     is_sync_privacy INTEGER DEFAULT 0,
     is_sync_secure INTEGER DEFAULT 0,
@@ -48,7 +48,7 @@ UPDATE `options`
 SET 
 is_sync_fav = (?),
 is_sync_profile_name = (?),
-is_sync_profile_media = (?),
+is_sync_profile_avatars = (?),
 is_sync_public_channels_and_groups = (?),
 is_sync_privacy = (?),
 is_sync_secure = (?),

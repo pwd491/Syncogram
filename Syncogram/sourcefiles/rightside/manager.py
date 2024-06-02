@@ -38,21 +38,21 @@ class Manager:
             },
             "is_sync_profile_name": {
                 "title": _(
-                    "Synchronize the first name, last name and biography of the profile."
+                    "Synchronize the first name, last name, biography and birthday of the profile."
                 ),
                 "description": _(
-                    "Synchronization of the first name, last name and profile description. If you do not specify the data, it will be overwritten as empty fields."
+                    "Synchronization of the first name, last name, profile description and birthday. If you do not specify the data, it will be overwritten as empty fields."
                 ),
                 "function": self.sync_profile_first_name_and_second_name,
                 "status": bool(False),
                 "ui": Task,
             },
-            "is_sync_profile_media": {
+            "is_sync_profile_avatars": {
                 "title": _("Synchronize account photos and videos avatars."),
                 "description": _(
                     "Sync photo and video avatars in the correct sequence. If there are a lot of media files, the program sets an average limit between requests to the servers in order to circumvent the restrictions."
                 ),
-                "function": self.sync_profile_media,
+                "function": self.sync_profile_avatars,
                 "status": bool(False),
                 "ui": Task,
             },
@@ -94,7 +94,9 @@ class Manager:
             },
             "is_sync_bots": {
                 "title": _("Synchronize bots."),
-                "description": None,
+                "description": _(
+                    "Synchronizes the list of bots. Attention, this function does not transfer the message history."
+                ),
                 "function": self.sync_bots,
                 "status": bool(False),
                 "ui": Task,
@@ -338,7 +340,7 @@ class Manager:
             return
         ui.success()
 
-    async def sync_profile_media(self, ui: Task):
+    async def sync_profile_avatars(self, ui: Task):
         """
         The algorithm for synchronizing profile photo and video avatars to 
         the recipient's essence.
