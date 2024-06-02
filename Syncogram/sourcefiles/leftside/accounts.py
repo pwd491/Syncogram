@@ -262,7 +262,6 @@ class Accounts(ft.Container):
         ]
 
         self.content = self.wrapper_column
-        self.callback()
 
     def account_button(self, account_id, account_name) -> ft.ElevatedButton:
         """Clickable user button."""
@@ -338,4 +337,7 @@ class Accounts(ft.Container):
 
     def callback(self) -> None:
         """Callback query for re-generate accounts container."""
+        self.page.run_task(self.generate)
+
+    def did_mount(self):
         self.page.run_task(self.generate)
