@@ -28,7 +28,6 @@ class Authorization(ft.AlertDialog):
         self.log_phone_number_button.text = _("Use phone number")
         self.log_phone_number_button.on_click = self.phone_login_dialog
         self.log_phone_number_button.disabled = False
-        self.log_phone_number_button.tooltip = _("It will available in next updates")
 
         self.log_qrcode_button: ft.TextButton = ft.TextButton()
         self.log_qrcode_button.text = _("Use QR-code")
