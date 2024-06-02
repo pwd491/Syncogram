@@ -37,8 +37,14 @@ class Userbar(ft.Container):
             self.settings
         ])
         self.top = ft.Column([self.accounts])
+        self.ads = ft.Lottie()
+        self.ads.src = "ads.json"
+        self.ads.filter_quality = ft.FilterQuality.HIGH
 
-        self.content = ft.Column([self.top, self.bottom])
+        self.middle = ft.Column()
+        self.middle.controls = [self.ads]
+
+        self.content = ft.Column([self.top, self.middle, self.bottom])
         self.content.alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         self.bgcolor = ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER)
         self.width = 250

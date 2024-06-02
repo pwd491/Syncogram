@@ -16,42 +16,42 @@ class Settings(ft.AlertDialog):
             [False for __ in range(20)]
 
         self.c1 = ft.Checkbox(
-            label=_("Synchronize my favorite messages"),
+            label=_("Synchronize favorite messages."),
             value=bool(self.options[0]),
             disabled=False,
         )
         self.c2 = ft.Checkbox(
-            label=_("Synchronize my profile first name, last name and biography."),
+            label=_("Synchronize first name, last name, biography and birthday."),
             value=bool(self.options[1]),
             disabled=False
         )
         self.c3 = ft.Checkbox(
-            label=_("Synchronize my profile photos and videos avatars."),
+            label=_("Synchronize profile photos and videos avatars."),
             value=bool(self.options[2]),
             disabled=False
         )
         self.c4 = ft.Checkbox(
-            label=_("Synchronize my public channels and groups."),
+            label=_("Synchronize public channels and groups."),
             value=bool(self.options[3]),
             disabled=False
         )
         self.c5 = ft.Checkbox(
-            label=_("Synchronize my privacy settings."),
+            label=_("Synchronize privacy settings."),
             value=bool(self.options[4]),
             disabled=False
         )
         self.c6 = ft.Checkbox(
-            label=_("Synchronize my secure settings."),
+            label=_("Synchronize secure settings."),
             value=bool(self.options[5]),
             disabled=False
         )
         self.c7 = ft.Checkbox(
-            label=_("Synchronize my stickers, emojis and gifs."),
+            label=_("Synchronize stickers, emojis and gifs."),
             value=bool(self.options[6]),
             disabled=False
         )
         self.c8 = ft.Checkbox(
-            label=_("Synchronize my bots."),
+            label=_("Synchronize bots."),
             value=bool(self.options[7]),
             disabled=False
         )

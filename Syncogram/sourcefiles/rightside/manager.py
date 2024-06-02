@@ -94,9 +94,7 @@ class Manager:
             },
             "is_sync_bots": {
                 "title": _("Synchronize bots."),
-                "description": _(
-                    "Synchronizes bots."
-                ),
+                "description": None,
                 "function": self.sync_bots,
                 "status": bool(False),
                 "ui": Task,
