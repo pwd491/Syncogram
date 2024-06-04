@@ -358,29 +358,54 @@ class Manager:
         photo: types.Photo
         try:
             avatars = await sender.get_profile_photos("me")
+            user: types.users.UserFull = await sender(
+                users.GetFullUserRequest('me')
+            )
+            fallback = user.full_user.fallback_photo
+
             ui.progress_counters.visible = True
             ui.total = avatars.total
             for i, photo in enumerate(reversed(avatars), 1):
-                ui.value = i
                 await asyncio.sleep(3)
                 blob = await sender.download_media(photo, bytes)
                 name = "Syncogram_" + datetime.strftime(
                     photo.date, "%Y_%m_%d_%H_%M_%S"
                 )
-                if not photo.video_sizes:
-                    file = await recepient.upload_file(
-                        blob,
-                        file_name=name + image_extension
+
+                await recepient(
+                    photos.UploadProfilePhotoRequest(
+                        file=await recepient.upload_file(
+                            blob,
+                            file_name=name + image_extension
+                        ) if not photo.video_sizes else None,
+                        video=await recepient.upload_file(
+                            blob,
+                            file_name=name + video_extension
+                        ) if photo.video_sizes else None
                     )
-                    await recepient(
-                        photos.UploadProfilePhotoRequest(file=file)
-                    )
-                    continue
-                file = await recepient.upload_file(
-                    blob,
-                    file_name=name + video_extension
                 )
-                await recepient(photos.UploadProfilePhotoRequest(video=file))
+                ui.value = i
+
+            if fallback:
+                blob = await sender.download_media(fallback, bytes)
+                name = "Syncogram_" + datetime.strftime(
+                    photo.date, "%Y_%m_%d_%H_%M_%S"
+                )
+
+                await recepient(
+                    photos.UploadProfilePhotoRequest(
+                        fallback=True,
+                        file=await recepient.upload_file(
+                            blob,
+                            file_name=name + image_extension
+                        ) if not fallback.video_sizes else None,
+                        video=await recepient.upload_file(
+                            blob,
+                            file_name=name + video_extension
+                        ) if fallback.video_sizes else None
+                    )
+                )
+
         except Exception as e:
             ui.unsuccess(e)
             return
