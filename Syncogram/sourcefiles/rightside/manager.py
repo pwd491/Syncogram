@@ -1,18 +1,19 @@
 import asyncio
 from datetime import datetime
-from typing import Callable, Coroutine
+from typing import Callable, Coroutine, Dict
 
 import flet as ft
 from telethon import events
 from telethon import errors
 from telethon.tl import types
+from telethon.tl import patched
 from telethon.tl.functions import users
 from telethon.tl.functions import photos
 from telethon.tl.functions import account
 from telethon.tl.functions import channels
 from telethon.tl.functions import messages
 from telethon.tl.custom.dialog import Dialog
-from telethon.tl.patched import MessageService
+from telethon.helpers import TotalList
 
 from ..telegram import UserClient
 from ..database import SQLite
@@ -21,10 +22,11 @@ from ..components import Task
 
 class Manager:
     """The manager to control options UI and Coroutines."""
-    def __init__(self, page: ft.Page, _) -> None:
+    def __init__(self, page: ft.Page, timeleft, _) -> None:
         self.page: ft.Page = page
         self.database = SQLite()
         self.client = UserClient
+        self.timeleft = timeleft
 
         self.options = {
             "is_sync_fav": {
@@ -159,126 +161,200 @@ class Manager:
         sender = self.client(self.database.get_session_by_status(1))
         recepient = self.client(self.database.get_session_by_status(0))
 
-        sender_username = self.database.get_username_by_status(1)
-        recepient_username = self.database.get_username_by_status(0)
-
-        if not (sender.is_connected() and recepient.is_connected()):
+        if not sender.is_connected() or not recepient.is_connected():
             await sender.connect()
             await recepient.connect()
 
-        sender_entity = await recepient.get_input_entity(sender_username)
-        recepient_entity = await sender.get_input_entity(recepient_username)
-
-        # Getting messages from sender source
-        source_messages = await sender.get_messages(
-            sender_entity, min_id=0, max_id=0, reverse=True
+        source: TotalList[patched.Message] = await sender.get_messages(
+            "me", min_id=0, max_id=0, reverse=True
         )
+        sender_entity = await sender.get_entity('me')
+        recepient_entity = await recepient.get_entity('me')
 
-        is_grouped_id = None
-        is_pinned = False
-        is_replied = False
-        group = []
-        msg_ids = {}
-
-        async def recepient_save_message(
-            message_id,
-            message_length,
-            is_pin: bool,
-            is_reply: None | types.Message
-        ):
-            data = await recepient.get_messages(
-                sender_entity,
-                limit=message_length
-            )
-            messages: list[types.Message] = list(data)
-            if is_reply:
-                destination_message_id = msg_ids.get(is_reply.reply_to_msg_id)
-                if messages[0].media:
-                    await asyncio.sleep(3)
-                    message = await recepient.send_message(
-                        recepient_entity,
-                        messages[-1].message,
-                        file=messages,
-                        reply_to=destination_message_id,
-                    )
-                    msg_ids[message_id] = message[0].id
-                else:
-                    await asyncio.sleep(3)
-                    message = await recepient.send_message(
-                        recepient_entity,
-                        message=messages[0],
-                        reply_to=destination_message_id,
-                    )
-                    msg_ids[message_id] = message.id
-            else:
-                message = await recepient.forward_messages(recepient_entity, messages)
-                msg_ids[message_id] = message[0].id
-
-            if is_pin:
-                await asyncio.sleep(3)
-                await recepient.pin_message(recepient_entity, message[0])
-            await asyncio.sleep(3)
-            await recepient.delete_messages(sender_entity, messages)
-
-        try:
-            ui.progress_counters.visible = True
-            ui.total = source_messages.total
-            message: types.Message
-            for i, message in enumerate(source_messages, 1):
-                ui.value = i
-                if not isinstance(message, MessageService):
-                    if message.grouped_id is not None:
-                        if message.pinned:
-                            is_pinned = True
-                        if message.reply_to:
-                            is_replied = message.reply_to
-                        if is_grouped_id != message.grouped_id:
-                            is_grouped_id = message.grouped_id
-                            if group:
-                                await asyncio.sleep(3)
-                                await sender.forward_messages(
-                                    recepient_entity, group, silent=True
-                                )
-                                await recepient_save_message(
-                                    message.id, len(group), is_pinned, is_replied
-                                )
-                                is_pinned = False
-                                is_replied = False
-                                group.clear()
-                        group.append(message)
+        async def pin_messages():
+            if pinned:
+                timeout = .5
+                for message in pinned.copy():
+                    try:
+                        pin_id = ids.get(message.id)
+                        pin_id = pin_id if pin_id is not None else 123
+                        await asyncio.sleep(timeout)
+                        await recepient.pin_message(
+                            'me',
+                            pin_id
+                        )
+                    except errors.MessageIdInvalidError:
                         continue
-                    if group:
-                        await asyncio.sleep(3)
-                        await sender.forward_messages(
-                            recepient_entity, group, silent=True
-                        )
-                        await recepient_save_message(
-                            message.id, len(group), is_pinned, is_replied
-                        )
-                        is_pinned = False
-                        is_replied = False
-                        group.clear()
+                    except errors.FloodWaitError as flood:
+                        timeout += timeout
+                        await asyncio.sleep(flood.seconds)
+                    finally:
+                        pinned.remove(message)
 
-                    await asyncio.sleep(3)
-                    await sender.forward_messages(
-                        recepient_entity, message, silent=True
+        async def merge_old_and_new_ids():
+            if will_forward:
+                for k, message in enumerate(will_forward):
+                    ids.setdefault(
+                        message.id,
+                        was_saved[k].id
                     )
-                    await recepient_save_message(
-                        message.id, 1, message.pinned, message.reply_to
+            elif will_reply:
+                for k, message in enumerate(will_reply):
+                    ids.setdefault(
+                        message.id,
+                        was_saved[k].id
+                    )
+        async def forward_messages_and_save_ids():
+            if will_forward:
+                try:
+                    await asyncio.sleep(timeout)
+                    messages_to_recepient = await sender.forward_messages(
+                        recepient_entity.username,
+                        will_forward
+                    )
+                    will_delete.extend(messages_to_recepient)
+
+                    get_messages_from_sender = await recepient.get_messages(
+                        sender_entity.username,
+                        limit=len(messages_to_recepient),
                     )
 
-            if group:
-                await asyncio.sleep(3)
-                await sender.forward_messages(recepient_entity, group, silent=True)
-                await recepient_save_message(
-                    group[-1].id, len(group), is_pinned, is_replied
+                    send_to_saved_chat = await recepient.forward_messages(
+                        'me',
+                        get_messages_from_sender,
+                        drop_author=True
+                    )
+                    send_to_saved_chat = reversed(send_to_saved_chat)
+                    was_saved.extend(send_to_saved_chat)
+                    await merge_old_and_new_ids()
+                    await pin_messages()
+                    will_forward.clear()
+                    was_saved.clear()
+                except errors.FloodWaitError as flood:
+                    ui.cooldown(flood)
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
+
+        async def reply_message_and_save_ids():
+            if will_reply:
+                try:
+                    await asyncio.sleep(timeout)
+                    messages_to_recepient = await sender.forward_messages(
+                        recepient_entity.username,
+                        will_reply
+                    )
+                    will_delete.extend(messages_to_recepient)
+
+                    get_messages_from_sender = await recepient.get_messages(
+                        sender_entity.username,
+                        limit=len(messages_to_recepient),
+                    )
+                    if get_messages_from_sender[-1].text == "":
+                        send_to_saved_chat = await recepient.send_file(
+                            'me',
+                            file=get_messages_from_sender,
+                            reply_to=ids.get(will_reply[-1].reply_to_msg_id)
+                        )
+                    else:
+                        send_to_saved_chat = await recepient.send_message(
+                            'me',
+                            message=get_messages_from_sender[-1].text,
+                            reply_to=ids.get(will_reply[-1].reply_to_msg_id),
+                            file=get_messages_from_sender \
+                                if len(get_messages_from_sender) > 1 else None
+                        )
+
+                    if isinstance(send_to_saved_chat, list):
+                        send_to_saved_chat = reversed(send_to_saved_chat)
+                        was_saved.extend(send_to_saved_chat)
+                    else:
+                        was_saved.append(send_to_saved_chat)
+
+                    await merge_old_and_new_ids()
+                    await pin_messages()
+                    will_reply.clear()
+                    was_saved.clear()
+                except errors.FloodWaitError as flood:
+                    ui.cooldown(flood)
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
+
+        ids: Dict[int, int] = {}
+
+        will_delete: list[patched.Message] = [] # сообщения которые будут удалены
+        will_forward: list[patched.Message] = [] # сообщения которые должны быть пересланны
+        will_reply: list[patched.Message] = [] # группа сообщений или одно сообщение для ответа
+        was_saved: list[patched.Message] = [] # сообщения которые были сохраненны успешно
+        pinned: list[patched.Message] = []
+
+        reply_flag = False
+        grouped_id = 0
+        last_grouped_id = 0
+        timeout = source.total / 325
+        timeout = timeout if timeout <= 10 else 10
+
+        ui.progress_counters.visible = True
+        ui.total = source.total
+
+        message: patched.Message
+        for i, message in enumerate(source):
+            if not isinstance(message, patched.MessageService):
+                if message.pinned:
+                    pinned.append(message)
+                if message.grouped_id and reply_flag:
+                    if message.grouped_id == grouped_id:
+                        will_reply.append(message)
+                        ui.value = i
+                        continue
+                if message.is_reply:
+                    if message.grouped_id:
+                        if message.grouped_id == grouped_id:
+                            will_reply.append(message)
+                        else:
+                            await forward_messages_and_save_ids()
+                            await reply_message_and_save_ids()
+                            grouped_id = message.grouped_id
+                            reply_flag = True
+                            will_reply.append(message)
+                    else:
+                        await forward_messages_and_save_ids()
+                        will_reply.append(message)
+                        await reply_message_and_save_ids()
+                else:
+                    await reply_message_and_save_ids()
+                    reply_flag = False
+                    if len(will_forward) < 90:
+                        will_forward.append(message)
+                        last_grouped_id = message.grouped_id
+                    else:
+                        if message.grouped_id:
+                            if message.grouped_id == last_grouped_id:
+                                ui.value = i
+                                continue
+                            await forward_messages_and_save_ids()
+                        else:
+                            await forward_messages_and_save_ids()
+            ui.value = i
+
+        if will_forward:
+            await forward_messages_and_save_ids()
+            await pin_messages()
+
+        if will_reply:
+            await reply_message_and_save_ids()
+            await pin_messages()
+
+        if pinned:
+            await pin_messages()
+
+        if will_delete:
+            try:
+                await sender.delete_messages(
+                    recepient_entity.username,
+                    will_delete
                 )
-                is_pinned = False
-                is_replied = False
-                group.clear()
-        except Exception as e:
-            ui.unsuccess(e)
-            return
+            except errors.MessageIdInvalidError as msg:
+                print(msg.message, msg.code)
         ui.success()
 
     async def sync_profile_first_name_and_second_name(self, ui: Task):

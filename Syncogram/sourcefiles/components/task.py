@@ -28,13 +28,25 @@ class Task(ft.Container):
         self.current_total: ft.Text = ft.Text()
         self.current_total.value = 0
 
-        self.progress_counters = ft.Row()
+        self.progress_counters: ft.Row = ft.Row()
         self.progress_counters.controls = [self.current_value, self.current_total]
         self.progress_counters.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
         self.progress_counters.visible = False
 
+        self.cooldown_ui: ft.Container = ft.Container()
+        self.cooldown_text: ft.Text = ft.Text()
+        self.cooldown_text.value = "Cooldown".upper()
+        self.cooldown_text.size = 11
+        self.cooldown_text.weight = ft.FontWeight.BOLD
+
+        self.cooldown_ui.content = self.cooldown_text
+        self.cooldown_ui.padding = ft.Padding(3,2,3,2)
+        self.cooldown_ui.border = ft.border.all(1, ft.colors.RED)
+        self.cooldown_ui.visible = False
+
+
         self.header: ft.Row = ft.Row()
-        self.header.controls = [self.title, self.icon]
+        self.header.controls = [self.title, self.cooldown_ui, self.icon]
         self.header.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
         self.header.vertical_alignment = ft.CrossAxisAlignment.START
 
@@ -54,7 +66,13 @@ class Task(ft.Container):
 
         self.default()
 
-    def success(self):
+    def default(self) -> None:
+        """Theme mode when task was init."""
+        self.border = ft.border.all(.5, ft.colors.ORANGE)
+        self.icon.name = ft.icons.UPDATE
+        self.icon.color = ft.colors.ORANGE_500
+
+    def success(self) -> None:
         """Theme mode when task was end succesfully."""
         self.progress.value = 1
         self.icon.name = ft.icons.TASK_ALT
@@ -62,7 +80,7 @@ class Task(ft.Container):
         self.border = ft.border.all(.5, ft.colors.GREEN)
         self.update()
 
-    def unsuccess(self, exception):
+    def unsuccess(self, exception) -> None:
         """Theme mode when task was end unsuccesfully."""
         self.progress.value = 0
         self.icon.name = ft.icons.ERROR
@@ -71,11 +89,21 @@ class Task(ft.Container):
         self.border = ft.border.all(.5, ft.colors.RED)
         self.update()
 
-    def default(self):
-        """Theme mode when task was init."""
-        self.border = ft.border.all(.5, ft.colors.ORANGE)
-        self.icon.name = ft.icons.UPDATE
-        self.icon.color = ft.colors.ORANGE_500
+
+    def cooldown(self, exception) -> None:
+        """Theme mode when task on timeout."""
+        self.cooldown_ui.visible = True
+        self.icon.name = ft.icons.TIMER_10_SELECT
+        self.icon.color = ft.colors.RED
+        self.icon.tooltip = str(exception)
+        self.cooldown_ui.tooltip = str(exception)
+        self.border = ft.border.all(.5, ft.colors.RED)
+        self.update()
+
+    def uncooldown(self) -> None:
+        self.cooldown_ui.visible = False
+        self.default()
+        self.update()
 
     @property
     def total(self) -> int:

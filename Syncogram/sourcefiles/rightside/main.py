@@ -3,6 +3,7 @@ import flet as ft
 from ..components import MinimumAccountsRequired
 from ..components import StartAllTasksButton
 from ..components import Settings
+from ..components import Timeleft
 from ..database import SQLite
 from .manager import Manager
 
@@ -15,8 +16,9 @@ class Taskbar(ft.Container):
         self.database: SQLite = SQLite()
         self.database.check_update()
         self._: str = _
+        self.timeleft = Timeleft(self._)
 
-        self.manager = Manager(self.page, _)
+        self.manager = Manager(self.page, self.timeleft, _)
         self.start_button = StartAllTasksButton(
             self.page,
             self.manager.get_coroutines_with_ui,
@@ -37,8 +39,9 @@ class Taskbar(ft.Container):
         self.wrapper_side.expand = True
 
         self.wrapper_footer = ft.Container()
-        self.wrapper_footer.content = ft.Row([self.start_button])
-        self.wrapper_footer.content.alignment = ft.MainAxisAlignment.END
+        self.wrapper_footer.content = ft.Row([self.timeleft, self.start_button])
+        self.wrapper_footer.content.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        self.wrapper_footer.content.vertical_alignment = ft.CrossAxisAlignment.CENTER
         self.wrapper_footer.height = 50
         self.wrapper_footer.border_radius = ft.BorderRadius(10,10,10,10)
         self.wrapper_footer.bgcolor = ft.colors.BLACK12
