@@ -218,7 +218,7 @@ class Manager:
                         sender_entity.username,
                         limit=len(messages_to_recepient),
                     )
-
+                    await asyncio.sleep(timeout)
                     send_to_saved_chat = await recepient.forward_messages(
                         'me',
                         get_messages_from_sender,
@@ -249,6 +249,7 @@ class Manager:
                         sender_entity.username,
                         limit=len(messages_to_recepient),
                     )
+                    await asyncio.sleep(timeout)
                     if get_messages_from_sender[-1].text == "":
                         send_to_saved_chat = await recepient.send_file(
                             'me',
@@ -373,7 +374,7 @@ class Manager:
         ui.progress_counters.visible = True
         ui.total = 4
         try:
-            user = await sender(
+            user: types.users.UserFull = await sender(
                 users.GetFullUserRequest("me")
             )
 
@@ -635,7 +636,7 @@ class Manager:
                     )
                 )
             )
-            ui.value = i + 1
+            ui.value += 1
         except Exception as e:
             ui.unsuccess(e)
             return
@@ -656,9 +657,10 @@ class Manager:
         ui.progress_counters.visible = True
         ui.total = 3
         try:
-            request: types.account.ContentSettings = await sender(
+            request: account.ContentSettings = await sender(
                 account.GetContentSettingsRequest()
             )
+            types.account.ContentSettings()
             await asyncio.sleep(0.5)
             if request.sensitive_can_change:
                 await recepient(

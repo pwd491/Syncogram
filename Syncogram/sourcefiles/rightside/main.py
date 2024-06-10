@@ -17,6 +17,7 @@ class Taskbar(ft.Container):
         self.database.check_update()
         self._: str = _
         self.timeleft = Timeleft(self._)
+        self.timeleft.visible = False
 
         self.manager = Manager(self.page, self.timeleft, _)
         self.start_button = StartAllTasksButton(
@@ -39,8 +40,8 @@ class Taskbar(ft.Container):
         self.wrapper_side.expand = True
 
         self.wrapper_footer = ft.Container()
-        self.wrapper_footer.content = ft.Row([self.timeleft, self.start_button])
-        self.wrapper_footer.content.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        self.wrapper_footer.content = ft.Row([self.start_button])
+        self.wrapper_footer.content.alignment = ft.MainAxisAlignment.END
         self.wrapper_footer.content.vertical_alignment = ft.CrossAxisAlignment.CENTER
         self.wrapper_footer.height = 50
         self.wrapper_footer.border_radius = ft.BorderRadius(10,10,10,10)
