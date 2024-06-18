@@ -8,8 +8,10 @@ import gettext
 from locale import getlocale
 from json import loads
 from io import BytesIO
+from datetime import datetime
 
 from requests import request
+from loguru import logger
 from qrcode.main import QRCode
 from qrcode.constants import ERROR_CORRECT_H
 
@@ -110,3 +112,27 @@ def get_locale(__file__) -> gettext.gettext:
                 en.install()
                 _ = en.gettext
     return _
+
+def get_work_dir() -> str:
+    """Getting application work directory."""
+    directory = ""
+
+    match sys.platform:
+        case "win32":
+            directory = os.path.join("AppData", "Local")
+        case _:
+            directory = os.path.join(".local", "share")
+    return os.path.join(os.path.expanduser("~"), directory, "Syncogram")
+
+def get_logs_dir() -> str:
+    """Getting application logs directory."""
+    directory = get_work_dir()
+    return os.path.join(directory, "logs")
+
+def logging():
+    """Configured and returned logger object."""
+    directory = get_logs_dir()
+    file = os.path.join(directory, "syncogram.log")
+    logger.remove()
+    logger.add(file)
+    return logger
