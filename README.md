@@ -16,7 +16,7 @@ The application allows you to quickly transfer your channels, saved messages to 
 # Features
 * Syncing first name, last name, biography and birthday.
 * Syncing personal avatar photos and videos with right sequence.
-* Syncing favorite messages with right sequence. _(An inefficient algorithm is used)_
+* Syncing favorite messages with right sequence.
 * Syncing stickers, emojis and saved gifs.
 * Syncing public channels and groups. 
 * Syncing privacy settings.
