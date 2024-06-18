@@ -8,7 +8,6 @@ import gettext
 from locale import getlocale
 from json import loads
 from io import BytesIO
-from datetime import datetime
 
 from requests import request
 from loguru import logger
@@ -115,8 +114,6 @@ def get_locale(__file__) -> gettext.gettext:
 
 def get_work_dir() -> str:
     """Getting application work directory."""
-    directory = ""
-
     match sys.platform:
         case "win32":
             directory = os.path.join("AppData", "Local")
