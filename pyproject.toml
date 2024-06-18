@@ -12,6 +12,7 @@ pillow = "^10.3.0"
 Telethon = "^1.35.0"
 pyinstaller = "^6.6.0"
 qrcode = "^7.4.2"
+loguru = "^0.7.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.2.0"
