@@ -1,9 +1,11 @@
 import flet as ft
 
 from ..utils import config
+from ..utils import logging
 from ..utils import get_local_appication_version
 from ..utils import get_remote_application_version
 
+logger = logging()
 
 class MinimumAccountsRequired(ft.Row):
     """Display animations warning min 2 accounts."""
@@ -75,7 +77,9 @@ class UpdateApplicationAlert(ft.SnackBar):
 
     def __init__(self, page: ft.Page, _) -> None:
         self.__version__ = get_local_appication_version()
+        logger.info(f"Local Application version: [{self.__version__}]")
         self.__newest__ = get_remote_application_version()
+        logger.info(f"Remote Application version: [{self.__newest__}]")
 
         self.icon = ft.Icon()
         self.icon.name = ft.icons.BROWSER_UPDATED

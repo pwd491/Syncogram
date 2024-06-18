@@ -9,7 +9,9 @@ from ..components import Logout
 from ..components import AccountExists
 from ..components import ErrorAddAccount
 from ..telegram import UserClient
+from ..utils import logging
 
+logger = logging()
 
 class Authorization(ft.AlertDialog):
     """The class of the account telegram authorization dialog box."""
@@ -323,6 +325,7 @@ class Accounts(ft.Container):
         for account in accounts:
             client = UserClient(account[19])
             if await client.is_user_valid():
+                logger.info(f"{account[4]} was validated.")
                 if bool(account[1]):
                     self.account_primary.controls.insert(
                         -1, self.account_button(account[0], account[4][0:16])
@@ -332,6 +335,7 @@ class Accounts(ft.Container):
                         -1, self.account_button(account[0], account[4][0:16])
                     )
             else:
+                logger.warning(f"{account[4]} wasn't validated. Removing!")
                 self.database.delete_user_by_id(account[0])
         self.update()
 

@@ -5,10 +5,13 @@ from ..database import SQLite
 from ..components import SettingsButton
 from ..components import AboutApplication
 from ..components import FeedBack
+from ..utils import logging
 
+logger = logging()
 
 class Userbar(ft.Container):
     """Userbar container side."""
+    @logger.catch()
     def __init__(self, page: ft.Page, _) -> None:
         super().__init__()
         self.page = page
@@ -29,7 +32,8 @@ class Userbar(ft.Container):
         )
 
         self.accounts = Accounts(self.page, self._)
-
+        logger.info("Accounts side was builded.")
+        
         self.bottom = ft.Column([
             self.feedback,
             self.about,
@@ -43,6 +47,7 @@ class Userbar(ft.Container):
         self.bgcolor = ft.colors.with_opacity(0.1, ft.colors.SECONDARY_CONTAINER)
         self.width = 250
         self.padding = 20
+        logger.info("Userbar was builded.")
 
     def callback(self) -> None:
         """Regenerate accounts side."""

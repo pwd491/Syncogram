@@ -18,14 +18,17 @@ from telethon import functions
 
 from ..database import SQLite
 from ..utils import config
+from ..utils import logging
 from ..utils import generate_qrcode
 from ..utils import generate_username
 from .environments import API_ID, API_HASH
 
 cfg = config()
+logger = logging()
 
 class UserClient(TelegramClient):
     """Custom wraps of Telegram client."""
+    @logger.catch()
     def __init__(self, session: str = str()) -> None:
         self.database = SQLite()
         self.api_id: int = int(API_ID)
@@ -38,6 +41,7 @@ class UserClient(TelegramClient):
             app_version=cfg["APP"]["VERSION"],
         )
 
+    @logger.catch()
     async def set_random_username(self, user: User | InputPeerUser) -> User | InputPeerUser:
         """If username is None, generate and set username to account."""
         while True:
@@ -56,6 +60,7 @@ class UserClient(TelegramClient):
                 continue
         return user
 
+    @logger.catch()
     async def save_user_data(self, is_primary: bool):
         """Save user data to database"""
         user: User | InputPeerUser = await self.get_me()
@@ -86,7 +91,7 @@ class UserClient(TelegramClient):
             user.access_hash
         )
 
-
+    @logger.catch()
     async def login_by_qrcode(self, dialog, is_primary: bool):
         """Create QR image and await for login by url."""
         if not self.is_connected():
@@ -125,6 +130,7 @@ class UserClient(TelegramClient):
         await self.disconnect()
         return response
 
+    @logger.catch()
     async def login_by_phone_number(self, dialog, is_primary: bool):
         """Login by phone number."""
         if not self.is_connected():
@@ -171,13 +177,15 @@ class UserClient(TelegramClient):
 
         await self.disconnect()
         return response
-    
+
+    @logger.catch()
     async def logout(self) -> bool:
         """Logout from account."""
         if not self.is_connected():
             await self.connect()
         return await self.log_out()
 
+    @logger.catch()
     async def is_user_valid(self) -> bool:
         """Check is user valid."""
         if not self.is_connected():

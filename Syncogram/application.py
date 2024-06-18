@@ -4,11 +4,16 @@ from sourcefiles import WelcomeScreenAnimation
 from sourcefiles import UpdateApplicationAlert
 from sourcefiles import TheScreensController
 from sourcefiles import get_locale
+from sourcefiles import logging
 
+logger = logging()
 _: str = get_locale(__file__)
 
+@logger.catch()
 def main(page: ft.Page) -> None:
     """The entry point to start application."""
+    logger.info("".join(["-" for __ in range(25)]))
+    logger.info("SYNCOGRAM INITIALIZATION.")
     page.title = "Syncogram"
     page.window_width = page.window_min_width = 960
     page.window_height = page.window_min_height = 680

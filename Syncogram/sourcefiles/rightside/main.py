@@ -5,8 +5,10 @@ from ..components import StartAllTasksButton
 from ..components import Settings
 from ..components import Timeleft
 from ..database import SQLite
+from ..utils import logging
 from .manager import Manager
 
+logger = logging()
 
 class Taskbar(ft.Container):
     """The taskbar container side."""
@@ -16,6 +18,7 @@ class Taskbar(ft.Container):
         self.database: SQLite = SQLite()
         self.database.check_update()
         self._: str = _
+
         self.timeleft = Timeleft(self._)
         self.timeleft.visible = False
 
@@ -54,7 +57,9 @@ class Taskbar(ft.Container):
         self.border_radius = ft.BorderRadius(10, 10, 10, 10)
         self.padding = ft.Padding(20, 40, 20, 20)
         self._update()
+        logger.info("Taskbar was builded.")
 
+    @logger.catch()
     def _update(self):
         self.wrapper.controls.clear()
         if len(self.database.get_users()) >= 2:

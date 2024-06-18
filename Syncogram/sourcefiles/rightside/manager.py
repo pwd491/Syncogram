@@ -15,10 +15,12 @@ from telethon.tl.functions import messages
 from telethon.tl.custom.dialog import Dialog
 from telethon.helpers import TotalList
 
+from ..components import Task
 from ..telegram import UserClient
 from ..database import SQLite
-from ..components import Task
+from ..utils import logging
 
+logger = logging()
 
 class Manager:
     """The manager to control options UI and Coroutines."""
@@ -106,6 +108,7 @@ class Manager:
         }
         self.callback()
 
+    @logger.catch()
     def update_options_dict(self):
         """Get options list and update dict variable."""
         list_of_options = self.database.get_options()
@@ -152,6 +155,7 @@ class Manager:
         """Callback"""
         self.update_options_dict()
 
+    @logger.catch()
     async def sync_favorite_messages(self, ui: Task):
         """
         An algorithm for forwarding messages to the recipient entity is
@@ -183,9 +187,11 @@ class Manager:
                             'me',
                             pin_id
                         )
-                    except errors.MessageIdInvalidError:
+                    except errors.MessageIdInvalidError as e:
+                        logger.error(e)
                         continue
                     except errors.FloodWaitError as flood:
+                        logger.warning(flood)
                         timeout += timeout
                         await asyncio.sleep(flood.seconds)
                     finally:
@@ -231,6 +237,7 @@ class Manager:
                     will_forward.clear()
                     was_saved.clear()
                 except errors.FloodWaitError as flood:
+                    logger.warning(flood)
                     ui.cooldown(flood)
                     await asyncio.sleep(flood.seconds)
                     ui.uncooldown()
@@ -276,6 +283,7 @@ class Manager:
                     will_reply.clear()
                     was_saved.clear()
                 except errors.FloodWaitError as flood:
+                    logger.warning(flood)
                     ui.cooldown(flood)
                     await asyncio.sleep(flood.seconds)
                     ui.uncooldown()
@@ -355,9 +363,10 @@ class Manager:
                     will_delete
                 )
             except errors.MessageIdInvalidError as msg:
-                print(msg.message, msg.code)
+                logger.error(msg)
         ui.success()
 
+    @logger.catch()
     async def sync_profile_first_name_and_second_name(self, ui: Task):
         """
         Connecting accounts, getting profile data and sets.
@@ -413,10 +422,12 @@ class Manager:
             ui.value += 1
 
         except Exception as e:
+            logger.error(e)
             ui.unsuccess(e)
             return
         ui.success()
 
+    @logger.catch()
     async def sync_profile_avatars(self, ui: Task):
         """
         The algorithm for synchronizing profile photo and video avatars to 
@@ -484,10 +495,12 @@ class Manager:
                 )
 
         except Exception as e:
+            logger.error(e)
             ui.unsuccess(e)
             return
         ui.success()
 
+    @logger.catch()
     async def sync_public_channels_and_groups(self, ui: Task):
         """
         The algorithm for synchronizing public channels, 
@@ -532,12 +545,19 @@ class Manager:
                         True
                     ))
                 ui.value = i
+        except errors.FloodWaitError as flood:
+            logger.warning(flood)
+            ui.cooldown(flood)
+            await asyncio.sleep(flood.seconds)
+            ui.uncooldown()
+
         except Exception as e:
+            logger.error(e)
             ui.unsuccess(e)
             return
         ui.success()
 
-
+    @logger.catch()
     async def sync_privacy_settings(self, ui: Task):
         """The algorithm for synchronizing privacy settings."""
         ui.default()
@@ -638,11 +658,13 @@ class Manager:
             )
             ui.value += 1
         except Exception as e:
+            logger.error(e)
             ui.unsuccess(e)
             return
 
         ui.success()
 
+    @logger.catch()
     async def sync_secure_settings(self, ui: Task):
         """The algorithm for synchronizing security settings."""
         ui.default()
@@ -656,15 +678,15 @@ class Manager:
 
         ui.progress_counters.visible = True
         ui.total = 3
+
         try:
-            request: account.ContentSettings = await sender(
+            content: types.account.ContentSettings = await sender(
                 account.GetContentSettingsRequest()
             )
-            types.account.ContentSettings()
             await asyncio.sleep(0.5)
-            if request.sensitive_can_change:
+            if content.sensitive_can_change:
                 await recepient(
-                    account.SetContentSettingsRequest(request.sensitive_enabled)
+                    account.SetContentSettingsRequest(content.sensitive_enabled)
                 )
             ui.value += 1
             await asyncio.sleep(0.5)
@@ -692,10 +714,12 @@ class Manager:
             await asyncio.sleep(0.5)
 
         except Exception as e:
+            logger.error(e)
             ui.unsuccess(e)
             return
         ui.success()
 
+    @logger.catch()
     async def sync_stickers_emojis_gifs(self, ui: Task):
         """The algorithm for synchronizing stickers and other things."""
         ui.default()
@@ -729,7 +753,7 @@ class Manager:
                     )
                 )
             except Exception as e:
-                print(e)
+                logger.warning(e)
 
         faved_stickers_list: types.messages.FavedStickers = await sender(
             messages.GetFavedStickersRequest(0)
@@ -792,7 +816,8 @@ class Manager:
                         )
                     )
                     ui.value += 1
-                except errors.StickerIdInvalidError:
+                except errors.StickerIdInvalidError as e:
+                    logger.warning(e)
                     continue
 
         if stickers:
@@ -808,7 +833,8 @@ class Manager:
                         )
                     )
                     ui.value += 1
-                except errors.StickersetInvalidError:
+                except errors.StickersetInvalidError as e:
+                    logger.warning(e)
                     continue
 
         if stickers_archived:
@@ -824,7 +850,8 @@ class Manager:
                         )
                     )
                     ui.value += 1
-                except errors.StickersetInvalidError:
+                except errors.StickersetInvalidError as e:
+                    logger.warning(e)
                     continue
 
         if emojis:
@@ -840,7 +867,8 @@ class Manager:
                         )
                     )
                     ui.value += 1
-                except errors.StickersetInvalidError:
+                except errors.StickersetInvalidError as e:
+                    logger.warning(e)
                     continue
 
         if emojis_archived:
@@ -856,7 +884,8 @@ class Manager:
                         )
                     )
                     ui.value += 1
-                except errors.StickersetInvalidError:
+                except errors.StickersetInvalidError as e:
+                    logger.warning(e)
                     continue
 
 
@@ -868,18 +897,20 @@ class Manager:
                     message = await sender.send_file(r_entity.username, gif)
                     will_delete.append(message)
                     ui.value += 1
-                except Exception:
+                except Exception as e:
+                    logger.error(e)
                     continue
 
         if will_delete:
             try:
                 await sender.delete_messages(r_entity.username, will_delete)
-            except errors.MessageDeleteForbiddenError:
+            except errors.MessageDeleteForbiddenError as e:
+                logger.error(e)
                 pass
 
         ui.success()
 
-
+    @logger.catch()
     async def sync_bots(self, ui: Task):
         ui.default()
 
@@ -906,7 +937,8 @@ class Manager:
             try:
                 await recepient.send_message(bot.username, "/start")
                 ui.value += 1
-            except (errors.YouBlockedUserError, errors.UserIsBlockedError):
+            except (errors.YouBlockedUserError, errors.UserIsBlockedError) as e:
+                logger.error(e)
                 pass
 
         ui.success()

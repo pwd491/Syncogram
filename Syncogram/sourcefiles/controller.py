@@ -3,10 +3,16 @@ import flet as ft
 
 from .leftside import Userbar
 from .rightside import Taskbar
+from .utils import logging
+
+logger = logging()
+
 
 class TheScreensController:
     """The controls to view windows screens in application."""
+    @logger.catch
     def __init__(self, page: ft.Page, _) -> None:
+        logger.info("The screens controller start initialization.")
         self.page: ft.Page = page
         self._: str = _
 

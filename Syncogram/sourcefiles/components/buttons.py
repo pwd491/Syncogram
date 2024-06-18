@@ -5,7 +5,9 @@ import flet as ft
 
 from .settings import Settings
 from .warnings import CancelAllTasks
-from .task import Task
+from ..utils import logging
+
+logger = logging()
 
 class SettingsButton(ft.ElevatedButton):
     """Settings button open dialog."""
@@ -113,7 +115,7 @@ class StartAllTasksButton(ft.Container):
             if len(tasks) <= 0:
                 await self.open_settings_dialog()
                 return
-            self.tasks = [asyncio.create_task(task) for task in tasks]
+            self.tasks: list[asyncio.Task] = [asyncio.create_task(task) for task in tasks]
             self.state = True
             await asyncio.gather(
                 self.start_executes_tasks(self.tasks),
@@ -127,6 +129,7 @@ class StartAllTasksButton(ft.Container):
             await self.cancel()
             for task in self.tasks:
                 task.cancel()
+            logger.warning("Tasks were stopped forcibly.")
             self.state = False
             await self.__animate()
 
@@ -137,11 +140,14 @@ class StartAllTasksButton(ft.Container):
         settings.open = True
         self.page.update()
 
-    async def start_executes_tasks(self, tasks: list[Coroutine]):
+    async def start_executes_tasks(self, tasks: list[asyncio.Task]):
         """..."""
+        logger.warning("The application begins processing the following tasks:")
+        logger.info(f"[{[task.get_coro() for task in tasks]}]")
         await asyncio.gather(*tasks)
         self.state = False
         await self.__animate()
+        logger.warning("The application has finished executing tasks.")
 
     async def infinity_rotate(self):
         """Animation of the progress icon."""
