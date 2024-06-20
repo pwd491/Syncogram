@@ -24,6 +24,7 @@ logger = logging()
 
 class Manager:
     """The manager to control options UI and Coroutines."""
+    @logger.catch()
     def __init__(self, page: ft.Page, timeleft, _) -> None:
         self.page: ft.Page = page
         self.database = SQLite()
@@ -37,7 +38,7 @@ class Manager:
                     "Sync messages in your favorite chat with the correct sequence, re-replies to messages and pinned messages. The program can synchronize up to 100 messages per clock cycle."
                 ),
                 "function": self.sync_favorite_messages,
-                "status": bool(False),
+                "status": False,
                 "ui": Task,
             },
             "is_sync_profile_name": {
@@ -48,7 +49,7 @@ class Manager:
                     "Synchronization of the first name, last name, profile description and birthday. If you do not specify the data, it will be overwritten as empty fields."
                 ),
                 "function": self.sync_profile_first_name_and_second_name,
-                "status": bool(False),
+                "status": False,
                 "ui": Task,
             },
             "is_sync_profile_avatars": {
@@ -57,7 +58,7 @@ class Manager:
                     "Sync photo and video avatars in the correct sequence. If there are a lot of media files, the program sets an average limit between requests to the servers in order to circumvent the restrictions."
                 ),
                 "function": self.sync_profile_avatars,
-                "status": bool(False),
+                "status": False,
                 "ui": Task,
             },
             "is_sync_public_channels_and_groups": {
@@ -66,7 +67,7 @@ class Manager:
                     "Synchronizes public channels ang groups. If the channel or groups was archived or pinned, the program will save these parameters."
                 ),
                 "function": self.sync_public_channels_and_groups,
-                "status": bool(False),
+                "status": False,
                 "ui": Task,
             },
             "is_sync_privacy": {
@@ -75,7 +76,7 @@ class Manager:
                     "Synchronizes the privacy settings for the account. If the sync account does not have Telegram Premium, then the corresponding premium settings will not be synchronized."
                 ),
                 "function": self.sync_privacy_settings,
-                "status": bool(False),
+                "status": False,
                 "ui": Task,
             },
             "is_sync_secure": {
@@ -84,7 +85,7 @@ class Manager:
                     "Synchronizes the secure settings for the account. It includes synchronization of sensitive content, TTL messages and account."
                 ),
                 "function": self.sync_secure_settings,
-                "status": bool(False),
+                "status": False,
                 "ui": Task,
             },
             "is_sync_stickers_emojis_gifs": {
@@ -93,7 +94,7 @@ class Manager:
                     "Synchronizes the stickers sets, emojis and saved gifs. It also enables automatic transfer of archived stickers or emojis, and faved stickers."
                 ),
                 "function": self.sync_stickers_emojis_gifs,
-                "status": bool(False),
+                "status": False,
                 "ui": Task,
             },
             "is_sync_bots": {
@@ -102,58 +103,40 @@ class Manager:
                     "Synchronizes the list of bots. Attention, this function does not transfer the message history."
                 ),
                 "function": self.sync_bots,
-                "status": bool(False),
+                "status": False,
                 "ui": Task,
             },
         }
         self.callback()
 
     @logger.catch()
-    def update_options_dict(self):
-        """Get options list and update dict variable."""
-        list_of_options = self.database.get_options()
-        if list_of_options is None:
-            return
-        list_of_options = list_of_options[1:]
+    def update_options_dict(self) -> None:
+        """Get options dict and update <self.options>."""
+        for key, value in self.database.get_options_as_dict().items():
+            if key in self.options:
+                self.options[key]["status"] = value
+                self.options[key]["ui"] = Task(
+                    self.options[key]["title"],
+                    self.options[key]["description"],
+                )
 
-        for n, option in enumerate(self.options.items()):
-            option[1].update({"status": bool(list_of_options[n])})
-
-        for option in self.options.items():
-            if option[1].get("status"):
-                title = option[1].get("title")
-                desc = option[1].get("description")
-                option[1].update({"ui": Task(title, desc)})
-
+    @logger.catch()
     def get_ui_tasks(self) -> list[Task]:
         """Return UI list of will be execute tasks."""
-        lst = []
-        for option in self.options.items():
-            if option[1].get("status"):
-                lst.append(option[1].get("ui"))
+        lst: list[Task] = []
+        for option in self.options.values():
+            if option["status"]:
+                lst.append(option["ui"])
         return lst
 
-    def get_tasks_coroutines(self) -> list[Coroutine]:
-        """Return coroutines objects."""
-        lst = []
-        for option in self.options.items():
-            if option[1].get("status"):
-                lst.append(option[1].get("function"))
+    @logger.catch()
+    def get_coroutines(self) -> list[Callable[[Task], None]]:
+        """Return coroutines with UI objects.."""
+        lst: list[Callable[[Task], None]] = []
+        for option in self.options.values():
+            if option["status"]:
+                lst.append(option["function"](option["ui"]))
         return lst
-
-    def get_coroutines_with_ui(self) -> list[Callable[[Task], None]]:
-        """Return dict object."""
-        lst = []
-        for option in self.options.items():
-            if option[1].get("status"):
-                func = option[1].get("function")
-                ui = option[1].get("ui")
-                lst.append(func(ui))
-        return lst
-
-    def callback(self):
-        """Callback"""
-        self.update_options_dict()
 
     @logger.catch()
     async def sync_favorite_messages(self, ui: Task):
@@ -942,3 +925,7 @@ class Manager:
                 pass
 
         ui.success()
+
+    def callback(self):
+        """Callback"""
+        self.update_options_dict()

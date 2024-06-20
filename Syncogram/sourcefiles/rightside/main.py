@@ -25,7 +25,7 @@ class Taskbar(ft.Container):
         self.manager = Manager(self.page, self.timeleft, _)
         self.start_button = StartAllTasksButton(
             self.page,
-            self.manager.get_coroutines_with_ui,
+            self.manager.get_coroutines,
             self._
         )
 

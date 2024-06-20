@@ -9,53 +9,48 @@ class Settings(ft.AlertDialog):
         super().__init__()
         self.database: SQLite = SQLite()
         self.page: ft.Page = page
-
-        """!!!"""
-        self.options: list[int] = self.database.get_options()
-        self.options = self.options[1:] if self.options is not None else \
-            [False for __ in range(20)]
+        self.options: dict[str, int] = self.database.get_options_as_dict()
 
         self.c1 = ft.Checkbox(
             label=_("Synchronize favorite messages."),
-            value=bool(self.options[0]),
+            value=bool(self.options.get("is_sync_fav")),
             disabled=False,
         )
         self.c2 = ft.Checkbox(
             label=_("Synchronize first name, last name, biography and birthday."),
-            value=bool(self.options[1]),
+            value=bool(self.options.get("is_sync_profile_name")),
             disabled=False
         )
         self.c3 = ft.Checkbox(
             label=_("Synchronize profile photos and videos avatars."),
-            value=bool(self.options[2]),
+            value=bool(self.options.get("is_sync_profile_avatars")),
             disabled=False
         )
         self.c4 = ft.Checkbox(
             label=_("Synchronize public channels and groups."),
-            value=bool(self.options[3]),
+            value=bool(self.options.get("is_sync_public_channels_and_groups")),
             disabled=False
         )
         self.c5 = ft.Checkbox(
             label=_("Synchronize privacy settings."),
-            value=bool(self.options[4]),
+            value=bool(self.options.get("is_sync_privacy")),
             disabled=False
         )
         self.c6 = ft.Checkbox(
             label=_("Synchronize secure settings."),
-            value=bool(self.options[5]),
+            value=bool(self.options.get("is_sync_secure")),
             disabled=False
         )
         self.c7 = ft.Checkbox(
             label=_("Synchronize stickers, emojis and gifs."),
-            value=bool(self.options[6]),
+            value=bool(self.options.get("is_sync_stickers_emojis_gifs")),
             disabled=False
         )
         self.c8 = ft.Checkbox(
             label=_("Synchronize bots."),
-            value=bool(self.options[7]),
+            value=bool(self.options.get("is_sync_bots")),
             disabled=False
         )
-        """!!!"""
 
         x = [
             self.c1,
@@ -65,7 +60,7 @@ class Settings(ft.AlertDialog):
             self.c5,
             self.c6,
             self.c7,
-            self.c8
+            self.c8,
         ]
         x.sort(key=lambda x: x.disabled is True)
 

@@ -64,7 +64,7 @@ class SQLite:
                     return bool(request)
                 except sqlite3.IntegrityError as error:
                     return error.sqlite_errorcode
-                
+
     @logger.catch()
     def get_users(self) -> list[Any]:
         """Get all users."""
@@ -129,6 +129,17 @@ class SQLite:
                 if bool(request):
                     return request
                 return None
+
+    @logger.catch()
+    def get_options_as_dict(self) -> dict[str, int] | None:
+        """Get options like dict object."""
+        with self.database as connect:
+            connect.row_factory = sqlite3.Row
+            with closing(connect.cursor()) as cursor:
+                request = cursor.execute(
+                    SQL_GET_OPTIONS
+                ).fetchone()
+                return dict(request) if request is not None else {}
 
     @logger.catch()
     def set_options(self, *args) -> bool:
