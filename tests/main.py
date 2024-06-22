@@ -2,229 +2,166 @@ import asyncio
 import datetime
 import random
 import time
-from typing import Dict
+import re
+from typing import Dict, Callable, Coroutine
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl import types
 from telethon.tl.functions import messages
 from telethon import events
 from telethon import errors
-from telethon.tl.custom import Dialog
+from telethon.tl import custom
 from telethon.tl import patched
 from telethon.helpers import TotalList
 
 from environments import API_HASH, API_ID, R_SESSION, S_SESSION, M_SESSION
 
-sender = TelegramClient(StringSession(R_SESSION), API_ID, API_HASH)
-# sender = TelegramClient(StringSession(S_SESSION), API_ID, API_HASH)
-recepient = TelegramClient(StringSession(M_SESSION), API_ID, API_HASH)
+# sender = TelegramClient(StringSession(R_SESSION), API_ID, API_HASH)
 
+def autoconnect(func: Coroutine):
+    """Decorator got token and connect user to server."""
+    async def wrapper(*args):
+        sender = TelegramClient(StringSession(S_SESSION), API_ID, API_HASH)
+        recepient = TelegramClient(StringSession(R_SESSION), API_ID, API_HASH)
+        if not sender.is_connected():
+            await sender.connect()
+        if not recepient.is_connected():
+            await recepient.connect()
+        return await func(*args, sender=sender, recepient=recepient)
+    return wrapper
 
-async def main():
+def find_deep_links_hashes(message: str) -> list[str]:
     """
-    An algorithm for forwarding messages to the recipient entity is
-    implemented.
-    """
-    ui.default()
-    sender = self.client(self.database.get_session_by_status(1))
-    recepient = self.client(self.database.get_session_by_status(0))
-
-    if not sender.is_connected() or not recepient.is_connected():
-        await sender.connect()
-        await recepient.connect()
-
-    source: TotalList[patched.Message] = await sender.get_messages(
-        "me", min_id=0, max_id=0, reverse=True
-    )
-    sender_entity = await sender.get_entity('me')
-    recepient_entity = await recepient.get_entity('me')
-
-    async def pin_messages():
-        if pinned:
-            timeout = .5
-            for message in pinned.copy():
-                try:
-                    pin_id = ids.get(message.id)
-                    pin_id = pin_id if pin_id is not None else 123
-                    await asyncio.sleep(timeout)
-                    await recepient.pin_message(
-                        'me',
-                        pin_id
-                    )
-                except errors.MessageIdInvalidError:
-                    continue
-                except errors.FloodWaitError as flood:
-                    timeout += timeout
-                    await asyncio.sleep(flood.seconds)
-                finally:
-                    pinned.remove(message)
-
-    async def merge_old_and_new_ids():
-        if will_forward:
-            for k, message in enumerate(will_forward):
-                ids.setdefault(
-                    message.id,
-                    was_saved[k].id
-                )
-        elif will_reply:
-            for k, message in enumerate(will_reply):
-                ids.setdefault(
-                    message.id,
-                    was_saved[k].id
-                )
-    async def forward_messages_and_save_ids():
-        if will_forward:
-            try:
-                await asyncio.sleep(timeout)
-                messages_to_recepient = await sender.forward_messages(
-                    recepient_entity.username,
-                    will_forward
-                )
-                will_delete.extend(messages_to_recepient)
-
-                get_messages_from_sender = await recepient.get_messages(
-                    sender_entity.username,
-                    limit=len(messages_to_recepient),
-                )
-
-                send_to_saved_chat = await recepient.forward_messages(
-                    'me',
-                    get_messages_from_sender,
-                    drop_author=True
-                )
-                send_to_saved_chat = reversed(send_to_saved_chat)
-                was_saved.extend(send_to_saved_chat)
-                await merge_old_and_new_ids()
-                await pin_messages()
-                will_forward.clear()
-                was_saved.clear()
-            except errors.FloodWaitError as flood:
-                await asyncio.sleep(flood.seconds)
-
-    async def reply_message_and_save_ids():
-        if will_reply:
-            try:
-                await asyncio.sleep(timeout)
-                messages_to_recepient = await sender.forward_messages(
-                    recepient_entity.username,
-                    will_reply
-                )
-                will_delete.extend(messages_to_recepient)
-
-                get_messages_from_sender = await recepient.get_messages(
-                    sender_entity.username,
-                    limit=len(messages_to_recepient),
-                )
-                if get_messages_from_sender[-1].text == "":
-                    send_to_saved_chat = await recepient.send_file(
-                        'me',
-                        file=get_messages_from_sender,
-                        reply_to=ids.get(will_reply[-1].reply_to_msg_id)
-                    )
-                else:
-                    send_to_saved_chat = await recepient.send_message(
-                        'me',
-                        message=get_messages_from_sender[-1].text,
-                        reply_to=ids.get(will_reply[-1].reply_to_msg_id),
-                        file=get_messages_from_sender \
-                            if len(get_messages_from_sender) > 1 else None
-                    )
-
-                if isinstance(send_to_saved_chat, list):
-                    send_to_saved_chat = reversed(send_to_saved_chat)
-                    was_saved.extend(send_to_saved_chat)
-                else:
-                    was_saved.append(send_to_saved_chat)
-
-                await merge_old_and_new_ids()
-                await pin_messages()
-                will_reply.clear()
-                was_saved.clear()
-            except errors.FloodWaitError as flood:
-                await asyncio.sleep(flood.seconds)
-
-    ids: Dict[int, int] = {}
-
-    will_delete: list[patched.Message] = [] # сообщения которые будут удалены
-    will_forward: list[patched.Message] = [] # сообщения которые должны быть пересланны
-    will_reply: list[patched.Message] = [] # группа сообщений или одно сообщение для ответа
-    was_saved: list[patched.Message] = [] # сообщения которые были сохраненны успешно
-    pinned: list[patched.Message] = []
-
-    reply_flag = False
-    grouped_id = 0
-    last_grouped_id = 0
-    timeout = 5
-
-    ui.progress_counters.visible = True
-    ui.total = source.total
-
-    message: patched.Message
-    for k, message in enumerate(source):
-        if not isinstance(message, patched.MessageService):
-            if message.pinned:
-                pinned.append(message)
-            if message.grouped_id and reply_flag:
-                if message.grouped_id == grouped_id:
-                    will_reply.append(message)
-                    ui.value = i
-                    continue
-            if message.is_reply:
-                if message.grouped_id:
-                    if message.grouped_id == grouped_id:
-                        will_reply.append(message)
-                    else:
-                        await forward_messages_and_save_ids()
-                        await reply_message_and_save_ids()
-                        grouped_id = message.grouped_id
-                        reply_flag = True
-                        will_reply.append(message)
-                else:
-                    await forward_messages_and_save_ids()
-                    will_reply.append(message)
-                    await reply_message_and_save_ids()
-            else:
-                await reply_message_and_save_ids()
-                reply_flag = False
-                if len(will_forward) < 90:
-                    will_forward.append(message)
-                    last_grouped_id = message.grouped_id
-                else:
-                    if message.grouped_id:
-                        if message.grouped_id == last_grouped_id:
-                            ui.value = i
-                            continue
-                        print(f"Пересылка за раз: {len(will_forward)}")
-                        await forward_messages_and_save_ids()
-                    else:
-                        print(f"Пересылка за раз: {len(will_forward)}")
-                        await forward_messages_and_save_ids()
-        ui.value = i
-
-    if will_forward:
-        await forward_messages_and_save_ids()
-        await pin_messages()
-
-    if will_reply:
-        await reply_message_and_save_ids()
-        await pin_messages()
-
-    if pinned:
-        await pin_messages()
-
-    if will_delete:
-        try:
-            await sender.delete_messages(
-                recepient_entity.username,
-                will_delete
-            )
-        except errors.MessageIdInvalidError as msg:
-            print(msg.message, msg.code)
+    Regex string for search deep invite links. Delete hashes duplicates. Return
+    list of searched hashes.
     
+    t.me/+<hash>
+    t.me/joinchat/<hash> (legacy)
+    tg://join?invite=<hash>
+    """
+    pattern = re.compile(
+        r"(?:t|tg|telegram)(?:\.|\:)(?:me/|dog/|//)(?:\+|joinchat/|join\?invite=)([\w]+)",
+    )
+    return list(dict.fromkeys(pattern.findall(message)))
 
+@autoconnect
+async def main(ui: str, **kwargs):
+    sender: TelegramClient = kwargs["recepient"]
+    recepient: TelegramClient = kwargs["sender"]
 
+    def is_already_joined(channel_id: int) -> bool:
+        """Looking channel or group in Recepient chat list."""
+        for channel in recepient_dialogs:
+            if isinstance(channel, types.Channel):
+                if channel.entity.id == channel_id:
+                    return True
+        return False
+
+    async def channels() -> None:
+        for channel in sender_dialogs:
+            if isinstance(channel.entity, types.Channel):
+                if channel.entity.username is None and \
+                    channel.entity.usernames is None:
+                    if is_already_joined(channel.entity.id):
+                        continue
+                    channel_and_link.setdefault(channel.entity.title)
+                    channels_to_find.append(channel)
+
+    async def find_unique_hashes_in_overall_messages():
+        timeout = 10 if len(channels_to_find) > 50 else 5
+        for k, channel in enumerate(channels_to_find, 1):
+            await asyncio.sleep(timeout)
+            try:
+                last_50_messages = await sender.get_messages(
+                    channel.input_entity, limit=50
+                )
+            except errors.FloodWaitError as spam:
+                print(spam)
+                print(k)
+                await asyncio.sleep(spam.seconds)
+                last_50_messages = await sender.get_messages(
+                    channel.input_entity, limit=50
+                )
+
+            text = []
+            message: patched.Message
+            for message in last_50_messages:
+                if message.text:
+                    text.append(message.text)
+        check = "\n".join(text)
+        hashes.extend(find_deep_links_hashes(check))
+
+    async def check_deep_link_valid():
+        timeout = 10 if len(hashes) > 50 else 5
+        latest_client = sender
+        for invite_hash in hashes:
+            latest_client = sender if latest_client == recepient else recepient
+            await asyncio.sleep(timeout)
+            try:
+                request = latest_client(
+                    messages.CheckChatInviteRequest(
+                        hash=invite_hash
+                    )
+                )
+                chat: types.ChatInvite = await request
+            except (
+                errors.InviteHashEmptyError,
+                errors.InviteHashExpiredError,
+                errors.InviteHashInvalidError,
+            ):
+                pass
+            except errors.FloodWaitError as spam:
+                print(spam)
+                await asyncio.sleep(spam.seconds)
+                chat = await request
+
+            if chat.title in channel_and_link:
+                channel_and_link[chat.title] = invite_hash
+
+    async def join_to_channels_or_groups():
+        timeout = 10 if len(channel_and_link) > 50 else 5
+        for key, value in channel_and_link.items():
+            if value is not None:
+                try:
+                    await asyncio.sleep(timeout)
+                    await recepient(
+                        messages.ImportChatInviteRequest(
+                            hash=value
+                        )
+                    )
+                except (
+                    errors.UserAlreadyParticipantError,
+                    errors.InviteHashInvalidError,
+                    errors.InviteHashExpiredError,
+                    errors.InviteHashEmptyError,
+                    errors.UsersTooMuchError,
+                ):
+                    pass
+                except errors.ChannelsTooMuchError as e:
+                    print(e)
+                except errors.InviteRequestSentError:
+                    print("Эта я типа успешно присоединился.")
+                except errors.FloodWaitError as flood:
+                    print(flood)
+                    print("Время паузы увеличино: ", timeout, timeout + 5)
+                    timeout += 5
+                    await asyncio.sleep(flood.seconds)
+                    await recepient(
+                        messages.ImportChatInviteRequest(
+                            hash=value
+                        )
+                    )
+
+    sender_dialogs: list[custom.dialog.Dialog] = await sender.get_dialogs()
+    recepient_dialogs: list[custom.dialog.Dialog] = await recepient.get_dialogs()
+
+    channels_to_find: list[custom.dialog.Dialog] = []
+    channel_and_link: Dict[str, str] = {}
+    hashes: list[str] = []
+
+    await channels()
+    await find_unique_hashes_in_overall_messages()
+    await check_deep_link_valid()
+    await join_to_channels_or_groups()
 if __name__ == "__main__":
-    start = time.time()
-    asyncio.run(main())
-    end = time.time() - start
-    print(end)
+    asyncio.run(main("asd"))
