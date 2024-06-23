@@ -22,43 +22,60 @@ async def sync_secure_settings(ui: Task, **kwargs):
 
     ui.progress_counters.visible = True
     ui.total = 3
+    timeout = .5
 
     try:
+        await asyncio.sleep(timeout)
         content: types.account.ContentSettings = await sender(
             account.GetContentSettingsRequest()
         )
-        await asyncio.sleep(0.5)
-        if content.sensitive_can_change:
+    except Exception as error:
+        logger.critical(error)
+
+    if content.sensitive_can_change:
+        await asyncio.sleep(timeout)
+        try:
             await recepient(
                 account.SetContentSettingsRequest(content.sensitive_enabled)
             )
-        ui.value += 1
-        await asyncio.sleep(0.5)
+            ui.value += 1
+        except errors.SensitiveChangeForbiddenError as error:
+            logger.error(error)
 
-        request: types.DefaultHistoryTTL = await sender(
+    try:
+        await asyncio.sleep(timeout)
+        history: types.DefaultHistoryTTL = await sender(
             messages.GetDefaultHistoryTTLRequest()
         )
-        await asyncio.sleep(0.5)
+    except Exception as error:
+        logger.error(error)
+        
+    try:
+        await asyncio.sleep(timeout)
         await recepient(
-            messages.SetDefaultHistoryTTLRequest(request.period)
+            messages.SetDefaultHistoryTTLRequest(history.period)
         )
         ui.value += 1
-        await asyncio.sleep(0.5)
+    except Exception as error:
+        logger.error(error)
 
-        request: types.AccountDaysTTL = await sender(
+    try:
+        await asyncio.sleep(timeout)
+        account_ttl: types.AccountDaysTTL = await sender(
             account.GetAccountTTLRequest()
         )
-        await asyncio.sleep(0.5)
+    except Exception as error:
+        logger.error(error)
+
+    try:
+        await asyncio.sleep(timeout)
         await recepient(
             account.SetAccountTTLRequest(
-                types.TypeAccountDaysTTL(request.days)
+                types.TypeAccountDaysTTL(account_ttl.days)
             )
         )
         ui.value += 1
-        await asyncio.sleep(0.5)
+    except errors.TtlDaysInvalidError as error:
+        logger.error(error)
 
-    except Exception as e:
-        logger.error(e)
-        ui.unsuccess(e)
-        return
     ui.success()

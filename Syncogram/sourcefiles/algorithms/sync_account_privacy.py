@@ -34,56 +34,60 @@ async def sync_privacy_settings(ui: Task, **kwargs):
         types.InputPrivacyKeyVoiceMessages(),
     ]
 
-    try:
-        ui.progress_counters.visible = True
-        ui.total = len(input_privacies) + 1
-        i: int
-        for i, privacy in enumerate(input_privacies, 1):
-            await asyncio.sleep(1)
-            rules: list[types.TypePrivacyRule] = []
+    ui.progress_counters.visible = True
+    ui.total = len(input_privacies) + 1
+    timeout = 1
+
+    for i, privacy in enumerate(input_privacies, 1):
+        await asyncio.sleep(timeout)
+        rules: list[types.TypePrivacyRule] = []
+        try:
             request: types.account.PrivacyRules = await sender(
                 account.GetPrivacyRequest(
                     privacy
                 )
             )
+        except errors.PrivacyKeyInvalidError as error:
+            logger.error(error)
 
-            for rule in request.rules:
-                if isinstance(rule, types.PrivacyValueAllowAll):
-                    rules.append(types.InputPrivacyValueAllowAll())
+        for rule in request.rules:
+            if isinstance(rule, types.PrivacyValueAllowAll):
+                rules.append(types.InputPrivacyValueAllowAll())
 
-                if isinstance(rule, types.PrivacyValueAllowUsers):
-                    rules.append(types.InputPrivacyValueAllowUsers([]))
+            if isinstance(rule, types.PrivacyValueAllowUsers):
+                rules.append(types.InputPrivacyValueAllowUsers([]))
 
-                if isinstance(rule, types.PrivacyValueAllowPremium):
-                    rules.append(types.InputPrivacyValueAllowPremium())
+            if isinstance(rule, types.PrivacyValueAllowPremium):
+                rules.append(types.InputPrivacyValueAllowPremium())
 
-                if isinstance(rule, types.PrivacyValueAllowContacts):
-                    rules.append(types.InputPrivacyValueAllowContacts())
+            if isinstance(rule, types.PrivacyValueAllowContacts):
+                rules.append(types.InputPrivacyValueAllowContacts())
 
-                if isinstance(rule, types.PrivacyValueAllowCloseFriends):
-                    rules.append(types.InputPrivacyValueAllowCloseFriends())
+            if isinstance(rule, types.PrivacyValueAllowCloseFriends):
+                rules.append(types.InputPrivacyValueAllowCloseFriends())
 
-                if isinstance(rule, types.PrivacyValueAllowChatParticipants):
-                    rules.append(types.InputPrivacyValueAllowChatParticipants([]))
+            if isinstance(rule, types.PrivacyValueAllowChatParticipants):
+                rules.append(types.InputPrivacyValueAllowChatParticipants([]))
 
-                if isinstance(rule, types.PrivacyValueDisallowAll):
-                    r = True
-                    for k in rules:
-                        if isinstance(k, types.InputPrivacyValueAllowContacts):
-                            r = False
-                            break
-                    if r:
-                        rules.append(types.InputPrivacyValueDisallowAll())
+            if isinstance(rule, types.PrivacyValueDisallowAll):
+                r = True
+                for k in rules:
+                    if isinstance(k, types.InputPrivacyValueAllowContacts):
+                        r = False
+                        break
+                if r:
+                    rules.append(types.InputPrivacyValueDisallowAll())
 
-                if isinstance(rule, types.PrivacyValueDisallowUsers):
-                    rules.append(types.InputPrivacyValueDisallowUsers([]))
+            if isinstance(rule, types.PrivacyValueDisallowUsers):
+                rules.append(types.InputPrivacyValueDisallowUsers([]))
 
-                if isinstance(rule, types.PrivacyValueDisallowContacts):
-                    rules.append(types.InputPrivacyValueDisallowContacts())
+            if isinstance(rule, types.PrivacyValueDisallowContacts):
+                rules.append(types.InputPrivacyValueDisallowContacts())
 
-                if isinstance(rule, types.PrivacyValueDisallowChatParticipants):
-                    rules.append(types.InputPrivacyValueDisallowChatParticipants([]))
+            if isinstance(rule, types.PrivacyValueDisallowChatParticipants):
+                rules.append(types.InputPrivacyValueDisallowChatParticipants([]))
 
+        try:
             await recepient(
                 account.SetPrivacyRequest(
                     key=privacy,
@@ -91,26 +95,30 @@ async def sync_privacy_settings(ui: Task, **kwargs):
                 )
             )
             ui.value = i
+        except (errors.PrivacyKeyInvalidError, errors.PrivacyTooLongError) as error:
+            logger.error(error)
 
-        data: types.TypeGlobalPrivacySettings = await sender(
-            account.GetGlobalPrivacySettingsRequest()
-        )
+        try:
+            data: types.TypeGlobalPrivacySettings = await sender(
+                account.GetGlobalPrivacySettingsRequest()
+            )
+        except Exception as error:
+            logger.error(error)
 
-        await recepient(
-            account.SetGlobalPrivacySettingsRequest(
-                types.TypeGlobalPrivacySettings(
-                    data.archive_and_mute_new_noncontact_peers,
-                    data.keep_archived_unmuted,
-                    data.keep_archived_folders,
-                    data.hide_read_marks,
-                    data.new_noncontact_peers_require_premium
+        try:
+            await recepient(
+                account.SetGlobalPrivacySettingsRequest(
+                    types.TypeGlobalPrivacySettings(
+                        data.archive_and_mute_new_noncontact_peers,
+                        data.keep_archived_unmuted,
+                        data.keep_archived_folders,
+                        data.hide_read_marks,
+                        data.new_noncontact_peers_require_premium
+                    )
                 )
             )
-        )
-        ui.value += 1
-    except Exception as e:
-        logger.error(e)
-        ui.unsuccess(e)
-        return
+            ui.value += 1
+        except errors.AutoarchiveNotAvailableError as error:
+            logger.error(error)
 
     ui.success()
