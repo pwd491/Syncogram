@@ -32,7 +32,7 @@ from .constants import (
 
 logger = logging()
 WORK_DIR = get_work_dir()
-logger.info(f"Working directory path [{WORK_DIR}]")
+logger.info(f"Working directory path {WORK_DIR}")
 if not os.path.exists(WORK_DIR) or not os.path.isdir(WORK_DIR):
     logger.info("Working directory creating")
     os.mkdir(WORK_DIR)
