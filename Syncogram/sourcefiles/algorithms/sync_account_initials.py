@@ -15,42 +15,56 @@ logger = logging()
 @autoconnect
 async def sync_profile_first_name_and_second_name(ui: Task, **kwargs):
     """
-    Connecting accounts, getting profile data and sets.
+    The algorithm for syncing avatar photos/stickers, avatar videos and
+    fallback photo.
     """
     ui.default()
 
     sender: UserClient = kwargs["sender"]
     recepient: UserClient = kwargs["recepient"]
 
-    ui.progress_counters.visible = True
-    ui.total = 4
     try:
         user: types.users.UserFull = await sender(
             users.GetFullUserRequest("me")
         )
+    except (errors.TimedOutError, errors.UserIdInvalidError) as error:
+        logger.critical(error)
+        ui.unsuccess(error)
+        return
 
-        ui.value += 1
-        await asyncio.sleep(1)
-        first_name = user.users[0].first_name
-        first_name = str() if first_name is None else first_name
-        await asyncio.sleep(1)
+    timeout = 1
+    ui.total = 4 if user.full_user.birthday else 3
+    ui.progress_counters.visible = True
 
-        last_name = user.users[0].last_name
-        last_name = str() if last_name is None else last_name
-        ui.value += 1
-        await asyncio.sleep(1)
+    first_name = user.users[0].first_name
+    first_name = str() if first_name is None else first_name
 
-        bio = user.full_user.about
-        bio = str() if bio is None else bio
-        ui.value += 1
-        await asyncio.sleep(1)
+    last_name = user.users[0].last_name
+    last_name = str() if last_name is None else last_name
 
+    bio = user.full_user.about
+    bio = str() if bio is None else bio
+
+    try:
+        await asyncio.sleep(timeout)
         await recepient(
             account.UpdateProfileRequest(first_name, last_name, bio)
         )
-        await asyncio.sleep(1)
+        ui.value += 3
+    except (errors.AboutTooLongError, errors.FirstNameInvalidError) as error:
+        logger.warning(error)
+    except errors.FloodWaitError as flood:
+        logger.warning(flood)
+        ui.cooldown(flood)
+        await asyncio.sleep(flood.seconds)
+        ui.uncooldown()
+        await recepient(
+            account.UpdateProfileRequest(first_name, last_name, bio)
+        )
+        ui.value += 3
 
-        if user.full_user.birthday is not None:
+    if user.full_user.birthday is not None:
+        try:
             await recepient(
                 account.UpdateBirthdayRequest(
                     types.TypeBirthday(
@@ -60,11 +74,22 @@ async def sync_profile_first_name_and_second_name(ui: Task, **kwargs):
                     )
                 )
             )
-        await asyncio.sleep(1)
-        ui.value += 1
+            ui.value += 1
 
-    except Exception as e:
-        logger.error(e)
-        ui.unsuccess(e)
-        return
+        except errors.FloodWaitError as flood:
+            logger.warning(flood)
+            ui.cooldown(flood)
+            await asyncio.sleep(flood.seconds)
+            ui.uncooldown()
+            await recepient(
+                account.UpdateBirthdayRequest(
+                    types.TypeBirthday(
+                        user.full_user.birthday.day,
+                        user.full_user.birthday.month,
+                        user.full_user.birthday.year
+                    )
+                )
+            )
+            ui.value += 1
+
     ui.success()
