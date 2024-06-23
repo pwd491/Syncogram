@@ -1,0 +1,1 @@
+from .sync_fav_messages import sync_favorite_messages
