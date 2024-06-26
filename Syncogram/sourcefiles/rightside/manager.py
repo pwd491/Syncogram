@@ -14,6 +14,7 @@ class Manager:
     """The manager to control options UI and Coroutines."""
     @logger.catch()
     def __init__(self, page: Page, timeleft, _) -> None:
+        self._ = _
         self.database = SQLite()
         self.options = {
             "is_sync_fav": {
@@ -102,6 +103,7 @@ class Manager:
                 self.options[key]["ui"] = Task(
                     self.options[key]["title"],
                     self.options[key]["description"],
+                    self._,
                 )
 
     @logger.catch()
