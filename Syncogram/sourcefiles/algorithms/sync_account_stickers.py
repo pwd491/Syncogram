@@ -24,10 +24,11 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
     s_entity: types.User = await sender.get_entity('me')
     r_entity: types.User = await recepient.get_entity('me')
 
-    timeout = 5
+    keyword = "gifsync"
 
     @recepient.on(events.NewMessage(
-        from_users=[s_entity.username], func=lambda e: e.message.gif)
+        from_users=[s_entity.username],
+        func=lambda e: e.message.gif and e.message.text == keyword)
     )
     async def gifhook(event: events.NewMessage.Event):
         gif: types.Document = event.message.gif
@@ -42,8 +43,8 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                     unsave=False
                 )
             )
-        except Exception as e:
-            logger.warning(e)
+        except errors.GifIdInvalidError as error:
+            logger.warning(error)
 
     faved_stickers_list: types.messages.FavedStickers = await sender(
         messages.GetFavedStickersRequest(0)
@@ -86,11 +87,13 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
     )
     gifs: list[types.TypeDocument] = gifs_list.gifs
 
-    ui.progress_counters.visible = True
     ui.total = len(faved_stickers) + len(stickers) + len(stickers_archived) \
             + len(emojis) + len(emojis_archived) + len(gifs)
+    ui.progress_counters.visible = True
+    timeout = 5
 
-    ui.value = 0
+    # ui.timeleft += ui.total * timeout
+
     if faved_stickers:
         for sticker in reversed(faved_stickers):
             await asyncio.sleep(timeout)
@@ -106,9 +109,9 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                     )
                 )
                 ui.value += 1
-            except errors.StickerIdInvalidError as e:
-                logger.warning(e)
-                continue
+                # ui.timeleft -= timeout
+            except errors.StickerIdInvalidError as error:
+                logger.warning(error)
 
     if stickers:
         for sticker in reversed(stickers):
@@ -123,9 +126,9 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                     )
                 )
                 ui.value += 1
-            except errors.StickersetInvalidError as e:
-                logger.warning(e)
-                continue
+                # ui.timeleft -= timeout
+            except errors.StickersetInvalidError as error:
+                logger.warning(error)
 
     if stickers_archived:
         for sticker in reversed(stickers_archived):
@@ -140,9 +143,9 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                     )
                 )
                 ui.value += 1
-            except errors.StickersetInvalidError as e:
-                logger.warning(e)
-                continue
+                # ui.timeleft -= timeout
+            except errors.StickersetInvalidError as error:
+                logger.warning(error)
 
     if emojis:
         for emoji in reversed(emojis):
@@ -157,9 +160,9 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                     )
                 )
                 ui.value += 1
-            except errors.StickersetInvalidError as e:
-                logger.warning(e)
-                continue
+                # ui.timeleft -= timeout
+            except errors.StickersetInvalidError as error:
+                logger.warning(error)
 
     if emojis_archived:
         for emoji in reversed(emojis_archived):
@@ -174,28 +177,28 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                     )
                 )
                 ui.value += 1
-            except errors.StickersetInvalidError as e:
-                logger.warning(e)
-                continue
-
+                # ui.timeleft -= timeout
+            except errors.StickersetInvalidError as error:
+                logger.warning(error)
 
     will_delete = []
     if gifs:
         for gif in reversed(gifs):
             await asyncio.sleep(timeout)
             try:
-                message = await sender.send_file(r_entity.username, gif)
+                message = await sender.send_file(
+                    r_entity.username, gif, caption=keyword
+                )
                 will_delete.append(message)
                 ui.value += 1
-            except Exception as e:
-                logger.error(e)
-                continue
+                # ui.timeleft -= timeout
+            except errors.FileReferenceExpiredError as error:
+                logger.error(error)
 
     if will_delete:
         try:
             await sender.delete_messages(r_entity.username, will_delete)
-        except errors.MessageDeleteForbiddenError as e:
-            logger.error(e)
-            pass
+        except errors.MessageDeleteForbiddenError as error:
+            logger.error(error)
 
     ui.success()
