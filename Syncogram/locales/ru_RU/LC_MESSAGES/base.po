@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-06-02 18:37+0300\n"
-"PO-Revision-Date: 2024-06-02 18:51+0300\n"
+"PO-Revision-Date: 2024-06-27 13:57+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru_RU\n"
 "Language-Team: ru_RU <LL@li.org>\n"
@@ -126,6 +126,14 @@ msgstr "Отменить"
 #: Syncogram/sourcefiles/components/settings.py:88
 msgid "Save"
 msgstr "Сохранить"
+
+#: Syncogram/sourcefiles/components/task.py:80
+msgid "Detailed"
+msgstr "Подробнее"
+
+#: Syncogram/sourcefiles/components/timeleft.py:13
+msgid "Execution time:"
+msgstr "Время выполнения:"
 
 #: Syncogram/sourcefiles/components/warnings.py:21
 msgid "To get started, log in to at least 2 accounts"
