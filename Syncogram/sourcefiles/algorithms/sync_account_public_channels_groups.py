@@ -44,7 +44,7 @@ async def sync_public_channels_and_groups(ui: Task, **kwargs):
     ui.progress_counters.visible = True
     ui.total = len(channels_list) - 1
 
-    timeout = 10 if len(channels_list) <= 30 else 15
+    timeout = 10 if len(channels_list) <= 50 else 20
     timeout_adc = 2.5
 
     channel: Dialog
