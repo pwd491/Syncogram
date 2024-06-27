@@ -1,5 +1,4 @@
 import asyncio
-from typing import Dict
 
 from telethon import errors
 from telethon.tl import patched
@@ -12,6 +11,8 @@ from ..utils import logging
 
 logger = logging()
 
+timeout: int = 0
+
 @logger.catch()
 @autoconnect
 async def sync_favorite_messages(ui: Task, **kwargs):
@@ -20,6 +21,7 @@ async def sync_favorite_messages(ui: Task, **kwargs):
     implemented.
     """
     ui.default()
+
     sender: UserClient = kwargs["sender"]
     recepient: UserClient = kwargs["recepient"]
 
@@ -29,27 +31,36 @@ async def sync_favorite_messages(ui: Task, **kwargs):
     sender_entity = await sender.get_entity('me')
     recepient_entity = await recepient.get_entity('me')
 
+    global timeout
+    timeout = source.total / 325
+    timeout = timeout if timeout <= 10 else 10
+
     async def pin_messages():
         if pinned:
-            timeout = .5
+            pin_timeout = 1 if len(pinned) <= 10 else 3.5
             for message in pinned.copy():
-                try:
-                    pin_id = ids.get(message.id)
-                    pin_id = pin_id if pin_id is not None else 123
-                    await asyncio.sleep(timeout)
-                    await recepient.pin_message(
-                        'me',
-                        pin_id
-                    )
-                except errors.MessageIdInvalidError as e:
-                    logger.error(e)
-                    continue
-                except errors.FloodWaitError as flood:
-                    logger.warning(flood)
-                    timeout += timeout
-                    await asyncio.sleep(flood.seconds)
-                finally:
-                    pinned.remove(message)
+                while True:
+                    try:
+                        pin_id = ids.get(message.id)
+                        pin_id = pin_id if pin_id is not None else 123
+                        await asyncio.sleep(pin_timeout)
+                        await recepient.pin_message(
+                            'me',
+                            pin_id
+                        )
+                        pinned.remove(message)
+                        break
+                    except errors.MessageIdInvalidError as e:
+                        logger.error(e)
+                        ui.message(e)
+                        break
+                    except errors.FloodWaitError as flood:
+                        logger.warning(flood)
+                        ui.message(flood)
+                        ui.cooldown(flood)
+                        pin_timeout += pin_timeout
+                        await asyncio.sleep(flood.seconds)
+                        ui.uncooldown()
 
     async def merge_old_and_new_ids():
         if will_forward:
@@ -64,67 +75,179 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                     message.id,
                     was_saved[k].id
                 )
-    async def forward_messages_and_save_ids():
+    async def forward_messages_and_save_ids() -> None:
+        global timeout
         if will_forward:
-            try:
-                await asyncio.sleep(timeout)
-                messages_to_recepient = await sender.forward_messages(
-                    recepient_entity.username,
-                    will_forward
-                )
-                will_delete.extend(messages_to_recepient)
+            while True:
+                try:
+                    await asyncio.sleep(timeout)
+                    messages_to_recepient = await sender.forward_messages(
+                        recepient_entity.username,
+                        will_forward
+                    )
+                    will_delete.extend(messages_to_recepient)
+                    break
+                except (
+                    errors.MessageIdsEmptyError,
+                    errors.MessageIdInvalidError,
+                    errors.GroupedMediaInvalidError
+                ) as error:
+                    logger.error(error)
+                    ui.message(f"{error}. {len(will_forward)} messages wasn't sync.")
+                    will_forward.clear()
+                    return
+                except errors.FloodWaitError as flood:
+                    logger.warning(flood)
+                    ui.message(flood)
+                    ui.cooldown(flood)
+                    timeout = timeout + 5
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
 
-                get_messages_from_sender = await recepient.get_messages(
-                    sender_entity.username,
-                    limit=len(messages_to_recepient),
-                )
-                await asyncio.sleep(timeout)
-                send_to_saved_chat = await recepient.forward_messages(
-                    'me',
-                    get_messages_from_sender,
-                    drop_author=True
-                )
+            while True:
+                try:
+                    get_messages_from_sender = await recepient.get_messages(
+                        sender_entity.username,
+                        limit=len(messages_to_recepient),
+                    )
+                    break
+                except errors.FloodWaitError as flood:
+                    logger.warning(flood)
+                    ui.message(flood)
+                    ui.cooldown(flood)
+                    timeout = timeout + 5
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
+
+            while True:
+                try:
+                    await asyncio.sleep(timeout)
+                    send_to_saved_chat = await recepient.forward_messages(
+                        'me',
+                        get_messages_from_sender,
+                        drop_author=True
+                    )
+                    break
+                except (
+                    errors.MessageIdsEmptyError,
+                    errors.MessageIdInvalidError,
+                    errors.GroupedMediaInvalidError
+                ) as error:
+                    logger.error(error)
+                    ui.message(f"{error}. {len(get_messages_from_sender)} messages wasn't sync.")
+                    will_forward.clear()
+                    return
+                except errors.FloodWaitError as flood:
+                    logger.warning(flood)
+                    ui.message(flood)
+                    ui.cooldown(flood)
+                    timeout = timeout + 5
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
+
                 send_to_saved_chat = reversed(send_to_saved_chat)
                 was_saved.extend(send_to_saved_chat)
                 await merge_old_and_new_ids()
                 await pin_messages()
                 will_forward.clear()
                 was_saved.clear()
-            except errors.FloodWaitError as flood:
-                logger.warning(flood)
-                ui.cooldown(flood)
-                await asyncio.sleep(flood.seconds)
-                ui.uncooldown()
 
-    async def reply_message_and_save_ids():
+    async def reply_message_and_save_ids() -> None:
+        global timeout
         if will_reply:
-            try:
-                await asyncio.sleep(timeout)
-                messages_to_recepient = await sender.forward_messages(
-                    recepient_entity.username,
-                    will_reply
-                )
-                will_delete.extend(messages_to_recepient)
+            while True:
+                try:
+                    await asyncio.sleep(timeout)
+                    messages_to_recepient = await sender.forward_messages(
+                        recepient_entity.username,
+                        will_reply
+                    )
+                    will_delete.extend(messages_to_recepient)
+                    break
+                except (
+                    errors.MessageIdsEmptyError,
+                    errors.MessageIdInvalidError,
+                    errors.GroupedMediaInvalidError
+                ) as error:
+                    logger.error(error)
+                    ui.message(f"{error}. {len(will_reply)} messages wasn't sync.")
+                    will_reply.clear()
+                    return
+                except errors.FloodWaitError as flood:
+                    logger.warning(flood)
+                    ui.message(flood)
+                    ui.cooldown(flood)
+                    timeout = timeout + 5
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
 
-                get_messages_from_sender = await recepient.get_messages(
-                    sender_entity.username,
-                    limit=len(messages_to_recepient),
-                )
-                await asyncio.sleep(timeout)
+            while True:
+                try:
+                    get_messages_from_sender = await recepient.get_messages(
+                        sender_entity.username,
+                        limit=len(messages_to_recepient),
+                    )
+                except errors.FloodWaitError as flood:
+                    logger.warning(flood)
+                    ui.message(flood)
+                    ui.cooldown(flood)
+                    timeout = timeout + 5
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
+
                 if get_messages_from_sender[-1].text == "":
-                    send_to_saved_chat = await recepient.send_file(
-                        'me',
-                        file=get_messages_from_sender,
-                        reply_to=ids.get(will_reply[-1].reply_to_msg_id)
-                    )
+                    while True:
+                        try:
+                            await asyncio.sleep(timeout)
+                            send_to_saved_chat = await recepient.send_file(
+                                'me',
+                                file=get_messages_from_sender,
+                                reply_to=ids.get(will_reply[-1].reply_to_msg_id)
+                            )
+                            break
+                        except (
+                            errors.MultiMediaTooLongError,
+                            errors.EntityBoundsInvalidError
+                        ) as error:
+                            logger.error(error)
+                            ui.message(error)
+                            will_reply.clear()
+                            break
+                        except errors.FloodWaitError as flood:
+                            logger.warning(flood)
+                            ui.message(flood)
+                            ui.cooldown(flood)
+                            timeout = timeout + 5
+                            await asyncio.sleep(flood.seconds)
+                            ui.uncooldown()
                 else:
-                    send_to_saved_chat = await recepient.send_message(
-                        'me',
-                        message=get_messages_from_sender[-1].text,
-                        reply_to=ids.get(will_reply[-1].reply_to_msg_id),
-                        file=get_messages_from_sender \
-                            if len(get_messages_from_sender) > 1 else None
-                    )
+                    while True:
+                        try:
+                            await asyncio.sleep(timeout)
+                            send_to_saved_chat = await recepient.send_message(
+                                'me',
+                                message=get_messages_from_sender[-1].text,
+                                reply_to=ids.get(will_reply[-1].reply_to_msg_id),
+                                file=get_messages_from_sender \
+                                    if len(get_messages_from_sender) > 1 else None
+                            )
+                            break
+                        except (
+                            errors.MsgIdInvalidError,
+                            errors.MessageEmptyError,
+                            errors.MessageTooLongError,
+                        ) as error:
+                            logger.error(error)
+                            ui.message(error)
+                            will_reply.clear()
+                            break
+                        except errors.FloodWaitError as flood:
+                            logger.warning(flood)
+                            ui.message(flood)
+                            ui.cooldown(flood)
+                            timeout = timeout + 5
+                            await asyncio.sleep(flood.seconds)
+                            ui.uncooldown()
 
                 if isinstance(send_to_saved_chat, list):
                     send_to_saved_chat = reversed(send_to_saved_chat)
@@ -136,13 +259,8 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                 await pin_messages()
                 will_reply.clear()
                 was_saved.clear()
-            except errors.FloodWaitError as flood:
-                logger.warning(flood)
-                ui.cooldown(flood)
-                await asyncio.sleep(flood.seconds)
-                ui.uncooldown()
 
-    ids: Dict[int, int] = {}
+    ids: dict[int, int] = {}
 
     will_delete: list[patched.Message] = [] # сообщения которые будут удалены
     will_forward: list[patched.Message] = [] # сообщения которые должны быть пересланны
@@ -153,8 +271,6 @@ async def sync_favorite_messages(ui: Task, **kwargs):
     reply_flag = False
     grouped_id = 0
     last_grouped_id = 0
-    timeout = source.total / 325
-    timeout = timeout if timeout <= 10 else 10
 
     ui.progress_counters.visible = True
     ui.total = source.total
@@ -218,4 +334,5 @@ async def sync_favorite_messages(ui: Task, **kwargs):
             )
         except errors.MessageIdInvalidError as msg:
             logger.error(msg)
+            ui.message(msg)
     ui.success()
