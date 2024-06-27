@@ -204,10 +204,10 @@ class Task(ft.Container):
     def __on_long_press(self, e: ft.LongPressStartEvent):
         pass
 
-    def message(self, message: str) -> None:
+    def message(self, message: str | Exception) -> None:
         """A message about the results."""
         self.extensive.controls.extend([
-            ft.Text(value=message, selectable=True, size=12),
+            ft.Text(value=str(message), selectable=True, size=12),
             ft.Divider()
         ])
         self.extensive.update()

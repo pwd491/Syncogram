@@ -143,7 +143,6 @@ class StartAllTasksButton(ft.Container):
     async def start_executes_tasks(self, tasks: list[asyncio.Task]):
         """..."""
         logger.warning("The application begins processing the following tasks:")
-        logger.info(f"[{[task.get_coro() for task in tasks]}]")
         await asyncio.gather(*tasks)
         self.state = False
         await self.__animate()
