@@ -1,6 +1,8 @@
 """Custom task container for view in mainscreen."""
 import flet as ft
 
+from telethon.errors.rpcerrorlist import FloodWaitError
+
 from ..components import Timeleft
 
 class Task(ft.Container):
@@ -35,7 +37,7 @@ class Task(ft.Container):
         self.progress_counters: ft.Row = ft.Row()
         self.progress_counters.controls = [self.current_value, self.current_total]
         self.progress_counters.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
-        self.progress_counters.visible = True
+        self.progress_counters.visible = False
 
         self.cooldown_ui: ft.Container = ft.Container()
         self.cooldown_text: ft.Text = ft.Text()
@@ -143,13 +145,14 @@ class Task(ft.Container):
         self.border = ft.border.all(.5, ft.colors.RED)
         self.update()
 
-    def cooldown(self, exception) -> None:
+    def cooldown(self, exception: Exception) -> None:
         """Theme mode when task on timeout."""
+        message = f"{str(exception)}\nPlease wait for a pause and the program will resume working."
         self.cooldown_ui.visible = True
         self.icon.name = ft.icons.TIMER_10_SELECT
         self.icon.color = ft.colors.RED
-        self.icon.tooltip = str(exception)
-        self.cooldown_ui.tooltip = str(exception)
+        self.icon.tooltip = message
+        self.cooldown_ui.tooltip = message
         self.border = ft.border.all(.5, ft.colors.RED)
         self.update()
 
@@ -206,6 +209,8 @@ class Task(ft.Container):
 
     def message(self, message: str | Exception) -> None:
         """A message about the results."""
+        if isinstance(message, FloodWaitError):
+            message = f"{str(message)}\nLatency was increased.\nPlease wait for a pause and the program will resume working."
         self.extensive.controls.extend([
             ft.Text(value=str(message), selectable=True, size=12),
             ft.Divider()
