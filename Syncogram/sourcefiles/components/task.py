@@ -207,14 +207,18 @@ class Task(ft.Container):
     def __on_long_press(self, e: ft.LongPressStartEvent):
         pass
 
-    def message(self, message: str | Exception) -> None:
+    def message(self, message: str | Exception, bad: bool = False) -> None:
         """A message about the results."""
+        if bad:
+            if not self.missdata_ui.visible:
+                self.missdata_ui.visible = True
         if isinstance(message, FloodWaitError):
             message = f"{str(message)}\nLatency was increased.\nPlease wait for a pause and the program will resume working."
         self.extensive.controls.extend([
             ft.Text(value=str(message), selectable=True, size=12),
             ft.Divider()
         ])
+        self.missdata_ui.update()
         self.extensive.update()
 
     def callback(self):
