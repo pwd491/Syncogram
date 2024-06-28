@@ -91,6 +91,15 @@ class Manager:
                 "status": False,
                 "ui": Task,
             },
+            "is_sync_blacklist": {
+                "title": _("Synchronize blacklist."),
+                "description": _(
+                    "Synchronizes the list of blocked users and bots."
+                ),
+                "function": algorithms.sync_blacklist,
+                "status": False,
+                "ui": Task,
+            },
         }
         self.callback()
 

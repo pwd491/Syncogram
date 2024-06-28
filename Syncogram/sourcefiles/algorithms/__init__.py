@@ -6,4 +6,5 @@ class algorithms:
     from .sync_account_privacy import sync_privacy_settings
     from .sync_account_avatars import sync_profile_avatars
     from .sync_account_secure import sync_secure_settings
+    from .sync_account_blacklist import sync_blacklist
     from .sync_account_bots import sync_bots
