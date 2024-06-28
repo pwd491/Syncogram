@@ -45,7 +45,8 @@ async def sync_bots(ui: Task, **kwargs) -> None:
     for dialog in source:
         if isinstance(dialog.entity, types.User):
             if dialog.entity.bot:
-                bots.append(dialog)
+                if dialog.entity.username != "replies":
+                    bots.append(dialog)
 
     ui.progress_counters.visible = True
     ui.total = len(bots) - 1
