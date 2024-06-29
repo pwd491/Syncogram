@@ -11,6 +11,7 @@ class Settings(ft.AlertDialog):
         self.page: ft.Page = page
         self.options: dict[str, int] = self.database.get_options_as_dict()
 
+
         self.c1 = ft.Checkbox(
             label=_("Synchronize favorite messages."),
             value=bool(self.options.get("is_sync_fav")),
@@ -84,17 +85,37 @@ class Settings(ft.AlertDialog):
         self.wrapper = ft.Container()
         self.wrapper.content = self.column
 
+        self.current_language = self.page.client_storage.get("language")
+        
+        self.language_button = ft.TextButton()
+        self.language_button.text = "RU" if self.current_language == "en" else "EN"
+        self.language_button.on_click = self.__change_language
+
         self.modal = True
         self.title = ft.Row([
-            ft.Icon(ft.icons.SETTINGS),
-            ft.Text(_("Settings"))
-        ])
+            ft.Row([
+                ft.Icon(ft.icons.SETTINGS), 
+                ft.Text(_("Settings"))
+            ]),
+            self.language_button
+        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
         self.content = self.wrapper
         self.actions = [
             ft.TextButton(_("Cancel"), on_click=self.close),
             ft.FilledButton(_("Save"), on_click=self.save),
         ]
+
         self.actions_alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+
+    def __change_language(self, e: ft.TapEvent):
+        if self.page.client_storage.get("language") == "ru":
+            self.page.client_storage.set("language", "en")
+            self.language_button.text = "RU"
+        else:
+            self.page.client_storage.set("language", "ru")
+            self.language_button.text = "EN"
+        self.page.update()
+        self.language_button.update()
 
     async def close(self, e) -> None:
         """Close dialog."""

@@ -15,6 +15,7 @@ class SettingsButton(ft.ElevatedButton):
         super().__init__()
         self.page: ft.Page = page
         self._ = _
+        self.settings = Settings(self.page, self._)
 
         self.text = _("Settings")
         self.icon = ft.icons.SETTINGS
@@ -22,10 +23,9 @@ class SettingsButton(ft.ElevatedButton):
         self.height = 45
         self.on_click = self.__open
 
-    async def __open(self, e):
-        settings = Settings(self.page, self._)
-        self.page.dialog = settings
-        settings.open = True
+    async def __open(self, e: ft.TapEvent):
+        self.page.dialog = self.settings
+        self.settings.open = True
         self.page.update()
 
 

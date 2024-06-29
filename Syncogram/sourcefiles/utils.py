@@ -13,6 +13,7 @@ from requests import request
 from loguru import logger
 from qrcode.main import QRCode
 from qrcode.constants import ERROR_CORRECT_H
+from flet import Page
 
 def logging():
     """Configured and returned logger object."""
@@ -116,7 +117,7 @@ def check_db_version(__version__) -> tuple | None:
     return None
 
 @logger.catch()
-def get_locale(__file__) -> gettext.gettext:
+def get_locale(__file__, page: Page) -> gettext.gettext:
     """Getting system locale. (Bad way to get for darwin)"""
     domain = "base"
     path_to_locales = os.path.abspath(
@@ -125,6 +126,16 @@ def get_locale(__file__) -> gettext.gettext:
     logger.info(f"The path to the localization files: {path_to_locales}")
     ru = gettext.translation(domain, path_to_locales, ["ru"], fallback=True)
     en = gettext.translation(domain, path_to_locales, ["en"], fallback=True)
+    language = page.client_storage.get("language")
+
+    if language is not None:
+        if language == "ru":
+            ru.install()
+            return ru.gettext
+        elif language == "en":
+            en.install()
+            return en.gettext
+
     logger.info(f"System platform: {sys.platform}")
     match sys.platform:
         case "darwin":
@@ -132,18 +143,22 @@ def get_locale(__file__) -> gettext.gettext:
                 .read().strip().split('"')[1] in ["ru-RU"]:
                 ru.install()
                 _ = ru.gettext
+                page.client_storage.set("language", "ru")
                 logger.info("Set Russian language.")
             else:
                 en.install()
                 _ = en.gettext
+                page.client_storage.set("language", "en")
                 logger.info("Set English language.")
         case _:
             if getlocale()[0] in ["Russian_Russia", "ru_RU"]:
                 ru.install()
                 _ = ru.gettext
+                page.client_storage.set("language", "ru")
                 logger.info("Set Russian language.")
             else:
                 en.install()
                 _ = en.gettext
+                page.client_storage.set("language", "en")
                 logger.info("Set English language.")
     return _

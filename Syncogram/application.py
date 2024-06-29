@@ -7,7 +7,6 @@ from sourcefiles import get_locale
 from sourcefiles import logging
 
 logger = logging()
-_: str = get_locale(__file__)
 
 @logger.catch()
 def main(page: ft.Page) -> None:
@@ -17,6 +16,7 @@ def main(page: ft.Page) -> None:
     page.window_height = page.window_min_height = 680
     page.theme_mode = ft.ThemeMode.DARK
     page.window_center()
+    _: str = get_locale(__file__, page)
 
     WelcomeScreenAnimation(page, _)
     TheScreensController(page, _)
