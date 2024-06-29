@@ -55,6 +55,15 @@ class Manager:
                 "status": False,
                 "ui": Task,
             },
+            "is_sync_private_channels_and_groups": {
+                "title": _("Synchronize private channels and groups."),
+                "description": _(
+                    "Synchronizes private channels ang groups. Please note that this feature does not guarantee 100% of the search results."
+                ),
+                "function": algorithms.sync_private_channels_and_groups,
+                "status": False,
+                "ui": Task,
+            },
             "is_sync_privacy": {
                 "title": _("Synchronize privacy settings."),
                 "description": _(

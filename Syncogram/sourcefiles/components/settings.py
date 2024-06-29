@@ -32,26 +32,31 @@ class Settings(ft.AlertDialog):
             disabled=False
         )
         self.c5 = ft.Checkbox(
+            label=_("Synchronize private channels and groups."),
+            value=bool(self.options.get("is_sync_private_channels_and_groups")),
+            disabled=False
+        )
+        self.c6 = ft.Checkbox(
             label=_("Synchronize privacy settings."),
             value=bool(self.options.get("is_sync_privacy")),
             disabled=False
         )
-        self.c6 = ft.Checkbox(
+        self.c7 = ft.Checkbox(
             label=_("Synchronize secure settings."),
             value=bool(self.options.get("is_sync_secure")),
             disabled=False
         )
-        self.c7 = ft.Checkbox(
+        self.c8 = ft.Checkbox(
             label=_("Synchronize stickers, emojis and gifs."),
             value=bool(self.options.get("is_sync_stickers_emojis_gifs")),
             disabled=False
         )
-        self.c8 = ft.Checkbox(
+        self.c9 = ft.Checkbox(
             label=_("Synchronize bots."),
             value=bool(self.options.get("is_sync_bots")),
             disabled=False
         )
-        self.c9 = ft.Checkbox(
+        self.c10 = ft.Checkbox(
             label=_("Synchronize blacklist."),
             value=bool(self.options.get("is_sync_blacklist")),
             disabled=False
@@ -67,6 +72,7 @@ class Settings(ft.AlertDialog):
             self.c7,
             self.c8,
             self.c9,
+            self.c10,
         ]
         x.sort(key=lambda x: x.disabled is True)
 
@@ -108,6 +114,7 @@ class Settings(ft.AlertDialog):
             int(self.c7.value),
             int(self.c8.value),
             int(self.c9.value),
+            int(self.c10.value),
         )
         self.page.pubsub.send_all("update")
         self.page.dialog.clean()
