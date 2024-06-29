@@ -158,12 +158,14 @@ async def sync_private_channels_and_groups(ui: Task, **kwargs):
 
             if isinstance(chat, (types.ChatInvitePeek, types.ChatInviteAlready)):
                 if chat.chat.title in channel_and_link:
-                    channel_and_link[chat.chat.title] = invite_hash
-                    ui.message(f"{chat.chat.title} was founded!")
+                    if channel_and_link[chat.chat.title] is None:
+                        channel_and_link[chat.chat.title] = invite_hash
+                        ui.message(f"{chat.chat.title} was founded!")
             else:
                 if chat.title in channel_and_link:
-                    channel_and_link[chat.title] = invite_hash
-                    ui.message(f"{chat.title} was founded!")
+                    if channel_and_link[chat.title] is None:
+                        channel_and_link[chat.title] = invite_hash
+                        ui.message(f"{chat.title} was founded!")
 
     async def join_to_channels_or_groups():
         length = len(channel_and_link)
