@@ -136,7 +136,7 @@ class Task(ft.Container):
         self.border = ft.border.all(.5, ft.colors.GREEN)
         self.update()
 
-    def unsuccess(self, exception) -> None:
+    def unsuccess(self, exception: Exception = str()) -> None:
         """Theme mode when task was end unsuccesfully."""
         self.progress.value = 0
         self.icon.name = ft.icons.ERROR

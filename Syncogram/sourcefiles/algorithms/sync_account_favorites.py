@@ -52,7 +52,7 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                         break
                     except errors.MessageIdInvalidError as e:
                         logger.error(e)
-                        ui.message(e)
+                        ui.message(e, True)
                         break
                     except errors.FloodWaitError as flood:
                         logger.warning(flood)
@@ -93,7 +93,7 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                     errors.GroupedMediaInvalidError
                 ) as error:
                     logger.error(error)
-                    ui.message(f"{error}. {len(will_forward)} messages wasn't sync.")
+                    ui.message(f"{error}. {len(will_forward)} messages wasn't sync.", True)
                     will_forward.clear()
                     return
                 except errors.FloodWaitError as flood:
@@ -134,7 +134,7 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                     errors.GroupedMediaInvalidError
                 ) as error:
                     logger.error(error)
-                    ui.message(f"{error}. {len(get_messages_from_sender)} messages wasn't sync.")
+                    ui.message(f"{error}. {len(get_messages_from_sender)} messages wasn't sync.", True)
                     will_forward.clear()
                     return
                 except errors.FloodWaitError as flood:
@@ -170,7 +170,7 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                     errors.GroupedMediaInvalidError
                 ) as error:
                     logger.error(error)
-                    ui.message(f"{error}. {len(will_reply)} messages wasn't sync.")
+                    ui.message(f"{error}. {len(will_reply)} messages wasn't sync.", True)
                     will_reply.clear()
                     return
                 except errors.FloodWaitError as flood:
@@ -210,7 +210,7 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                             errors.EntityBoundsInvalidError
                         ) as error:
                             logger.error(error)
-                            ui.message(error)
+                            ui.message(error, True)
                             will_reply.clear()
                             break
                         except errors.FloodWaitError as flood:
@@ -238,7 +238,7 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                             errors.MessageTooLongError,
                         ) as error:
                             logger.error(error)
-                            ui.message(error)
+                            ui.message(error, True)
                             will_reply.clear()
                             break
                         except errors.FloodWaitError as flood:

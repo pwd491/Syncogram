@@ -24,58 +24,106 @@ async def sync_secure_settings(ui: Task, **kwargs):
     ui.total = 3
     timeout = .5
 
-    try:
-        await asyncio.sleep(timeout)
-        content: types.account.ContentSettings = await sender(
-            account.GetContentSettingsRequest()
-        )
-    except Exception as error:
-        logger.critical(error)
+    while True:
+        try:
+            await asyncio.sleep(timeout)
+            content: types.account.ContentSettings = await sender(
+                account.GetContentSettingsRequest()
+            )
+            break
+        except errors.FloodWaitError as flood:
+            logger.warning(flood)
+            ui.message(flood)
+            ui.cooldown(flood)
+            timeout += 5
+            await asyncio.sleep(flood.seconds)
+            ui.uncooldown()
 
     if content.sensitive_can_change:
-        await asyncio.sleep(timeout)
+        while True:
+            try:
+                await asyncio.sleep(timeout)
+                await recepient(
+                    account.SetContentSettingsRequest(content.sensitive_enabled)
+                )
+                ui.value += 1
+                break
+            except errors.SensitiveChangeForbiddenError as error:
+                logger.error(error)
+                ui.message(error, True)
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.message(flood)
+                ui.cooldown(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
+
+    while True:
         try:
+            await asyncio.sleep(timeout)
+            history: types.DefaultHistoryTTL = await sender(
+                messages.GetDefaultHistoryTTLRequest()
+            )
+            break
+        except errors.FloodWaitError as flood:
+            logger.warning(flood)
+            ui.message(flood)
+            ui.cooldown(flood)
+            timeout += 5
+            await asyncio.sleep(flood.seconds)
+            ui.uncooldown()
+
+    while True:
+        try:
+            await asyncio.sleep(timeout)
             await recepient(
-                account.SetContentSettingsRequest(content.sensitive_enabled)
+                messages.SetDefaultHistoryTTLRequest(history.period)
             )
             ui.value += 1
-        except errors.SensitiveChangeForbiddenError as error:
-            logger.error(error)
+            break
+        except errors.FloodWaitError as flood:
+            logger.warning(flood)
+            ui.message(flood)
+            ui.cooldown(flood)
+            timeout += 5
+            await asyncio.sleep(flood.seconds)
+            ui.uncooldown()
 
-    try:
-        await asyncio.sleep(timeout)
-        history: types.DefaultHistoryTTL = await sender(
-            messages.GetDefaultHistoryTTLRequest()
-        )
-    except Exception as error:
-        logger.error(error)
-        
-    try:
-        await asyncio.sleep(timeout)
-        await recepient(
-            messages.SetDefaultHistoryTTLRequest(history.period)
-        )
-        ui.value += 1
-    except Exception as error:
-        logger.error(error)
-
-    try:
-        await asyncio.sleep(timeout)
-        account_ttl: types.AccountDaysTTL = await sender(
-            account.GetAccountTTLRequest()
-        )
-    except Exception as error:
-        logger.error(error)
-
-    try:
-        await asyncio.sleep(timeout)
-        await recepient(
-            account.SetAccountTTLRequest(
-                types.TypeAccountDaysTTL(account_ttl.days)
+    while True:
+        try:
+            await asyncio.sleep(timeout)
+            account_ttl: types.AccountDaysTTL = await sender(
+                account.GetAccountTTLRequest()
             )
-        )
-        ui.value += 1
-    except errors.TtlDaysInvalidError as error:
-        logger.error(error)
+            break
+        except errors.FloodWaitError as flood:
+            logger.warning(flood)
+            ui.message(flood)
+            ui.cooldown(flood)
+            timeout += 5
+            await asyncio.sleep(flood.seconds)
+            ui.uncooldown()
+
+    while True:
+        try:
+            await asyncio.sleep(timeout)
+            await recepient(
+                account.SetAccountTTLRequest(
+                    types.TypeAccountDaysTTL(account_ttl.days)
+                )
+            )
+            ui.value += 1
+            break
+        except errors.TtlDaysInvalidError as error:
+            logger.error(error)
+            ui.message(error, True)
+        except errors.FloodWaitError as flood:
+            logger.warning(flood)
+            ui.message(flood)
+            ui.cooldown(flood)
+            timeout += 5
+            await asyncio.sleep(flood.seconds)
+            ui.uncooldown()
 
     ui.success()

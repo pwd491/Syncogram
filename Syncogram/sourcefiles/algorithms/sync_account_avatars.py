@@ -28,8 +28,8 @@ async def sync_profile_avatars(ui: Task, **kwargs) -> None:
     except (errors.MaxIdInvalidError, errors.UserIdInvalidError) as error:
         logger.critical(error)
         ui.unsuccess(error)
+        ui.message(error)
         return
-
 
     try:
         user: types.users.UserFull = await sender(
@@ -38,6 +38,7 @@ async def sync_profile_avatars(ui: Task, **kwargs) -> None:
         fallback = user.full_user.fallback_photo
     except (errors.TimedOutError, errors.UserIdInvalidError) as error:
         logger.warning(error)
+        ui.message(error, True)
 
     ui.progress_counters.visible = True
     ui.total = avatars.total
@@ -47,82 +48,109 @@ async def sync_profile_avatars(ui: Task, **kwargs) -> None:
     video_extension = ".mp4"
 
     photo: types.Photo
-    for i, photo in enumerate(reversed(avatars), 1):
-        await asyncio.sleep(timeout)
-        try:
-            blob = await sender.download_media(photo, bytes)
-        except errors.FloodWaitError as flood:
-            logger.warning(flood)
-            ui.cooldown(flood)
-            await asyncio.sleep(flood.seconds)
-            ui.uncooldown()
-            blob = await sender.download_media(photo, bytes)
+    for photo in reversed(avatars):
+        while True:
+            try:
+                await asyncio.sleep(timeout)
+                blob = await sender.download_media(photo, bytes)
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.cooldown(flood)
+                ui.message(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
 
         name = "Syncogram_" + datetime.strftime(
             photo.date, "%Y_%m_%d_%H_%M_%S"
         )
-        try:
-            await recepient(
-                photos.UploadProfilePhotoRequest(
-                    file=await recepient.upload_file(
-                        blob,
-                        file_name=name + image_extension
-                    ) if not photo.video_sizes else None,
-                    video=await recepient.upload_file(
-                        blob,
-                        file_name=name + video_extension
-                    ) if photo.video_sizes else None
+        while True:
+            try:
+                await recepient(
+                    photos.UploadProfilePhotoRequest(
+                        file=await recepient.upload_file(
+                            blob,
+                            file_name=name + image_extension
+                        ) if not photo.video_sizes else None,
+                        video=await recepient.upload_file(
+                            blob,
+                            file_name=name + video_extension
+                        ) if photo.video_sizes else None
+                    )
                 )
-            )
-        except (
-            errors.FilePartsInvalidError,
-            errors.ImageProcessFailedError,
-            errors.PhotoCropSizeSmallError,
-            errors.PhotoExtInvalidError,
-            errors.StickerMimeInvalidError,
-            errors.VideoFileInvalidError
-        ) as error:
-            logger.error(error)
-            logger.info(photo.stringify())
-
-        ui.value = i
+                ui.value += 1
+                break
+            except (
+                errors.FilePartsInvalidError,
+                errors.ImageProcessFailedError,
+                errors.PhotoCropSizeSmallError,
+                errors.PhotoExtInvalidError,
+                errors.StickerMimeInvalidError,
+                errors.VideoFileInvalidError
+            ) as error:
+                logger.error(error)
+                logger.info(photo.stringify())
+                ui.message(error, True)
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.cooldown(flood)
+                ui.message(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
 
     if fallback:
-        try:
-            blob = await sender.download_media(fallback, bytes)
-        except errors.FloodWaitError as flood:
-            logger.warning(flood)
-            ui.cooldown(flood)
-            await asyncio.sleep(flood.seconds)
-            ui.uncooldown()
-            blob = await sender.download_media(fallback, bytes)
+        while True:
+            try:
+                blob = await sender.download_media(fallback, bytes)
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.cooldown(flood)
+                ui.message(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
 
         name = "Syncogram_" + datetime.strftime(
             photo.date, "%Y_%m_%d_%H_%M_%S"
         )
-        try:
-            await recepient(
-                photos.UploadProfilePhotoRequest(
-                    fallback=True,
-                    file=await recepient.upload_file(
-                        blob,
-                        file_name=name + image_extension
-                    ) if not fallback.video_sizes else None,
-                    video=await recepient.upload_file(
-                        blob,
-                        file_name=name + video_extension
-                    ) if fallback.video_sizes else None
+        while True:
+            try:
+                await recepient(
+                    photos.UploadProfilePhotoRequest(
+                        fallback=True,
+                        file=await recepient.upload_file(
+                            blob,
+                            file_name=name + image_extension
+                        ) if not fallback.video_sizes else None,
+                        video=await recepient.upload_file(
+                            blob,
+                            file_name=name + video_extension
+                        ) if fallback.video_sizes else None
+                    )
                 )
-            )
-        except (
-            errors.FilePartsInvalidError,
-            errors.ImageProcessFailedError,
-            errors.PhotoCropSizeSmallError,
-            errors.PhotoExtInvalidError,
-            errors.StickerMimeInvalidError,
-            errors.VideoFileInvalidError
-        ) as error:
-            logger.error(error)
-            logger.info(photo.stringify())
-
+                ui.value += 1
+                break
+            except (
+                errors.FilePartsInvalidError,
+                errors.ImageProcessFailedError,
+                errors.PhotoCropSizeSmallError,
+                errors.PhotoExtInvalidError,
+                errors.StickerMimeInvalidError,
+                errors.VideoFileInvalidError
+            ) as error:
+                logger.error(error)
+                logger.info(photo.stringify())
+                ui.message(error, True)
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.cooldown(flood)
+                ui.message(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
     ui.success()

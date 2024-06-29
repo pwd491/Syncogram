@@ -12,68 +12,67 @@ from ..utils import logging
 
 logger = logging()
 
+
 @logger.catch()
 @autoconnect
 async def sync_bots(ui: Task, **kwargs) -> None:
     """The algorithm for synchronizing bots in telegram."""
+    async def __get_dialogs(client: UserClient) -> None | list[custom.dialog.Dialog]:
+        while True:
+            try:
+                source: list[custom.dialog.Dialog] = await client.get_dialogs()
+                break
+            except (
+                errors.InputConstructorInvalidError,
+                errors.OffsetPeerIdInvalidError,
+                errors.SessionPasswordNeededError,
+                errors.TimeoutError
+            ) as error:
+                logger.critical(error)
+                ui.unsuccess("It is not possible to get a list of the sender's bots.")
+                ui.message("It is not possible to get a list of the sender's bots.")
+                return
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.cooldown(flood)
+                asyncio.sleep(flood.seconds)
+                ui.uncooldown()
+        return source
+
     ui.default()
 
     sender: UserClient = kwargs["sender"]
     recepient: UserClient = kwargs["recepient"]
 
-    while True:
-        try:
-            source: list[custom.dialog.Dialog] = await sender.get_dialogs()
-            break
-        except (
-            errors.InputConstructorInvalidError,
-            errors.OffsetPeerIdInvalidError,
-            errors.SessionPasswordNeededError,
-            errors.TimeoutError
-        ) as error:
-            logger.critical(error)
-            ui.unsuccess("It is not possible to get a list of the sender's bots.")
-            ui.message("It is not possible to get a list of the sender's bots.")
-            return
-        except errors.FloodWaitError as flood:
-            logger.warning(flood)
-            ui.cooldown(flood)
-            asyncio.sleep(flood.seconds)
-            ui.uncooldown()
+    sender_dialogs: list[custom.dialog.Dialog] = await __get_dialogs(sender)
+    if sender_dialogs is None:
+        return
+    recepient_dialogs: list[custom.dialog.Dialog] = await __get_dialogs(recepient)
 
-    bots: list[custom.dialog.Dialog] = []
-    for dialog in source:
-        if isinstance(dialog.entity, types.User):
-            if dialog.entity.bot:
-                if dialog.entity.username != "replies":
-                    bots.append(dialog)
+    s_dialog: custom.dialog.Dialog
+    for s_dialog in sender_dialogs.copy():
+        if not isinstance(s_dialog.entity, types.User):
+            sender_dialogs.remove(s_dialog)
+        elif not s_dialog.entity.bot:
+            sender_dialogs.remove(s_dialog)
+        elif s_dialog.entity.username == "replies":
+            sender_dialogs.remove(s_dialog)
+        else:
+            if recepient_dialogs is not None:
+                for r_dialog in recepient_dialogs:
+                    if s_dialog.entity.id == r_dialog.entity.id:
+                        sender_dialogs.remove(s_dialog)
 
     ui.progress_counters.visible = True
-    ui.total = len(bots) - 1
+    ui.total = len(sender_dialogs)
 
     timeout = 5 if ui.total < 50 else 10
     timeout_additional = 2.5
 
     bot: custom.dialog.Dialog
-    for bot in bots:
+    for bot in sender_dialogs:
         entity: types.User = bot.entity
         dialog: types.Dialog = bot.dialog
-        while True:
-            try:
-                await asyncio.sleep(timeout)
-                await recepient.send_message(entity.username, "/start")
-                break
-            except (errors.YouBlockedUserError, errors.UserIsBlockedError) as error:
-                logger.error(error)
-                ui.message(f"Unable to sync: @{entity.username}", True)
-                break
-            except errors.FloodWaitError as flood:
-                logger.warning(flood)
-                ui.cooldown(flood)
-                timeout += 5
-                asyncio.sleep(flood.seconds)
-                ui.uncooldown()
-        
         while True:
             try:
                 await asyncio.sleep(timeout_additional)
@@ -91,7 +90,7 @@ async def sync_bots(ui: Task, **kwargs) -> None:
                 break
             except errors.PeerIdInvalidError as error:
                 logger.warning(error)
-                ui.message(f"Failed to synchronize notification settings for: @{entity.username}", True)
+                ui.message(f"Failed to sync notification settings for: @{entity.username or entity.usernames[0].username}", True)
                 break
             except errors.FloodWaitError as flood:
                 logger.warning(flood)
@@ -100,5 +99,22 @@ async def sync_bots(ui: Task, **kwargs) -> None:
                 timeout_additional += 5
                 await asyncio.sleep(flood.seconds)
                 ui.uncooldown()
-        ui.value += 1
+
+        while True:
+            try:
+                await asyncio.sleep(timeout)
+                await recepient.send_message(entity.username, "/start")
+                ui.value += 1
+                break
+            except (errors.YouBlockedUserError, errors.UserIsBlockedError) as error:
+                logger.error(error)
+                ui.message(f"Unable to sync: @{entity.username or entity.usernames[0].username}", True)
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.cooldown(flood)
+                timeout += 5
+                asyncio.sleep(flood.seconds)
+                ui.uncooldown()
+
     ui.success()

@@ -35,20 +35,31 @@ async def sync_privacy_settings(ui: Task, **kwargs):
     ]
 
     ui.progress_counters.visible = True
-    ui.total = len(input_privacies) + 1
+    ui.total = len(input_privacies)
     timeout = 1
 
-    for i, privacy in enumerate(input_privacies, 1):
+    for privacy in input_privacies:
         await asyncio.sleep(timeout)
         rules: list[types.TypePrivacyRule] = []
-        try:
-            request: types.account.PrivacyRules = await sender(
-                account.GetPrivacyRequest(
-                    privacy
+        while True:
+            try:
+                request: types.account.PrivacyRules = await sender(
+                    account.GetPrivacyRequest(
+                        privacy
+                    )
                 )
-            )
-        except errors.PrivacyKeyInvalidError as error:
-            logger.error(error)
+                break
+            except errors.PrivacyKeyInvalidError as error:
+                logger.error(error)
+                ui.message(error, True)
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.message(flood)
+                ui.cooldown(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
 
         for rule in request.rules:
             if isinstance(rule, types.PrivacyValueAllowAll):
@@ -87,38 +98,68 @@ async def sync_privacy_settings(ui: Task, **kwargs):
             if isinstance(rule, types.PrivacyValueDisallowChatParticipants):
                 rules.append(types.InputPrivacyValueDisallowChatParticipants([]))
 
-        try:
-            await recepient(
-                account.SetPrivacyRequest(
-                    key=privacy,
-                    rules=rules
-                )
-            )
-            ui.value = i
-        except (errors.PrivacyKeyInvalidError, errors.PrivacyTooLongError) as error:
-            logger.error(error)
-
-        try:
-            data: types.TypeGlobalPrivacySettings = await sender(
-                account.GetGlobalPrivacySettingsRequest()
-            )
-        except Exception as error:
-            logger.error(error)
-
-        try:
-            await recepient(
-                account.SetGlobalPrivacySettingsRequest(
-                    types.TypeGlobalPrivacySettings(
-                        data.archive_and_mute_new_noncontact_peers,
-                        data.keep_archived_unmuted,
-                        data.keep_archived_folders,
-                        data.hide_read_marks,
-                        data.new_noncontact_peers_require_premium
+        while True:
+            try:
+                await recepient(
+                    account.SetPrivacyRequest(
+                        key=privacy,
+                        rules=rules
                     )
                 )
-            )
-            ui.value += 1
-        except errors.AutoarchiveNotAvailableError as error:
-            logger.error(error)
+                ui.value += 1
+                break
+            except (
+                errors.PrivacyKeyInvalidError, errors.PrivacyTooLongError
+            ) as error:
+                logger.error(error)
+                ui.message(error, True)
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.message(flood)
+                ui.cooldown(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
 
+        while True:
+            try:
+                data: types.TypeGlobalPrivacySettings = await sender(
+                    account.GetGlobalPrivacySettingsRequest()
+                )
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.message(flood)
+                ui.cooldown(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
+
+        while True:
+            try:
+                await recepient(
+                    account.SetGlobalPrivacySettingsRequest(
+                        types.TypeGlobalPrivacySettings(
+                            data.archive_and_mute_new_noncontact_peers,
+                            data.keep_archived_unmuted,
+                            data.keep_archived_folders,
+                            data.hide_read_marks,
+                            data.new_noncontact_peers_require_premium
+                        )
+                    )
+                )
+                ui.value += 1
+                break
+            except errors.AutoarchiveNotAvailableError as error:
+                logger.error(error)
+                ui.message(error, True)
+                break
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.message(flood)
+                ui.cooldown(flood)
+                timeout += 5
+                await asyncio.sleep(flood.seconds)
+                ui.uncooldown()
     ui.success()

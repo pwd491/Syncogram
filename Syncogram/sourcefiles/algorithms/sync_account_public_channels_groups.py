@@ -17,7 +17,7 @@ logger = logging()
 @autoconnect
 async def sync_public_channels_and_groups(ui: Task, **kwargs):
     """
-    The algorithm for synchronizing public channels, 
+    The algorithm for synchronizing public channels and groups, 
     the status of pinning and archiving.
     """
     def get_public_channels(dialogs: list[Dialog]) -> list[Dialog]:
@@ -80,10 +80,10 @@ async def sync_public_channels_and_groups(ui: Task, **kwargs):
     r_channels: list[int] = [channel.entity.id for channel in recepient_channels]
 
     ui.progress_counters.visible = True
-    ui.total = len(channels_list) - 1
+    ui.total = len(channels_list)
 
     timeout = 10 if len(channels_list) <= 50 else 20
-    timeout_adc = 2.5
+    timeout_additional = 2.5
 
     channel: Dialog
     for channel in channels_list:
@@ -121,7 +121,7 @@ async def sync_public_channels_and_groups(ui: Task, **kwargs):
             dialog: types.Dialog = channel.dialog
             while True:
                 try:
-                    await asyncio.sleep(timeout_adc)
+                    await asyncio.sleep(timeout_additional)
                     await recepient(account.UpdateNotifySettingsRequest(
                         peer=entity.username,
                         settings=types.InputPeerNotifySettings(
@@ -142,28 +142,28 @@ async def sync_public_channels_and_groups(ui: Task, **kwargs):
                     logger.warning(flood)
                     ui.message(flood)
                     ui.cooldown(flood)
-                    timeout_adc += 5
+                    timeout_additional += 5
                     await asyncio.sleep(flood.seconds)
                     ui.uncooldown()
 
             if channel.archived:
                 while True:
                     try:
-                        await asyncio.sleep(timeout_adc)
+                        await asyncio.sleep(timeout_additional)
                         await recepient.edit_folder(entity.username, 1)
                         break
                     except errors.FloodWaitError as flood:
                         logger.warning(flood)
                         ui.message(flood)
                         ui.cooldown(flood)
-                        timeout_adc += 5
+                        timeout_additional += 5
                         await asyncio.sleep(flood.seconds)
                         ui.uncooldown()
 
             if channel.pinned:
                 while True:
                     try:
-                        await asyncio.sleep(timeout_adc)
+                        await asyncio.sleep(timeout_additional)
                         await recepient(messages.ToggleDialogPinRequest(
                             entity.username,
                             True
@@ -173,7 +173,7 @@ async def sync_public_channels_and_groups(ui: Task, **kwargs):
                         logger.warning(flood)
                         ui.message(flood, True)
                         ui.cooldown(flood)
-                        timeout_adc += 5
+                        timeout_additional += 5
                         await asyncio.sleep(flood.seconds)
                         ui.uncooldown()
         ui.value += 1
