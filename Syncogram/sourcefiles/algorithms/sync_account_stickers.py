@@ -39,6 +39,9 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                 await asyncio.sleep(flood.seconds)
                 ui.uncooldown()
 
+    async def is_already_have():
+        pass
+
     ui.default()
 
     sender: UserClient = kwargs["sender"]
@@ -55,7 +58,7 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
 
     @recepient.on(events.NewMessage(
         from_users=[s_entity.username],
-        func=lambda e: e.message.gif and e.message.text == keyword)
+        func=lambda e: e.message.text == keyword)
     )
     async def gifhook(event: events.NewMessage.Event):
         gif: types.Document = event.message.gif
