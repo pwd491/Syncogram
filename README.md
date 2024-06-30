@@ -9,23 +9,22 @@ The application allows you to quickly transfer your channels, saved messages to 
 ![GitHub Release](https://img.shields.io/github/v/release/pwd491/Syncogram?display_name=release&label=latest-release)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/pwd491/syncogram/.github%2Fworkflows%2Frelease.yml)](https://github.com/pwd491/Syncogram/actions)  
 
-![Preview of Telegram Desktop][preview_image]
+![Preview of Syncogram Desktop][preview_image]
 
-[preview_image]: ./docs/assets/preview.jpg "Preview of Syncogram Application"
+[preview_image]: ./docs/assets/preview.png "Preview of Syncogram Application"
 
 # Features
 * Syncing first name, last name, biography and birthday.
 * Syncing personal avatar photos and videos with right sequence.
 * Syncing favorite messages with right sequence.
 * Syncing stickers, emojis and saved gifs.
+* Syncing private channels and groups.
 * Syncing public channels and groups. 
 * Syncing privacy settings.
 * Syncing secure settings.
 * Syncing list of bots.
+* Syncing blocklist.
 * Syncing contacts. _(soon)_
-* Syncing blocklist. _(soon)_
-* Syncing private channels and groups. _(soon)_
-* Backup personals chats with all media and pins. _(soon)_
 
 # Supports
 ### Operation Systems
