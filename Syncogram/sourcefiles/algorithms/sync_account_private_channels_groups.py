@@ -100,7 +100,7 @@ async def sync_private_channels_and_groups(ui: Task, **kwargs):
                 try:
                     await asyncio.sleep(timeout)
                     last_50_messages = await sender.get_messages(
-                        channel.input_entity, limit=50
+                        channel.input_entity, limit=5
                     )
                     ui.value += 1
                     break
