@@ -30,50 +30,35 @@ async def sync_public_channels_and_groups(ui: Task, **kwargs):
                 lst.append(dialog)
         return lst
 
+    async def __get_dialogs(client: UserClient) -> list[Dialog]:
+        while True:
+            try:
+                source: list[Dialog] = await client.get_dialogs()
+                break
+            except (
+                errors.InputConstructorInvalidError,
+                errors.OffsetPeerIdInvalidError,
+                errors.SessionPasswordNeededError,
+                errors.TimeoutError
+            ) as error:
+                logger.critical(error)
+                ui.unsuccess("It is not possible to get a list of channels.")
+                ui.message("It is not possible to get a list of channels.")
+                return
+            except errors.FloodWaitError as flood:
+                logger.warning(flood)
+                ui.cooldown(flood)
+                asyncio.sleep(flood.seconds)
+                ui.uncooldown()
+        return source
+
     ui.default()
 
     sender: UserClient = kwargs["sender"]
     recepient: UserClient = kwargs["recepient"]
-
-    while True:
-        try:
-            source: list[Dialog] = await sender.get_dialogs()
-            break
-        except (
-            errors.InputConstructorInvalidError,
-            errors.OffsetPeerIdInvalidError,
-            errors.SessionPasswordNeededError,
-            errors.TimeoutError
-        ) as error:
-            logger.critical(error)
-            ui.unsuccess("It is not possible to get a list of the sender's channels.")
-            ui.message("It is not possible to get a list of the sender's channels.")
-            return
-        except errors.FloodWaitError as flood:
-            logger.warning(flood)
-            ui.cooldown(flood)
-            asyncio.sleep(flood.seconds)
-            ui.uncooldown()
-
-    while True:
-        try:
-            recepient_channels: list[Dialog] = await recepient.get_dialogs()
-            break
-        except (
-            errors.InputConstructorInvalidError,
-            errors.OffsetPeerIdInvalidError,
-            errors.SessionPasswordNeededError,
-            errors.TimeoutError
-        ) as error:
-            logger.critical(error)
-            ui.unsuccess("It is not possible to get a list of the recepient's channels.")
-            ui.message("It is not possible to get a list of the recepient's channels.")
-            return
-        except errors.FloodWaitError as flood:
-            logger.warning(flood)
-            ui.cooldown(flood)
-            asyncio.sleep(flood.seconds)
-            ui.uncooldown()
+    
+    source = await __get_dialogs(sender)
+    recepient_channels = await __get_dialogs(recepient)
 
     channels_list: list[Dialog] = get_public_channels(source)
     recepient_channels: list[Dialog] = get_public_channels(recepient_channels)
