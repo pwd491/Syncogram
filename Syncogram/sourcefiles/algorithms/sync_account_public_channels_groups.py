@@ -57,7 +57,7 @@ async def sync_public_channels_and_groups(ui: Task, **kwargs):
 
     while True:
         try:
-            recepient_channels: list[Dialog] = await sender.get_dialogs()
+            recepient_channels: list[Dialog] = await recepient.get_dialogs()
             break
         except (
             errors.InputConstructorInvalidError,
