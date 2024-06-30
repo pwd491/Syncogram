@@ -12,10 +12,10 @@ logger = logging()
 def main(page: ft.Page) -> None:
     """The entry point to start application."""
     page.title = "Syncogram"
-    page.window_width = page.window_min_width = 960
-    page.window_height = page.window_min_height = 680
+    page.window.width = page.window.min_width = 960
+    page.window.height = page.window.min_height = 680
     page.theme_mode = ft.ThemeMode.DARK
-    page.window_center()
+    page.window.center()
     _: str = get_locale(__file__, page)
 
     WelcomeScreenAnimation(page, _)

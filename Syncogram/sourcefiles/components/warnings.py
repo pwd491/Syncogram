@@ -104,3 +104,17 @@ class UpdateApplicationAlert(ft.SnackBar):
             page.snack_bar = self
             page.snack_bar.open = True
         page.update()
+
+class RestartApplicationAlert(ft.SnackBar):
+    def __init__(self, page: ft.Page, _) -> None:
+        self.page = page
+        self.content = ft.Text()
+        self.content.value = _("Please, restart the application.")
+        self.content.color = ft.colors.WHITE
+        super().__init__(self.content)
+        self.duration = 2000
+        self.bgcolor = ft.colors.BLACK87
+
+    def will_unmount(self):
+        self.page.dialog.clean()
+        self.page.update()

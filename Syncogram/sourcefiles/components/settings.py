@@ -1,6 +1,7 @@
 import flet as ft
 
 from ..database import SQLite
+from ..components import RestartApplicationAlert
 
 
 class Settings(ft.AlertDialog):
@@ -10,7 +11,7 @@ class Settings(ft.AlertDialog):
         self.database: SQLite = SQLite()
         self.page: ft.Page = page
         self.options: dict[str, int] = self.database.get_options_as_dict()
-
+        self.restart_alert = RestartApplicationAlert(self.page, _)
 
         self.c1 = ft.Checkbox(
             label=_("Synchronize favorite messages."),
@@ -114,6 +115,10 @@ class Settings(ft.AlertDialog):
         else:
             self.page.client_storage.set("language", "ru")
             self.language_button.text = "EN"
+        
+        if self.page.dialog != self.restart_alert:
+            self.page.dialog = self.restart_alert
+            self.restart_alert.open = True
         self.page.update()
         self.language_button.update()
 

@@ -1,6 +1,7 @@
 from .greetings import WelcomeScreenAnimation
 from .warnings import MinimumAccountsRequired
 from .warnings import UpdateApplicationAlert
+from .warnings import RestartApplicationAlert
 from .timeleft import Timeleft
 from .settings import Settings
 from .buttons import SettingsButton
