@@ -71,5 +71,7 @@ async def sync_contacts(ui: Task, **kwargs) -> None:
                 timeout += 5
                 await asyncio.sleep(flood.seconds)
                 ui.uncooldown()
+    if non_sync:
+        ui.message(f"Contacts was not sync: {non_sync}")
 
     ui.success()
