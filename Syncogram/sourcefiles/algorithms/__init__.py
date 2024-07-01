@@ -9,3 +9,4 @@ class algorithms:
     from .sync_account_secure import sync_secure_settings
     from .sync_account_blacklist import sync_blacklist
     from .sync_account_bots import sync_bots
+    from .sync_account_contacts import sync_contacts

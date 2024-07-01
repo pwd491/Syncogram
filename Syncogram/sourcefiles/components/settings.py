@@ -63,6 +63,11 @@ class Settings(ft.AlertDialog):
             value=bool(self.options.get("is_sync_blacklist")),
             disabled=False
         )
+        self.c11 = ft.Checkbox(
+            label=_("Synchronize contacts."),
+            value=bool(self.options.get("is_sync_contacts")),
+            disabled=False
+        )
 
         x = [
             self.c1,
@@ -75,6 +80,7 @@ class Settings(ft.AlertDialog):
             self.c8,
             self.c9,
             self.c10,
+            self.c11,
         ]
         x.sort(key=lambda x: x.disabled is True)
 
@@ -141,6 +147,7 @@ class Settings(ft.AlertDialog):
             int(self.c8.value),
             int(self.c9.value),
             int(self.c10.value),
+            int(self.c11.value),
         )
         self.page.pubsub.send_all("update")
         self.page.dialog.clean()

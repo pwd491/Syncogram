@@ -109,6 +109,15 @@ class Manager:
                 "status": False,
                 "ui": Task,
             },
+            "is_sync_contacts": {
+                "title": _("Synchronize contacts."),
+                "description": _(
+                    "Synchronizes the contact list with the user's name."
+                ),
+                "function": algorithms.sync_contacts,
+                "status": False,
+                "ui": Task,
+            },
         }
         self.callback()
 
