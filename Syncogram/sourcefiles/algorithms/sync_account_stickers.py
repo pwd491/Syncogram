@@ -54,38 +54,6 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
         ui.unsuccess()
         return
 
-    keyword = "gifsync"
-
-    @recepient.on(events.NewMessage(
-        from_users=[s_entity.username],
-        func=lambda e: e.message.text == keyword)
-    )
-    async def gifhook(event: events.NewMessage.Event):
-        gif: types.Document = event.message.gif
-        while True:
-            try:
-                await recepient(
-                    messages.SaveGifRequest(
-                        types.InputDocument(
-                            gif.id,
-                            gif.access_hash,
-                            gif.file_reference
-                        ),
-                        unsave=False
-                    )
-                )
-                break
-            except errors.GifIdInvalidError as error:
-                logger.warning(error)
-                ui.message(error, True)
-                break
-            except errors.FloodWaitError as flood:
-                logger.warning(flood)
-                ui.message(flood)
-                ui.cooldown(flood)
-                await asyncio.sleep(flood.seconds)
-                ui.uncooldown()
-
     while True:
         try:
             faved_stickers_list: types.messages.FavedStickers = await sender(
@@ -321,16 +289,52 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                     await asyncio.sleep(flood.seconds)
                     ui.uncooldown()
 
-    will_delete = []
     if gifs:
+        timeout_gif = 1 if len(gifs) < 50 else 2 if 20 < len(gifs) < 50 else 3.5
         for gif in reversed(gifs):
             while True:
                 try:
-                    await asyncio.sleep(timeout)
-                    message = await sender.send_file(
-                        r_entity.username, gif, caption=keyword
+                    request = await sender.download_file(gif, bytes)
+                    break
+                except errors.FloodWaitError as flood:
+                    logger.warning(flood)
+                    ui.message(flood)
+                    ui.cooldown(flood)
+                    timeout_gif += 5
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
+
+            while True:
+                try:
+                    await asyncio.sleep(timeout_gif)
+                    upload = await recepient.upload_file(
+                        request, file_name="gif.mp4"
                     )
-                    will_delete.append(message)
+                    media = (await recepient._file_to_media(upload))[1]
+                    x: types.MessageMediaDocument = await recepient(
+                    messages.UploadMediaRequest('me', media)
+                    )
+                    break
+                except errors.FloodWaitError as flood:
+                    logger.warning(flood)
+                    ui.message(flood)
+                    ui.cooldown(flood)
+                    timeout_gif += 5
+                    await asyncio.sleep(flood.seconds)
+                    ui.uncooldown()
+
+            while True:
+                try:
+                    await recepient(
+                        messages.SaveGifRequest(
+                            types.InputDocument(
+                                id=x.document.id,
+                                access_hash=x.document.access_hash,
+                                file_reference=x.document.file_reference
+                            ),
+                            unsave=False
+                        )
+                    )
                     ui.value += 1
                     break
                 except errors.FileReferenceExpiredError as error:
@@ -341,15 +345,9 @@ async def sync_stickers_emojis_gifs(ui: Task, **kwargs):
                     logger.warning(flood)
                     ui.message(flood)
                     ui.cooldown(flood)
-                    timeout += 5
+                    timeout_gif += 5
                     await asyncio.sleep(flood.seconds)
                     ui.uncooldown()
 
-    if will_delete:
-        try:
-            await sender.delete_messages(r_entity.username, will_delete)
-        except errors.MessageDeleteForbiddenError as error:
-            logger.error(error)
-            ui.message(error, True)
 
     ui.success()
