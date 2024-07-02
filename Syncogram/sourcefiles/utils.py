@@ -47,7 +47,7 @@ def generate_qrcode(url):
     qrcode.clear()
     qrcode.add_data(url)
     qrcode.make()
-    img = qrcode.make_image(back_color=(40,47,54), fill_color=(255,255,255))
+    img = qrcode.make_image(back_color=(17,20,24), fill_color=(255,255,255))
     img.save(buffered, format="png")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
