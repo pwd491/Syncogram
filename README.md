@@ -24,7 +24,7 @@ The application allows you to quickly transfer your channels, saved messages to 
 * Syncing secure settings.
 * Syncing list of bots.
 * Syncing blocklist.
-* Syncing contacts. _(soon)_
+* Syncing contacts.
 
 # Supports
 ### Operation Systems
