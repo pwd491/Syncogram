@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-06-29 19:34+0300\n"
-"PO-Revision-Date: 2024-06-30 11:20+0300\n"
+"PO-Revision-Date: 2024-07-03 11:06+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru_RU\n"
 "Language-Team: ru_RU <LL@li.org>\n"
@@ -128,6 +128,11 @@ msgstr "Синхронизировать ботов."
 #: Syncogram/sourcefiles/rightside/manager.py:104
 msgid "Synchronize blacklist."
 msgstr "Синхронизировать чёрный список."
+
+#: Syncogram/sourcefiles/components/settings.py:67
+#: Syncogram/sourcefiles/rightside/manager.py:113
+msgid "Synchronize contacts."
+msgstr "Синхронизировать контакты."
 
 #: Syncogram/sourcefiles/components/settings.py:104
 msgid "Cancel"
@@ -321,4 +326,10 @@ msgstr ""
 #: Syncogram/sourcefiles/rightside/manager.py:105
 msgid "Synchronizes the list of blocked users and bots."
 msgstr "Синхронизирует список заблокированных пользователей и ботов."
+
+#: Syncogram/sourcefiles/rightside/manager.py:114
+msgid "Synchronizes the contacts. Syncs only contacts with a public name."
+msgstr ""
+"Синхронизирует контакты. Синхронизирует только контакты с именем "
+"пользователя."
 
