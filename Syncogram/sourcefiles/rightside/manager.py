@@ -112,7 +112,7 @@ class Manager:
             "is_sync_contacts": {
                 "title": _("Synchronize contacts."),
                 "description": _(
-                    "Synchronizes the contact list with the user's name."
+                    "Synchronizes the contacts. Syncs only contacts with a public name."
                 ),
                 "function": algorithms.sync_contacts,
                 "status": False,
