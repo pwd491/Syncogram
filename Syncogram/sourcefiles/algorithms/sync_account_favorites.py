@@ -308,6 +308,7 @@ async def sync_favorite_messages(ui: Task, **kwargs):
                 else:
                     if message.grouped_id:
                         if message.grouped_id == last_grouped_id:
+                            will_forward.append(message)
                             ui.value = i
                             continue
                         await forward_messages_and_save_ids()
